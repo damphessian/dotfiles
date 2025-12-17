@@ -75,6 +75,7 @@ end
 def machine_is?(machine_type)
   arch = `uname -ps`
   case machine_type
+  when :mac then arch.match?(/^Darwin/)
   when :apple then arch.match?(/^Darwin arm/)
   when :intel then arch.match?(/^Darwin i386/)
   when :linux then arch.match?(/^Linux/)
@@ -85,13 +86,14 @@ def homebrew_prefix
   return "/opt/homebrew" if machine_is?(:apple)
   return "/usr/local" if machine_is?(:intel)
   return "/home/linuxbrew/.linuxbrew" if machine_is?(:linux)
+  raise ValueError("unrecognized architecture")
 end
 
 # Xcode-related
 # -------------
 
 def ensure_xcode_is_set_up
-  return unless machine_is?(:apple)
+  return unless machine_is?(:mac)
 
   unless xcode_installed?
     puts "Please install Xcode before running this script."
@@ -120,7 +122,7 @@ end
 # --------------
 def install_system_zshenv
   zshenv = File.expand_path("#{DOTFILES_DIR}/env/xdg.core.sh")
-  target = machine_is?(:apple) ? "/etc/zshenv" : "/etc/zsh/zshenv"
+  target = machine_is?(:mac) ? "/etc/zshenv" : "/etc/zsh/zshenv"
 
   if File.exist?("#{target}.pre_bootstrap")
     return puts("System zshenv already set. Skipping.")
@@ -136,7 +138,7 @@ def install_system_zshenv
 end
 
 def install_launchagent(filename)
-  return unless machine_is?(:apple)
+  return unless machine_is?(:mac)
   return if File.exist?(File.expand_path("~/Library/LaunchAgents/#{filename}.plist"))
 
   FileUtils.mkdir_p(File.expand_path("~/Library/LaunchAgents/"))
@@ -146,7 +148,7 @@ def install_launchagent(filename)
 end
 
 def reset_quicklookd
-  execho("qlmanage -r") if machine_is?(:apple)
+  execho("qlmanage -r") if machine_is?(:mac)
 end
 
 def script_install(name)
@@ -199,7 +201,7 @@ def ensure_locals_are_created
 
   unless File.exist?(ENVIRONMENT.fetch("XDG_SECURE_DIR"))
     target =
-      if machine_is?(:apple)
+      if machine_is?(:mac)
         "~/Library/Mobile\\ Documents/com~apple~CloudDocs"
       else
         "~/Dropbox"
@@ -207,7 +209,7 @@ def ensure_locals_are_created
     execho("ln -s #{target}/dotfiles ${XDG_SECURE_DIR}")
   end
 
-  return unless machine_is?(:apple)
+  return unless machine_is?(:mac)
 
   system("mkdir -p ${HOME}/.local/")
 
@@ -282,7 +284,7 @@ def brew_install(package, version: nil, options: [])
 end
 
 def cask_install(package_name, version: nil, options: [])
-  return unless machine_is?(:apple)
+  return unless machine_is?(:mac)
   brew_install(package_name, version: version, options: [:cask, *options])
 end
 

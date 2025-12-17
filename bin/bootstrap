@@ -119,9 +119,10 @@ setup :text_editing_cli_tools do
 
 end
 
-if machine_is?(:apple)
+if machine_is?(:mac)
   setup_emacs_plus(version: 30) do
-    brew_install :emacs_plus, options: %i[with_compress_install with_imagemagick with_xwidgets]
+    options = %i[with_compress_install with_imagemagick with_xwidgets] if machine_is?(:apple)
+    brew_install :emacs_plus, options: options
   end
 
   setup :emacs_mac, default: false do
@@ -235,7 +236,7 @@ setup :writing_projects, default: false do
   setup(:conclave) { setup_writing(:conclave) }
 end
 
-if machine_is?(:apple)
+if machine_is?(:mac)
   configure :macos do
     disable_press_and_hold
     clear_dock
