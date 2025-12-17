@@ -351,7 +351,7 @@ HOMEBREW_PREFIX = homebrew_prefix
 ENV["DOTFILES_DIR"] = DOTFILES_DIR
 
 ENVIRONMENT =
-  `zsh -c ". #{DOTFILES_DIR}/config/zsh/zshenv && env | grep -E '^(XDG_|MISE_|PATH|GNUPG|ORG_)'"`
+  `zsh -c "env | grep -E '^(XDG_|MISE_|PATH|GNUPG|ORG_)'"`
   .strip
   .split("\n")
   .map { |line| line.split("=") }
