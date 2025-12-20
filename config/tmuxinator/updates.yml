@@ -8,9 +8,11 @@ windows:
 - vim:
   - vim +PlugInstall +PlugUpgrade +PlugUpdate +qall
 - doom:
-  - doom upgrade
-  - doom sync
-  - bump-submodules
+  panes:
+    - doom:
+      - doom upgrade
+      - doom sync
+      - bump-submodules
 - hosts:
   - hosts update
 - brew:
