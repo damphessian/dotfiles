@@ -176,6 +176,7 @@ if machine_is?(:mac)
     cask_install :kid3
     cask_install :kitty
     cask_install :latexit
+    cask_install :launchbar
     cask_install :launchcontrol
     cask_install :launchpad_manager
     cask_install :licecap
@@ -183,7 +184,6 @@ if machine_is?(:mac)
     cask_install :name_mangler
     cask_install :onedrive
     cask_install :pdfsam_basic
-    cask_install :raycast
     cask_install :rectangle_pro
     cask_install :responsively
     cask_install :screenflow
