@@ -2,18 +2,16 @@
 name: update
 project_root: "~/.dotfiles"
 windows:
-- dotfiles:
-  - cd ~/.dotfiles
-  - git pull --rebase --autostash
-- vim:
-  - vim +PlugInstall +PlugUpgrade +PlugUpdate +qall
-- doom:
-  panes:
-    - doom:
-      - doom upgrade
-      - doom sync
-      - bump-submodules
-- hosts:
-  - hosts update
-- brew:
-  - brew upgrade
+  - dotfiles:
+    - cd ~/.dotfiles
+    - git pull --rebase --autostash
+  - vim:
+    - vim +PlugInstall +PlugUpgrade +PlugUpdate +qall
+  - doom:
+    - doom upgrade
+    - doom sync
+    - bump-submodules
+  - hosts:
+    - hosts update
+  - brew:
+    - brew upgrade
