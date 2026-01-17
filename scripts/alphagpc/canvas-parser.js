@@ -37,7 +37,7 @@ function getCourseCode() {
 }
 
 function getWeekNumber(moduleEl) {
-  const header = queryText(SELECTORS.MODULE, moduleEl).split(" - ")[0];
+  const header = moduleEl.getAttribute("aria-label") || "";
   const match = [...header.matchAll(/(Module|Week) (\d+)/g)];
   const weekMap = new Map(match.map((m) => m.slice(1, 3)));
   return Number(weekMap.get("Week")) - 1;
@@ -47,7 +47,11 @@ function getWeekNumber(moduleEl) {
 // Assignment Parsing
 // ==========================
 function parseDueDate(itemEl) {
-  const raw = firstLine(queryText(SELECTORS.DETAILS, itemEl));
+  let raw = firstLine(queryText(SELECTORS.DETAILS, itemEl));
+  if (!/\b\d{4}\b/.test(raw)) {
+    const currentYear = new Date().getFullYear();
+    raw += ` ${currentYear}`;
+  }
   const date = new Date(Date.parse(raw));
   return isNaN(date) ? "" : date.toISOString().split("T")[0];
 }
@@ -87,9 +91,9 @@ function getScheduleAssignments(moduleEl) {
 function getSchedule() {
   return querySelectorAllAsArray(SELECTORS.MODULE).map((moduleEl) => {
     const week = getWeekNumber(moduleEl);
-    const topic = queryText(SELECTORS.MODULE, moduleEl).split(/\s-\s|\n/)[1];
-    const assignments = getScheduleAssignments(moduleEl);
-    return [week, topic, assignments].join("\t");
+    const topic = moduleEl.getAttribute("aria-label").split(/\s-\s|\n/)[1];
+    // const assignments = getScheduleAssignments(moduleEl);
+    return [week, topic].join("\t");
   });
 }
 
