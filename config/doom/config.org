@@ -2319,7 +2319,7 @@ nil)
     (progn
       (org-insert-heading-respect-content nil)
       (org-demote-subtree)
-      (evil-insert 1)))
+      (evil-org-append-line 1)))
   nil)
 #+end_src
 
