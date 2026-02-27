@@ -1275,7 +1275,6 @@ Use tab to fold in prog modes.
 #+begin_src elisp
 (setq +format-on-save-enabled-modes
       '(not js2-mode
-            rjsx-mode
             typescript-mode
             emacs-lisp-mode  ; elisp's mechanisms are good enough
             sql-mode         ; sqlformat is currently broken
@@ -3289,19 +3288,6 @@ kill any open pytest compilation buffers
 
 * react & web
 
-Use =rjsx-mode= for React and React-TypeScript files.
-
-#+begin_src elisp
-(setq auto-mode-alist
-      (assoc-delete-all
-       "\\.tsx\\'"
-       (assoc-delete-all
-        "\\.jsx\\'"
-        auto-mode-alist)))
-
-(add-to-list 'auto-mode-alist '("\\.\\(?:jsx\\|tsx\\)\\'" . rjsx-mode))
-#+end_src
-
 ** Emmet
 
 Use =C-RET= to expand emmet tags.
@@ -3310,7 +3296,7 @@ Use =C-RET= to expand emmet tags.
 (defun do/config:keybindings:web-h ()
   (map! :ni "C-<return>" #'emmet-expand-line))
 
-(add-hook! '(web-mode-hook rjsx-mode-hook) #'do/config:keybindings:web-h)
+(add-hook! '(web-mode-hook) #'do/config:keybindings:web-h)
 #+end_src
 
 Emmet should expand classes as =className= in JSX modes.
@@ -3318,8 +3304,7 @@ Emmet should expand classes as =className= in JSX modes.
 #+begin_src elisp
 (defun do/config:emmet-expand-jsx-classname-h ()
   (setq emmet-expand-jsx-className? t))
-
-(add-hook! '(rjsx-mode-hook typescript-tsx-mode-hook) #'do/config:emmet-expand-jsx-classname-h)
+(add-hook! '(typescript-tsx-mode-hook) #'do/config:emmet-expand-jsx-classname-h)
 #+end_src
 
 * ruby
