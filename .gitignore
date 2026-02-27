@@ -75,6 +75,7 @@ state
 # high-churn config files,
 # state files miscategorized as config
 
+/config/.android
 /config/.gsd-keyboard.settings-ported
 /config/GNOME-xdg-terminals.list
 /config/NVIDIA/
