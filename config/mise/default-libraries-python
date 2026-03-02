@@ -4,8 +4,10 @@ ipython
 isort
 jupyter
 mypy
+openai
 pip
 pyflakes
 pylint
 pytest
+pyxdg
 virtualenv
