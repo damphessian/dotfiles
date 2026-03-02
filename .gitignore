@@ -92,6 +92,7 @@ state
 /config/evolution/
 /config/exercism
 /config/gatsby/
+/config/gcloud/
 /config/github-copilot/versions.json
 /config/glib-2.0/
 /config/glow/
