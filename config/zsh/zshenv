@@ -27,5 +27,5 @@ fi
 [[ -f "${XDG_SECURE_DIR}/config/zsh/zshenv" ]] && \
   source "${XDG_SECURE_DIR}/config/zsh/zshenv"
 
-[[ -f "${XDG_LOCALS_DIR}/locals/config/zsh/zshenv" ]] && \
-  source "${XDG_LOCALS_DIR}/locals/config/zsh/zshenv"
+[[ -f "${XDG_LOCALS_DIR}/config/zsh/zshenv" ]] && \
+  source "${XDG_LOCALS_DIR}/config/zsh/zshenv"
