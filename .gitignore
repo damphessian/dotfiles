@@ -104,6 +104,7 @@ state
 /config/ibus/
 /config/irb/irb_history
 /config/iterm2/AppSupport
+/config/jj/
 /config/jupyter/migrated
 /config/karabiner/automatic_backups
 /config/maestral/
