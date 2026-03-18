@@ -35,17 +35,17 @@ PATH+=":${HOMEBREW_PREFIX}/sbin"
 
 PATH+=":${HOME}/.local/bin"
 PATH+=":${LMSTUDIO_HOME}/bin"
-PATH+=":/usr/local/cuda/bin"
 PATH+=":/usr/local/sbin"
 PATH+=":/usr/local/bin"
 PATH+=":/usr/sbin"
 PATH+=":/usr/bin"
 PATH+=":/sbin"
 PATH+=":/bin"
-PATH+=":/Library/TeX/texbin"
-PATH+=":/usr/local/texlive/current/bin/x86_64-linux"
-PATH+=":/usr/local/texlive/current/bin/aarch64-linux"
-PATH+=":/snap/bin"
+PATH+=":/usr/local/texlive/current/bin/universal-darwin"
+
+# PATH+=":/usr/local/texlive/current/bin/x86_64-linux"
+# PATH+=":/usr/local/cuda/bin"
+# PATH+=":/snap/bin"
 
 export PATH
 
