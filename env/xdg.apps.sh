@@ -5,7 +5,7 @@
 [[ -z "${XDG_SECURE_DIR}" ]]  && echo "WARNING: XDG_SECURE_DIR is not set in ${0}"
 [[ -z "${XDG_STATE_HOME}" ]]  && echo "WARNING: XDG_STATE_HOME is not set in ${0}"
 
-export ANDROID_SDK_ROOT="${HOME}/Library/Android/sdk"
+export ANDROID_SDK_ROOT="/Volumes/Cellar/Android"
 export ANDROID_USER_HOME="${XDG_DATA_HOME}/android"
 export AWS_CONFIG_FILE="${XDG_SECURE_DIR}/config/aws/config"
 export AWS_SHARED_CREDENTIALS_FILE="${XDG_SECURE_DIR}/config/aws/credentials"
