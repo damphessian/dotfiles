@@ -7,32 +7,38 @@ providers:
     api_key_env: "OPENAI_API_KEY_GIT"
     protocol: "responses"
 
-  grok:
-    base_url: "https://api.x.ai/v1"
-    model: "grok-3-mini"
-    api_key_env: "XAI_API_KEY"
+  mini_qwen3:
+    base_url: "http://jmr-mini.local:11434/v1"
+    model: "qwen3-coder:480b-cloud"
+    api_key_env: "OLLAMA_API_KEY"
     protocol: "responses"
 
-  lms_gpt:
-    base_url: "http://jmr-studio.local:1234/v1"
-    model: "openai/gpt-oss-20b"
-    api_key_env: "LMSTUDIO_API_KEY"
-    protocol: "chat"
-
-  lms_deepseek:
-    base_url: "http://jmr-studio.local:1234/v1"
-    model: "deepseek-coder-v2-lite-instruct-mlx"
-    api_key_env: "LMSTUDIO_API_KEY"
-    protocol: "chat"
-
-  air_llama:
-    base_url: "http://jmr-air.local:1234/v1"
-    model: "llama-3.2-3b-instruct"
-    api_key_env: "LMSTUDIO_API_KEY"
-    protocol: "chat"
-
-  air_qwen:
-    base_url: "http://jmr-air.local:1234/v1"
-    model: "qwen3.5-2b"
-    api_key_env: "LMSTUDIO_API_KEY"
-    protocol: "chat"
+  # air_llama:
+  #   base_url: "http://jmr-air.local:1234/v1"
+  #   model: "llama-3.2-3b-instruct"
+  #   api_key_env: "LMSTUDIO_API_KEY"
+  #   protocol: "chat"
+  #
+  # air_qwen:
+  #   base_url: "http://jmr-air.local:1234/v1"
+  #   model: "qwen3.5-2b"
+  #   api_key_env: "LMSTUDIO_API_KEY"
+  #   protocol: "chat"
+  #
+  # grok:
+  #   base_url: "https://api.x.ai/v1"
+  #   model: "grok-3-mini"
+  #   api_key_env: "XAI_API_KEY"
+  #   protocol: "responses"
+  #
+  # lms_gpt:
+  #   base_url: "http://jmr-studio.local:1234/v1"
+  #   model: "openai/gpt-oss-20b"
+  #   api_key_env: "LMSTUDIO_API_KEY"
+  #   protocol: "chat"
+  #
+  # lms_deepseek:
+  #   base_url: "http://jmr-studio.local:1234/v1"
+  #   model: "deepseek-coder-v2-lite-instruct-mlx"
+  #   api_key_env: "LMSTUDIO_API_KEY"
+  #   protocol: "chat"
