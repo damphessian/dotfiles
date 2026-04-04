@@ -47,19 +47,6 @@
 	clean  = git-media-clean %f
 	smudge = git-media-smudge %f
 
-[format]
-	headers = "Content-Type: text/plain;charset=utf-8\n"
-	signOff = yes
-
-[sendemail]
-	smtpEncryption   = starttls
-	smtpServer       = 127.0.0.1
-	smtpServerport   = 1025
-	transferEncoding = 8bit
-	confirm          = auto
-	suppressCC       = self
-	annotate         = true
-
 [init]
 	defaultBranch = master
 
@@ -110,12 +97,6 @@
 
 [rebase]
 	autosquash = true
-
-[http]
-	postbuffer = 524288000
-
-[ssh]
-	postbuffer = 524288000
 
 [alias]
 	# plumbing
