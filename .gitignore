@@ -120,6 +120,7 @@ state
 /config/qalculate/qalc.history
 /config/raycast/
 /config/rstudio
+/config/swiftpm/
 /config/systemd/
 /config/tiling-assistant/
 /config/toshy/*
