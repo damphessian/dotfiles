@@ -72,6 +72,20 @@ if has('termguicolors')
   set termguicolors
 endif
 
+function! SetBackgroundFromSystem() abort
+  if has('macunix')
+    let l:mode = system("defaults read -g AppleInterfaceStyle 2>/dev/null")
+    if v:shell_error == 0 && l:mode =~? 'Dark'
+      set background=dark
+    else
+      set background=light
+    endif
+  endif
+endfunction
+
+call SetBackgroundFromSystem()
+colorscheme spacemacs
+
 " Color scheme settings
 if has('gui_running')
   set vb                    " no audible bell
@@ -82,15 +96,6 @@ if has('gui_running')
   set guifont=JuliaMono:h16
   colorscheme spacemacs
 endif
-
-set background=dark
-execute 'colorscheme spacemacs'
-
-"comments in italics
-hi Comment cterm=italic
-" transparent background
-hi Normal guibg=NONE ctermbg=NONE
-
 
 "--------------------------------------------------------------
 " Line numbering
