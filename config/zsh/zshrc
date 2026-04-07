@@ -445,6 +445,8 @@ bindkey -s '\eOB' '\e[B'
 autoload -U colors && colors
 fg_no_bold[orange]=$'\e[38;5;208m'
 fg[orange]=$'\e[38;5;208m'
+fg_no_bold[gray]=$'\e[38;5;246m'
+fg[gray]=$'\e[38;5;246m'
 
 color() {
   case $1 in
