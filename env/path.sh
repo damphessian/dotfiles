@@ -13,37 +13,29 @@ PATH+=":${XDG_DATA_HOME}/doomemacs/bin"
 PATH+=":${XDG_DATA_HOME}/npm/bin"
 
 PATH+=":${HOMEBREW_PREFIX}/opt/bison/bin"
-PATH+=":${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin"
 PATH+=":${HOMEBREW_PREFIX}/opt/curl/bin"
-PATH+=":${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin"
 PATH+=":${HOMEBREW_PREFIX}/opt/gettext/bin"
-PATH+=":${HOMEBREW_PREFIX}/opt/gnu-bin/libexec/gnubin"
-PATH+=":${HOMEBREW_PREFIX}/opt/gnu-indent/libexec/gnubin"
-PATH+=":${HOMEBREW_PREFIX}/opt/gnu-sed/libexec/gnubin"
-PATH+=":${HOMEBREW_PREFIX}/opt/gnu-tar/libexec/gnubin"
-PATH+=":${HOMEBREW_PREFIX}/opt/gnu-which/libexec/gnubin"
-PATH+=":${HOMEBREW_PREFIX}/opt/gnutls/libexec/gnubin"
-PATH+=":${HOMEBREW_PREFIX}/opt/grep/libexec/gnubin"
-PATH+=":${HOMEBREW_PREFIX}/opt/make/libexec/gnubin"
 PATH+=":${HOMEBREW_PREFIX}/opt/rg/bin"
 PATH+=":${HOMEBREW_PREFIX}/opt/trash/bin"
 PATH+=":${HOMEBREW_PREFIX}/share/git-core/contrib/diff-highlight"
+
+if [[ -d "${HOMEBREW_PREFIX}/opt" ]]; then
+  for gnubin in "${HOMEBREW_PREFIX}"/opt/*/libexec/gnubin; do
+    [[ -d "$gnubin" ]] && PATH+=":${gnubin}"
+  done
+fi
 
 # -------------------
 PATH+=":${HOMEBREW_PREFIX}/bin"
 PATH+=":${HOMEBREW_PREFIX}/sbin"
 
 PATH+=":${HOME}/.local/bin"
-PATH+=":${LMSTUDIO_HOME}/bin"
-PATH+=":${ANDROID_SDK_ROOT}/platform-tools"
-PATH+=":/Applications/Obsidian.app/Contents/MacOS"
 PATH+=":/usr/local/sbin"
 PATH+=":/usr/local/bin"
 PATH+=":/usr/sbin"
 PATH+=":/usr/bin"
 PATH+=":/sbin"
 PATH+=":/bin"
-PATH+=":/usr/local/texlive/current/bin/universal-darwin"
 
 export PATH
 
