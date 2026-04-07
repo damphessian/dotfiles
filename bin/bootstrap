@@ -21,7 +21,6 @@ setup :core_cli_tools do
   brew_install :curl
   brew_install :diffutils
   brew_install :docker
-  brew_install :docker_compose
   brew_install :fd
   brew_install :ffmpeg
   brew_install :findutils
@@ -40,10 +39,7 @@ setup :core_cli_tools do
   brew_install :jq
   brew_install :less
   brew_install :maestral
-  brew_install :nbdime
   brew_install :parallel
-  brew_install :pixi
-  brew_install :pymupdf
   brew_install :ripgrep
   brew_install :shfmt
   brew_install :tlrc
@@ -61,7 +57,6 @@ setup :build_tools do
   brew_install :cmake
   brew_install :gcc
   brew_install :gettext
-  brew_install :glslang
   brew_install :icu4c, version: 77
   brew_install :imagemagick
   brew_install :libffi
@@ -71,7 +66,6 @@ setup :build_tools do
   brew_install :ncurses
   brew_install :openssl, version: 3
   brew_install :readline
-  brew_install :rtags
   brew_install :zlib
 
 end
@@ -91,11 +85,12 @@ setup :development_tools do
   brew_install :global
   brew_install :httpie
   brew_install :mise
+  brew_install :nbdime
+  brew_install :pymupdf
   brew_install :source_highlight
   brew_install :texlab
   brew_install :tmux
   brew_install :xdg_ninja
-  brew_install :zellij
   brew_install :zsh
   brew_install :zsh_completions
 
@@ -142,7 +137,6 @@ if machine_is?(:mac)
     brew_install :colima
     brew_install :osxutils
     brew_install :pinentry_mac
-    brew_install :reattach_to_user_namespace
     brew_install :trash
     brew_install :vim
     cask_install :cursor
@@ -168,12 +162,10 @@ if machine_is?(:mac)
     cask_install :finbar
     cask_install :google_chrome
     cask_install :google_drive
-    cask_install :httpie_desktop
     cask_install :iterm2
     cask_install :itermai
     cask_install :keycastr
     cask_install :kid3
-    cask_install :kitty
     cask_install :latexit
     cask_install :launchbar
     cask_install :launchcontrol
