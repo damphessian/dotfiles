@@ -340,16 +340,14 @@ delf <sid>cterm
 unlet s:gui00 s:gui01 s:gui02 s:gui03  s:gui04  s:gui05  s:gui06  s:gui07  s:gui08  s:gui09 s:gui0A  s:gui0B  s:gui0C  s:gui0D  s:gui0E  s:gui0F
 unlet s:cterm00 s:cterm01 s:cterm02 s:cterm03 s:cterm04 s:cterm05 s:cterm06 s:cterm07 s:cterm08 s:cterm09 s:cterm0A s:cterm0B s:cterm0C s:cterm0D s:cterm0E s:cterm0F
 
-if &background ==# 'light'
-  highlight Normal       guibg=NONE ctermbg=NONE
-  highlight LineNr       guibg=NONE ctermbg=NONE
-  highlight SignColumn   guibg=NONE ctermbg=NONE
-  highlight FoldColumn   guibg=NONE ctermbg=NONE
-  highlight CursorLine   guibg=NONE ctermbg=NONE
-  highlight CursorLineNr guibg=NONE ctermbg=NONE
-  highlight ColorColumn  guibg=NONE ctermbg=NONE
-  highlight CursorColumn guibg=NONE ctermbg=NONE
-endif
-
-"comments in italics
-hi Comment cterm=italic
+" if &background ==# 'light'
+highlight Normal       guibg=NONE ctermbg=NONE
+highlight LineNr       guibg=NONE ctermbg=NONE
+highlight SignColumn   guibg=NONE ctermbg=NONE
+highlight FoldColumn   guibg=NONE ctermbg=NONE
+highlight CursorLine   guibg=NONE ctermbg=NONE
+highlight CursorLineNr guibg=NONE ctermbg=NONE
+highlight ColorColumn  guibg=NONE ctermbg=NONE
+highlight CursorColumn guibg=NONE ctermbg=NONE
+highlight Comment      gui=italic cterm=italic
+" endif
