@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+format_file () {
+  pandoc "$1" \
+    --from markdown \
+    --to markdown \
+    --wrap=auto \
+    --markdown-headings=setext \
+    -o "$1"
+}
+
+for path in "$@"; do
+  if [ -d "$path" ]; then
+    find "$path" -type f -name "*.md" -print0 |
+    while IFS= read -r -d '' f; do
+      format_file "$f"
+    done
+  else
+    format_file "$path"
+  fi
+done
