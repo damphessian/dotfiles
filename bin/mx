@@ -123,11 +123,11 @@ kill_session_or_template() {
     selections_list=""
     IFS=$'\n'
     for session in $sessions; do
-      selections_list="$selections_list\n$SESSION\t\t$session"
+      selections_list="$selections_list\n$SESSION $session"
     done
 
     for template in $templates; do
-      selections_list="$selections_list\n$TEMPLATE\t$template"
+      selections_list="$selections_list\n$TEMPLATE $template"
     done
     unset IFS
 
@@ -140,11 +140,11 @@ kill_session_or_template() {
     IFS=$'\n'
     for entry in $selection; do
         kind="$(echo $entry | awk '{ print $1 }')"
-        name="$(echo $entry | sed -E 's/(session|template)\s+(.+)$/\2/')"
+        name="$(echo "$entry" | sed -E 's/^\w+\s+(.+)$/\1/')"
 
         printf "Terminating %s '%s' " "$kind" "$name"
 
-        if [[ "$kind" == 'session' ]]; then
+        if [[ "$kind" == 's' ]]; then
             if [[ "$templates" == *"$name"* ]]; then
               printf "[tmuxinator stop %s] ... " "$name"
               tmuxinator stop "$name"
@@ -154,7 +154,7 @@ kill_session_or_template() {
             fi
 
             printf "done.\n"
-        elif [[ "$kind" == 'template' ]]; then
+        elif [[ "$kind" == 't' ]]; then
             tmuxinator delete "$name"
         else
             printf "Unfamiliar selection: %s\n" "$entry"
