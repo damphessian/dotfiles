@@ -159,6 +159,7 @@ if machine_is?(:mac)
     cask_install :brave_browser
     cask_install :coderunner
     cask_install :dash, version: 6
+    cask_install :figma
     cask_install :finbar
     cask_install :google_chrome
     cask_install :google_drive
@@ -171,6 +172,7 @@ if machine_is?(:mac)
     cask_install :launchcontrol
     cask_install :launchpad_manager
     cask_install :licecap
+    cask_install :linear_linear
     cask_install :maestral
     cask_install :name_mangler
     cask_install :onedrive
