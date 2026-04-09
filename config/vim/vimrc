@@ -79,7 +79,7 @@ function! SetBackgroundFromSystem() abort
 
   let l:mode = system("defaults read -g AppleInterfaceStyle 2>/dev/null")
   let l:is_dark_system = (v:shell_error == 0 && l:mode =~? 'Dark')
-  let l:is_visor = exists('$ITERM_PROFILE') && $ITERM_PROFILE ==# 'Visor'
+  let l:is_visor = exists('$ITERM_PROFILE') && $ITERM_PROFILE ==# 'Visor' || exists('$GHOSTTY_QUICK_TERMINAL')
 
   if l:is_dark_system || l:is_visor
     set background=dark
