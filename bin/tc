@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+import sys
+
+try:
+    import tiktoken
+except ImportError:
+    print("tiktoken is not installed. Run: pip install tiktoken", file=sys.stderr)
+    sys.exit(1)
+
+DEFAULT_MODEL = "gpt-5.4"
+
+
+def get_encoding(model: str):
+    try:
+        return tiktoken.encoding_for_model(model)
+    except KeyError:
+        return tiktoken.get_encoding("o200k_base")
+
+
+def main():
+    model = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_MODEL
+    text = sys.stdin.read()
+
+    if text is None:
+        text = ""
+
+    enc = get_encoding(model)
+    count = len(enc.encode(text))
+    print(count)
+
+
+if __name__ == "__main__":
+    main()
