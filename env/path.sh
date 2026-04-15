@@ -19,13 +19,10 @@ PATH+=":${HOMEBREW_PREFIX}/opt/rg/bin"
 PATH+=":${HOMEBREW_PREFIX}/opt/trash/bin"
 PATH+=":${HOMEBREW_PREFIX}/share/git-core/contrib/diff-highlight"
 
-if [[ -d "${HOMEBREW_PREFIX}/opt" ]]; then
-  for gnubin in "${HOMEBREW_PREFIX}"/opt/*/libexec/gnubin; do
-    [[ -d "$gnubin" ]] && PATH+=":${gnubin}"
-  done
-fi
+for gnubin in "${HOMEBREW_PREFIX}"/opt/*/libexec/gnubin(N); do
+  PATH+=":${gnubin}"
+done
 
-# -------------------
 PATH+=":${HOMEBREW_PREFIX}/bin"
 PATH+=":${HOMEBREW_PREFIX}/sbin"
 
@@ -39,8 +36,6 @@ PATH+=":/bin"
 
 export PATH
 
-if [[ -d "${HOMEBREW_PREFIX}/opt" ]]; then
-  for mandir in ${HOMEBREW_PREFIX}/opt/*/libexec/gnuman; do
-    export MANPATH="$mandir:$MANPATH"
-  done
-fi
+for gnuman in "${HOMEBREW_PREFIX}"/opt/*/libexec/gnuman(N); do
+  MANPATH+=":${gnuman}"
+done
