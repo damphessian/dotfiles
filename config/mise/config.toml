@@ -9,3 +9,8 @@ postgres = "18.1"
 python = "3.14.3"
 ruby = "3.4.7"
 rust = "1.91.1"
+
+[settings]
+
+[settings.ruby]
+compile = false
