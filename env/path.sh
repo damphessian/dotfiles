@@ -2,6 +2,10 @@
 [[ -z "${XDG_DATA_HOME}" ]]   && echo "WARNING: XDG_DATA_HOME is not set in ${0}"
 [[ -z "${HOMEBREW_PREFIX}" ]] && echo "WARNING: HOMEBREW_PREFIX is not set in ${0}"
 
+if [ -n "$ZSH_VERSION" ]; then
+  setopt NULL_GLOB
+fi
+
 PATH="${XDG_LOCALS_DIR}/bin"
 PATH+=":${DOTFILES_DIR}/bin"
 PATH+=":${XDG_SECURE_DIR}/bin"
@@ -19,7 +23,8 @@ PATH+=":${HOMEBREW_PREFIX}/opt/rg/bin"
 PATH+=":${HOMEBREW_PREFIX}/opt/trash/bin"
 PATH+=":${HOMEBREW_PREFIX}/share/git-core/contrib/diff-highlight"
 
-for gnubin in "${HOMEBREW_PREFIX}"/opt/*/libexec/gnubin(N); do
+for gnubin in "${HOMEBREW_PREFIX}"/opt/*/libexec/gnubin; do
+  [ -d "$gnubin" ] || continue
   PATH+=":${gnubin}"
 done
 
@@ -37,6 +42,11 @@ PATH+=":/Library/TeX/texbin"
 
 export PATH
 
-for gnuman in "${HOMEBREW_PREFIX}"/opt/*/libexec/gnuman(N); do
+for gnuman in "${HOMEBREW_PREFIX}"/opt/*/libexec/gnuman; do
+  [ -d "$gnuman" ] || continue
   MANPATH+=":${gnuman}"
 done
+
+if [ -n "$ZSH_VERSION" ]; then
+  unsetopt NULL_GLOB
+fi
