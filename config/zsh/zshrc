@@ -507,9 +507,12 @@ setopt complete_aliases     # Complete aliased commands
 if [[ -d "${XDG_DATA_HOME}/fzf/shell" ]]; then
   . "${XDG_DATA_HOME}/fzf/shell/completion.zsh"
   . "${XDG_DATA_HOME}/fzf/shell/key-bindings.zsh"
-  . "${HOME}/.openclaw/completions/openclaw.zsh"
 else
   echo "Warning: fzf shell completions and keybindings not found"
+fi
+
+if [[ -d "${HOME}/.openclaw/completions" ]]; then
+  . "${HOME}/.openclaw/completions/openclaw.zsh"
 fi
 
 # 12. Secure and Local Configurations
