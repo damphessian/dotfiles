@@ -81,19 +81,23 @@ setup :development_tools do
   brew_install :direnv
   brew_install :eza
   brew_install :fzf
+  brew_install :gemini_cli
   brew_install :gh
   brew_install :git_delta
-  brew_install :global
-  brew_install :httpie
+  brew_install :imsg
   brew_install :mise
   brew_install :nbdime
   brew_install :pymupdf
   brew_install :source_highlight
+  brew_install :summarize
   brew_install :texlab
   brew_install :tmux
   brew_install :xdg_ninja
   brew_install :zsh
   brew_install :zsh_completions
+
+  brew_tap "schpet/tap"
+  brew_install :linear
 
   brew_tap "romkatv/gitstatus"
   brew_install :gitstatus
@@ -102,6 +106,7 @@ end
 setup :text_editing_cli_tools do
 
   brew_install :editorconfig
+  brew_install :ghostscript
   brew_install :grip
   brew_install :hunspell
   brew_install :libvterm
@@ -169,7 +174,6 @@ if machine_is?(:mac)
     cask_install :iterm2
     cask_install :itermai
     cask_install :keycastr
-    cask_install :kid3
     cask_install :latexit
     cask_install :launchbar
     cask_install :launchcontrol
@@ -184,11 +188,9 @@ if machine_is?(:mac)
     cask_install :screenflow
     cask_install :shottr
     cask_install :skim
-    cask_install :telegram
     cask_install :tex_live_utility
     cask_install :transmission
     cask_install :vlc
-    cask_install :whatsapp
     cask_install :zoom
     cask_install :zotero
 
