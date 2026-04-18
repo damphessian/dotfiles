@@ -9,8 +9,7 @@ DATE="$(date +'%d %b %Y')"
 echo "Syncing submodules..."
 
 cd "${DOTFILES_DIR}"
-git submodule sync --recursive
-git submodule update --recursive
+git submodule update --remote
 git submodule | awk '{ print $2 }' | xargs git add -f
 
 echo "Syncing dotfiles..."
