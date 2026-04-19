@@ -391,6 +391,20 @@ nnoremap <silent> <leader>bb :call fzf#run({
 "--------------------------------------------------------------
 " Plugins
 "--------------------------------------------------------------
+" JSON
+autocmd FileType json setlocal foldmethod=indent
+
+" JSON fold
+let g:jsonpath_register = '*'
+
+" Mappings only in JSON buffers
+augroup JsonNav
+  autocmd!
+  " Echo/visualize path to cursor
+  autocmd FileType json noremap <buffer> <silent> <leader>d :call jsonpath#echo()<CR>
+  " Go to a path you type (e.g., my.object[0].value)
+  autocmd FileType json noremap <buffer> <silent> <leader>g :call jsonpath#goto()<CR>
+augroup END
 
 " Rainbow parentheses
 augroup rainbow_parentheses

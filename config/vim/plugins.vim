@@ -27,3 +27,7 @@ Plug 'kana/vim-textobj-entire' " Adds ae/ie
 Plug 'kana/vim-textobj-indent' " Adds i
 Plug 'kana/vim-textobj-user'   " custom text objects
 Plug 'kana/vim-textobj-line'   " Adds l
+
+" JSON
+Plug 'elzr/vim-json'
+Plug 'mogelbrod/vim-jsonpath'
