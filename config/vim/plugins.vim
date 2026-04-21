@@ -2,7 +2,8 @@
 Plug 'liuchengxu/space-vim-dark'
 
 Plug 'christoomey/vim-sort-motion'
-Plug 'christoomey/vim-system-copy'    " cp
+Plug 'christoomey/vim-system-copy'
+Plug 'editorconfig/editorconfig-vim'
 Plug 'haya14busa/incsearch.vim'
 Plug 'itchyny/lightline.vim'          " lightweight, configurable status line
 Plug 'jiangmiao/auto-pairs'
