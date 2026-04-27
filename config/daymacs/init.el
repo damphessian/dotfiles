@@ -69,6 +69,14 @@
 (setq vc-follow-symlinks t)
 
 ;;; ————————————————————————————
+;;; Appearance
+;;; ————————————————————————————
+
+(use-package doom-themes
+  :config
+  (load-theme 'doom-one t))
+
+;;; ————————————————————————————
 ;;; Evil — vi keybindings
 ;;; ————————————————————————————
 
@@ -107,7 +115,7 @@
 
     ;; Files
     "f"   '(:ignore t           :which-key "file")
-    "f f" '(consult-find        :which-key "find file")
+    "f f" '(consult-fd          :which-key "find file")
     "f r" '(consult-recent-file :which-key "recent files")
 
     ;; Search
@@ -162,10 +170,7 @@
 (use-package consult
   ;; Rich completion commands: consult-ripgrep, consult-find, consult-buffer,
   ;; consult-line, consult-recent-file, etc. Integrates with vertico.
-  :config
-  ;; Use fd instead of find if available (faster, respects .gitignore).
-  (when (executable-find "fd")
-    (setq consult-find-args "fd --color=never --full-path ARG OPTS")))
+  :config)
 
 (use-package marginalia
   ;; Adds annotations to completion candidates: file sizes, docstrings,
