@@ -96,11 +96,10 @@ setup :development_tools do
   brew_install :zsh
   brew_install :zsh_completions
 
-  brew_tap "schpet/tap"
-  brew_install :linear
+  brew_install "bro3886/tap/ical"
+  brew_install "romkatv/gitstatus/gitstatus"
+  brew_install "schpet/tap/linear"
 
-  brew_tap "romkatv/gitstatus"
-  brew_install :gitstatus
 end
 
 setup :text_editing_cli_tools do
@@ -197,9 +196,7 @@ if machine_is?(:mac)
   end
 
   setup :miscellaneous_cli_tools, default: false do
-    brew_tap "yt-dlp/taps"
-    brew_install :yt_dlp
-
+    brew_install "yt-dlp/taps/yt_dlp"
     cask_install :mactex_no_gui
   end
 end
