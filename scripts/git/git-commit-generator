@@ -213,6 +213,8 @@ def main():
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--provider", default=None)
     parser.add_argument("--stream", action="store_true", help="Enable streamed output")
+    parser.add_argument("steering", nargs="?", default=None,
+                        help="Optional steering message to pre-seed generation")
     args, _ = parser.parse_known_args()
 
     config = load_config(DEFAULT_CONFIG)
@@ -250,7 +252,13 @@ def main():
 
     diff = read_staged_diff()
     base_prompt = generate_prompt(diff)
-    prompt = base_prompt
+    if args.steering:
+        prompt = (
+            f"{base_prompt}\n\nAdditional user guidance:\n{args.steering}\n\n"
+            f"Incorporate this guidance while following all prior rules."
+        )
+    else:
+        prompt = base_prompt
 
     while True:
         # -------------------------
