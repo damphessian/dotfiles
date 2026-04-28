@@ -353,15 +353,16 @@ frames exist; otherwise kill Emacs."
   :config
   (marginalia-mode 1))
 
+(use-package embark-consult
+  ;; Register the integration package before Embark loads so Embark's
+  ;; startup check can `require' it without warning.
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+
 (use-package embark
   ;; "Act on this candidate" layer for any completing-read UI.
   ;; C-, on any vertico candidate: open in other window, copy, delete, etc.
   :after general)
-
-(use-package embark-consult
-  ;; Wires embark actions into consult previews and exports.
-  :after (embark consult)
-  :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package wgrep
   ;; Edit consult-ripgrep results in-buffer, then apply across all files.
