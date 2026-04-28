@@ -65,6 +65,9 @@
 ;; Single space after sentences — affects fill-paragraph.
 (setq sentence-end-double-space nil)
 
+;; Silence the audible bell entirely.
+(setq ring-bell-function #'ignore)
+
 ;; Follow symlinks to version-controlled files without prompting.
 (setq vc-follow-symlinks t)
 
