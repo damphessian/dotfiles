@@ -104,6 +104,8 @@
   (setq evil-want-keybinding nil)    ; evil-collection provides these instead
   (setq evil-undo-system 'undo-redo) ; use native Emacs 28+ undo/redo
   (setq evil-want-C-u-scroll t)      ; C-u scrolls up (mirrors vim default)
+  (setq evil-vsplit-window-right t)
+  (setq evil-split-window-below  t)
   :config
   (evil-mode 1))
 
@@ -113,18 +115,6 @@
   :after evil
   :config
   (evil-collection-init))
-
-;;; ————————————————————————————
-;;; Window helpers
-;;; ————————————————————————————
-
-(defun split-window-right-and-focus ()
-  (interactive)
-  (select-window (split-window-right)))
-
-(defun split-window-below-and-focus ()
-  (interactive)
-  (select-window (split-window-below)))
 
 ;;; ————————————————————————————
 ;;; General — leader key bindings
@@ -191,8 +181,8 @@
 
     ;; Windows
     "w"   '(:ignore t                  :which-key "window")
-    "w v" '(split-window-right-and-focus :which-key "vertical split")
-    "w s" '(split-window-below-and-focus :which-key "horizontal split")
+    "w v" '(evil-window-vsplit         :which-key "vertical split")
+    "w s" '(evil-window-split          :which-key "horizontal split")
     "w d" '(delete-window              :which-key "close")
     "w m" '(delete-other-windows       :which-key "maximize")
     "w h" '(windmove-left              :which-key "go left")
