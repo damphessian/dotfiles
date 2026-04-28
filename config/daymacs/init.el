@@ -166,10 +166,12 @@ frames exist; otherwise kill Emacs."
     "s s" '(consult-line                     :which-key "line in buffer")
 
     ;; Git
-    "g"   '(:ignore t           :which-key "git")
-    "g g" '(magit-status        :which-key "magit status")
-    "g b" '(magit-blame         :which-key "magit blame")
-    "g t" '(git-timemachine     :which-key "time machine")
+    "g"   '(:ignore t                :which-key "git")
+    "g g" '(magit-status             :which-key "magit status")
+    "g b" '(magit-blame              :which-key "magit blame")
+    "g t" '(git-timemachine          :which-key "time machine")
+    "g n" '(diff-hl-next-hunk        :which-key "next hunk")
+    "g p" '(diff-hl-previous-hunk    :which-key "prev hunk")
 
     ;; Org
     "o"   '(:ignore t           :which-key "org")
@@ -341,6 +343,12 @@ frames exist; otherwise kill Emacs."
   :config
   (evil-make-overriding-map git-timemachine-mode-map 'normal)
   (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps))
+
+(use-package diff-hl
+  ;; Inline git diff indicators in the fringe (added/modified/removed lines).
+  :config
+  (global-diff-hl-mode 1)
+  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
 
 ;; Route GPG passphrase prompts through the Emacs minibuffer instead of a TTY
 ;; pinentry. Required for GPG commit signing to work in magit's subprocess.
