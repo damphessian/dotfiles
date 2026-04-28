@@ -210,7 +210,8 @@
    "s-W"   #'tab-close
    "s-w"   #'delete-window
    "s-k"   #'kill-current-buffer
-   "s-C-g" #'magit-status))
+   "s-C-g" #'magit-status
+   "s-'"   #'eat))
 
 ;;; ————————————————————————————
 ;;; which-key — keybinding hints
@@ -327,6 +328,15 @@
 ;; GNUPGHOME must be set explicitly — the XDG LaunchAgent doesn't export it,
 ;; so GUI-launched Emacs would otherwise fall back to ~/.gnupg.
 (setq epg-pinentry-mode 'loopback)
+
+;;; ————————————————————————————
+;;; eat — terminal emulator
+;;; ————————————————————————————
+
+(use-package eat
+  :hook (eshell-load . eat-eshell-mode)
+  :custom
+  (eat-term-name "xterm-256color"))
 
 ;;; ————————————————————————————
 ;;; Org
