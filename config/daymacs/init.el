@@ -116,6 +116,9 @@
   :config
   (evil-collection-init))
 
+(use-package evil-iedit-state
+  :after evil)
+
 (defun delete-window-dwim ()
   "Delete window; close tab if sole window in tab; close frame if multiple
 frames exist; otherwise kill Emacs."
@@ -149,9 +152,10 @@ frames exist; otherwise kill Emacs."
     "f r" '(consult-recent-file :which-key "recent files")
 
     ;; Search
-    "s"   '(:ignore t           :which-key "search")
-    "s g" '(consult-ripgrep     :which-key "ripgrep")
-    "s s" '(consult-line        :which-key "line in buffer")
+    "s"   '(:ignore t                        :which-key "search")
+    "s e" '(evil-iedit-state/iedit-mode      :which-key "iedit")
+    "s g" '(consult-ripgrep                  :which-key "ripgrep")
+    "s s" '(consult-line                     :which-key "line in buffer")
 
     ;; Git
     "g"   '(:ignore t           :which-key "git")
