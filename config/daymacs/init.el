@@ -156,6 +156,7 @@
     "g"   '(:ignore t           :which-key "git")
     "g g" '(magit-status        :which-key "magit status")
     "g b" '(magit-blame         :which-key "magit blame")
+    "g t" '(git-timemachine     :which-key "time machine")
 
     ;; Org
     "o"   '(:ignore t           :which-key "org")
@@ -322,6 +323,11 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   (magit-commit-show-diff t))
+
+(use-package git-timemachine
+  :config
+  (evil-make-overriding-map git-timemachine-mode-map 'normal)
+  (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps))
 
 ;; Route GPG passphrase prompts through the Emacs minibuffer instead of a TTY
 ;; pinentry. Required for GPG commit signing to work in magit's subprocess.
