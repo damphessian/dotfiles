@@ -71,6 +71,13 @@
 ;; Empty scratch buffer on launch (inhibit-startup-screen is in early-init.el).
 (setq initial-scratch-message nil)
 
+;; Show project name in title bar, falling back to buffer name.
+(setq frame-title-format
+      '((:eval
+         (if-let* ((proj (project-current)))
+             (project-name proj)
+           (buffer-name)))))
+
 ;;; ————————————————————————————
 ;;; Appearance
 ;;; ————————————————————————————
