@@ -68,9 +68,16 @@
 ;; Follow symlinks to version-controlled files without prompting.
 (setq vc-follow-symlinks t)
 
+;; Empty scratch buffer on launch (inhibit-startup-screen is in early-init.el).
+(setq initial-scratch-message nil)
+
 ;;; ————————————————————————————
 ;;; Appearance
 ;;; ————————————————————————————
+
+(set-face-attribute 'default nil
+                    :family "Source Code Pro Ligaturized"
+                    :height 180)
 
 (use-package doom-themes
   :config

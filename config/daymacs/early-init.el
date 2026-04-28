@@ -13,5 +13,8 @@
         (vertical-scroll-bars . nil)
         (horizontal-scroll-bars . nil)))
 
+;; Skip the "Welcome to GNU Emacs" splash screen.
+(setq inhibit-startup-screen t)
+
 ;; Prevent package.el from activating packages — straight.el owns that.
 (setq package-enable-at-startup nil)
