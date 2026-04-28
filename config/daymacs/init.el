@@ -296,6 +296,12 @@
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   (magit-commit-show-diff t))
 
+;; Route GPG passphrase prompts through the Emacs minibuffer instead of a TTY
+;; pinentry. Required for GPG commit signing to work in magit's subprocess.
+;; GNUPGHOME must be set explicitly — the XDG LaunchAgent doesn't export it,
+;; so GUI-launched Emacs would otherwise fall back to ~/.gnupg.
+(setq epg-pinentry-mode 'loopback)
+
 ;;; ————————————————————————————
 ;;; Org
 ;;; ————————————————————————————

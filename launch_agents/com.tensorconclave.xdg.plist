@@ -16,6 +16,7 @@
       <string>
         launchctl setenv XDG_CONFIG_HOME "${HOME}/.dotfiles/config";
         launchctl setenv ZDOTDIR "${HOME}/.dotfiles/config/zsh";
+        launchctl setenv GNUPGHOME "${HOME}/Dropbox/gnupg";
       </string>
     </array>
 
