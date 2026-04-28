@@ -143,7 +143,7 @@
   (add-to-list 'evil-snipe-disabled-modes 'magit-mode)
   (add-to-list 'evil-snipe-disabled-modes 'Info-mode))
 
-(defun delete-window-dwim ()
+(defun dm/delete-window-dwim ()
   "Delete window; close tab if sole window in tab; close frame if multiple
 frames exist; otherwise kill Emacs."
   (interactive)
@@ -158,27 +158,27 @@ frames exist; otherwise kill Emacs."
 ;;; Active-agent dispatch (claude-code-ide / codex-ide)
 ;;; ————————————————————————————
 
-(defvar daymacs-active-agent 'claude
+(defvar dm/active-agent 'claude
   "Currently active AI agent: `claude` or `codex`.")
 
-(defun daymacs-toggle-agent ()
+(defun dm/toggle-agent ()
   "Switch active agent between claude-code-ide and codex-ide."
   (interactive)
-  (setq daymacs-active-agent
-        (if (eq daymacs-active-agent 'claude) 'codex 'claude))
-  (message "Active agent: %s" daymacs-active-agent))
+  (setq dm/active-agent
+        (if (eq dm/active-agent 'claude) 'codex 'claude))
+  (message "Active agent: %s" dm/active-agent))
 
-(defun daymacs-agent-start ()
+(defun dm/agent-start ()
   "Start the active AI agent."
   (interactive)
-  (if (eq daymacs-active-agent 'claude)
+  (if (eq dm/active-agent 'claude)
       (claude-code-ide)
     (codex-ide)))
 
-(defun daymacs-agent-toggle ()
+(defun dm/agent-toggle ()
   "Toggle the active AI agent's window."
   (interactive)
-  (if (eq daymacs-active-agent 'claude)
+  (if (eq dm/active-agent 'claude)
       (claude-code-ide-toggle)
     (codex-ide-toggle)))
 
@@ -200,9 +200,9 @@ frames exist; otherwise kill Emacs."
 
     ;; Agent (claude-code-ide / codex-ide, toggled at runtime via SPC a A)
     "a"   '(:ignore t                     :which-key "agent")
-    "a a" '(daymacs-agent-start           :which-key "start session")
-    "a A" '(daymacs-toggle-agent          :which-key "switch agent")
-    "a t" '(daymacs-agent-toggle          :which-key "toggle window")
+    "a a" '(dm/agent-start           :which-key "start session")
+    "a A" '(dm/toggle-agent          :which-key "switch agent")
+    "a t" '(dm/agent-toggle          :which-key "toggle window")
     "a c" '(claude-code-ide-continue      :which-key "continue")
     "a r" '(claude-code-ide-resume        :which-key "resume")
     "a l" '(claude-code-ide-list-sessions :which-key "list sessions")
@@ -275,7 +275,7 @@ frames exist; otherwise kill Emacs."
     "w"   '(:ignore t                  :which-key "window")
     "w v" '(evil-window-vsplit         :which-key "vertical split")
     "w s" '(evil-window-split          :which-key "horizontal split")
-    "w d" '(delete-window-dwim         :which-key "close")
+    "w d" '(dm/delete-window-dwim         :which-key "close")
     "w m" '(delete-other-windows       :which-key "maximize")
     "w h" '(windmove-left              :which-key "go left")
     "w l" '(windmove-right             :which-key "go right")
@@ -291,7 +291,7 @@ frames exist; otherwise kill Emacs."
    "s-C-p" #'execute-extended-command-for-buffer
    "s-t"   #'tab-new
    "s-W"   #'tab-close
-   "s-w"   #'delete-window-dwim
+   "s-w"   #'dm/delete-window-dwim
    "s-k"   #'kill-current-buffer
    "s-C-g" #'magit-status
    "s-'"   #'eat
