@@ -154,6 +154,29 @@ frames exist; otherwise kill Emacs."
      ((> (length top-level-frames) 1)     (delete-frame))
      (t                                   (save-buffers-kill-emacs)))))
 
+(defvar dm/window-resize-step 5
+  "Number of rows or columns to resize by in the window hydra.")
+
+(defun dm/window-shrink-horizontally ()
+  "Shrink the current window horizontally."
+  (interactive)
+  (shrink-window-horizontally dm/window-resize-step))
+
+(defun dm/window-enlarge-horizontally ()
+  "Enlarge the current window horizontally."
+  (interactive)
+  (enlarge-window-horizontally dm/window-resize-step))
+
+(defun dm/window-shrink-vertically ()
+  "Shrink the current window vertically."
+  (interactive)
+  (shrink-window dm/window-resize-step))
+
+(defun dm/window-enlarge-vertically ()
+  "Enlarge the current window vertically."
+  (interactive)
+  (enlarge-window dm/window-resize-step))
+
 ;;; ————————————————————————————
 ;;; Active-agent dispatch (claude-code-ide / codex-ide)
 ;;; ————————————————————————————
@@ -181,6 +204,24 @@ frames exist; otherwise kill Emacs."
   (if (eq dm/active-agent 'claude)
       (claude-code-ide-toggle)
     (codex-ide-toggle)))
+
+;;; ————————————————————————————
+;;; Hydra — transient keymaps
+;;; ————————————————————————————
+
+(use-package hydra
+  ;; Repeatable keymaps for commands you want to apply several times in a row.
+  :config
+  (defhydra dm/window-resize-hydra (:hint nil)
+    "
+Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balance [_q_] quit
+"
+    ("h" dm/window-shrink-horizontally)
+    ("j" dm/window-shrink-vertically)
+    ("k" dm/window-enlarge-vertically)
+    ("l" dm/window-enlarge-horizontally)
+    ("=" balance-windows)
+    ("q" nil :color blue)))
 
 ;;; ————————————————————————————
 ;;; General — leader key bindings
@@ -277,6 +318,7 @@ frames exist; otherwise kill Emacs."
     "w s" '(evil-window-split          :which-key "horizontal split")
     "w d" '(dm/delete-window-dwim         :which-key "close")
     "w m" '(delete-other-windows       :which-key "maximize")
+    "w r" '(dm/window-resize-hydra/body :which-key "resize hydra")
     "w h" '(windmove-left              :which-key "go left")
     "w l" '(windmove-right             :which-key "go right")
     "w j" '(windmove-down              :which-key "go down")
