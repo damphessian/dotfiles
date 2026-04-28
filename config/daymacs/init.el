@@ -116,6 +116,17 @@
   :config
   (evil-collection-init))
 
+(defun delete-window-dwim ()
+  "Delete window; close tab if sole window in tab; close frame if multiple
+frames exist; otherwise kill Emacs."
+  (interactive)
+  (let ((top-level-frames (cl-remove-if (lambda (f) (eq (frame-parameter f 'minibuffer) 'only)) (frame-list))))
+    (cond
+     ((not (one-window-p))                (delete-window))
+     ((> (length (tab-bar-tabs)) 1)       (tab-close))
+     ((> (length top-level-frames) 1)     (delete-frame))
+     (t                                   (save-buffers-kill-emacs)))))
+
 ;;; ————————————————————————————
 ;;; General — leader key bindings
 ;;; ————————————————————————————
@@ -183,7 +194,7 @@
     "w"   '(:ignore t                  :which-key "window")
     "w v" '(evil-window-vsplit         :which-key "vertical split")
     "w s" '(evil-window-split          :which-key "horizontal split")
-    "w d" '(delete-window              :which-key "close")
+    "w d" '(delete-window-dwim         :which-key "close")
     "w m" '(delete-other-windows       :which-key "maximize")
     "w h" '(windmove-left              :which-key "go left")
     "w l" '(windmove-right             :which-key "go right")
@@ -199,7 +210,7 @@
    "s-C-p" #'execute-extended-command-for-buffer
    "s-t"   #'tab-new
    "s-W"   #'tab-close
-   "s-w"   #'delete-window
+   "s-w"   #'delete-window-dwim
    "s-k"   #'kill-current-buffer
    "s-C-g" #'magit-status
    "s-'"   #'eat))
