@@ -154,7 +154,37 @@
 
     ;; Toggle
     "t"   '(:ignore t           :which-key "toggle")
-    "t w" '(visual-fill-column-mode :which-key "word wrap")))
+    "t w" '(visual-fill-column-mode :which-key "word wrap")
+
+    ;; Workspaces (tabspaces)
+    "TAB"   '(:ignore t                    :which-key "workspace")
+    "TAB TAB" '(tabspaces-switch-or-create-workspace :which-key "switch/create")
+    "TAB n" '(tabspaces-open-or-create-project-and-workspace :which-key "new project")
+    "TAB d" '(tabspaces-close-workspace    :which-key "close")
+    "TAB r" '(tabspaces-rename-workspace   :which-key "rename")
+    "TAB b" '(tabspaces-switch-to-buffer   :which-key "workspace buffer")
+    "TAB B" '(tabspaces-move-buffer-to-tab :which-key "move buffer here")
+
+    ;; Project (project.el — built-in)
+    "p"   '(:ignore t                  :which-key "project")
+    "p p" '(project-switch-project     :which-key "switch project")
+    "p f" '(project-find-file          :which-key "find file")
+    "p b" '(project-switch-to-buffer   :which-key "project buffer")
+    "p k" '(project-kill-buffers       :which-key "kill buffers")
+    "p s" '(consult-ripgrep            :which-key "search"))
+
+  (general-define-key
+   "s-["   #'previous-buffer
+   "s-]"   #'next-buffer
+   "s-{"   #'tab-bar-switch-to-prev-tab
+   "s-}"   #'tab-bar-switch-to-next-tab
+   "s-P"   #'execute-extended-command
+   "s-C-p" #'execute-extended-command-for-buffer
+   "s-t"   #'tab-new
+   "s-W"   #'tab-close
+   "s-w"   #'delete-window
+   "s-k"   #'kill-current-buffer
+   "s-C-g" #'magit-status))
 
 ;;; ————————————————————————————
 ;;; which-key — keybinding hints
