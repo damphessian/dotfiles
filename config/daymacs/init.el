@@ -208,9 +208,9 @@
 ;;; ————————————————————————————
 
 (use-package magit
-  :config
-  ;; Show the diff of the commit being composed in the commit message buffer.
-  (setq magit-commit-show-diff t))
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+  (magit-commit-show-diff t))
 
 ;;; ————————————————————————————
 ;;; Org
