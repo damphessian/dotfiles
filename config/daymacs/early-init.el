@@ -18,5 +18,10 @@
 ;; Skip the "Welcome to GNU Emacs" splash screen.
 (setq inhibit-startup-screen t)
 
+;; Suppress the "For information about GNU Emacs..." minibuffer message.
+;; inhibit-startup-echo-area-message is unreliable; redefining the function
+;; that displays it is the dependable approach.
+(defun display-startup-echo-area-message () nil)
+
 ;; Prevent package.el from activating packages — straight.el owns that.
 (setq package-enable-at-startup nil)
