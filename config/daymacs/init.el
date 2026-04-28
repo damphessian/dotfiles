@@ -496,6 +496,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   :hook ((eshell-load . eat-eshell-mode)
          (eat-mode    . (lambda () (display-line-numbers-mode -1))))
   :custom
+  (eat-kill-buffer-on-exit t)
   (eat-term-name "xterm-256color"))
 
 (load-file (expand-file-name "codex-ide.el" user-emacs-directory))
