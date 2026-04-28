@@ -97,6 +97,10 @@
   :config
   (load-theme 'doom-one t))
 
+(use-package doom-modeline
+  :config
+  (doom-modeline-mode 1))
+
 ;;; ————————————————————————————
 ;;; Evil — vi keybindings
 ;;; ————————————————————————————
