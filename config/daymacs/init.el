@@ -155,6 +155,34 @@ frames exist; otherwise kill Emacs."
      (t                                   (save-buffers-kill-emacs)))))
 
 ;;; ————————————————————————————
+;;; Active-agent dispatch (claude-code-ide / codex-ide)
+;;; ————————————————————————————
+
+(defvar daymacs-active-agent 'claude
+  "Currently active AI agent: `claude` or `codex`.")
+
+(defun daymacs-toggle-agent ()
+  "Switch active agent between claude-code-ide and codex-ide."
+  (interactive)
+  (setq daymacs-active-agent
+        (if (eq daymacs-active-agent 'claude) 'codex 'claude))
+  (message "Active agent: %s" daymacs-active-agent))
+
+(defun daymacs-agent-start ()
+  "Start the active AI agent."
+  (interactive)
+  (if (eq daymacs-active-agent 'claude)
+      (claude-code-ide)
+    (codex-ide)))
+
+(defun daymacs-agent-toggle ()
+  "Toggle the active AI agent's window."
+  (interactive)
+  (if (eq daymacs-active-agent 'claude)
+      (claude-code-ide-toggle)
+    (codex-ide-toggle)))
+
+;;; ————————————————————————————
 ;;; General — leader key bindings
 ;;; ————————————————————————————
 
@@ -170,12 +198,13 @@ frames exist; otherwise kill Emacs."
     ;; Top-level
     "SPC" '(consult-buffer      :which-key "buffers")
 
-    ;; Agent (claude-code-ide)
+    ;; Agent (claude-code-ide / codex-ide, toggled at runtime via SPC a A)
     "a"   '(:ignore t                     :which-key "agent")
-    "a a" '(claude-code-ide               :which-key "start session")
+    "a a" '(daymacs-agent-start           :which-key "start session")
+    "a A" '(daymacs-toggle-agent          :which-key "switch agent")
+    "a t" '(daymacs-agent-toggle          :which-key "toggle window")
     "a c" '(claude-code-ide-continue      :which-key "continue")
     "a r" '(claude-code-ide-resume        :which-key "resume")
-    "a t" '(claude-code-ide-toggle        :which-key "toggle window")
     "a l" '(claude-code-ide-list-sessions :which-key "list sessions")
     "a m" '(claude-code-ide-menu          :which-key "menu")
 
@@ -418,9 +447,12 @@ frames exist; otherwise kill Emacs."
 ;;; ————————————————————————————
 
 (use-package eat
-  :hook (eshell-load . eat-eshell-mode)
+  :hook ((eshell-load . eat-eshell-mode)
+         (eat-mode    . (lambda () (display-line-numbers-mode -1))))
   :custom
   (eat-term-name "xterm-256color"))
+
+(load-file (expand-file-name "codex-ide.el" user-emacs-directory))
 
 ;;; ————————————————————————————
 ;;; claude-code-ide — Claude Code CLI with MCP bridge
