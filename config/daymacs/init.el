@@ -270,8 +270,6 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     ;; Jump (avy)
     "j"   '(:ignore t           :which-key "jump")
     "j j" '(avy-goto-char-2     :which-key "2-char")
-    "j l" '(avy-goto-line       :which-key "line")
-    "j w" '(avy-goto-word-1     :which-key "word")
 
     ;; Git
     "g"   '(:ignore t                :which-key "git")
