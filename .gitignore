@@ -86,6 +86,16 @@ state
 /config/configstore/update-notifier-npm.json
 /config/cups/
 /config/cursor/
+/config/daymacs/backups/
+/config/daymacs/bookmarks
+/config/daymacs/eln-cache/
+/config/daymacs/history
+/config/daymacs/projects
+/config/daymacs/recentf
+/config/daymacs/straight/
+/config/daymacs/tabsession.el
+/config/daymacs/transient
+/config/daymacs/tree-sitter/
 /config/dconf/
 /config/docker/*
 /config/doom/config.el
