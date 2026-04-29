@@ -147,7 +147,9 @@
   "Delete window; close tab if sole window in tab; close frame if multiple
 frames exist; otherwise kill Emacs."
   (interactive)
-  (let ((top-level-frames (cl-remove-if (lambda (f) (eq (frame-parameter f 'minibuffer) 'only)) (frame-list))))
+  (let ((top-level-frames
+	 (cl-remove-if
+	  (lambda (f) (eq (frame-parameter f 'minibuffer) 'only)) (frame-list))))
     (cond
      ((not (one-window-p))                (delete-window))
      ((> (length (tab-bar-tabs)) 1)       (tab-close))
@@ -371,8 +373,8 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
    (lambda ()
      `((top    . 0.3)
        (width  . 0.7)
-       (left   . 0.15)
-       (child-frame-border-width . 2)
+       (left   . 0.5)
+       (child-frame-border-width . 3)
        (background-color . ,(face-attribute 'default :background))))))
 
 (use-package orderless
