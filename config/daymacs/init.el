@@ -51,6 +51,7 @@
 (setq create-lockfiles nil)
 
 ;; Track recently visited files; used by consult-recent-file.
+(setq recentf-auto-cleanup "11:00pm")
 (recentf-mode 1)
 (setq recentf-max-saved-items 200)
 
