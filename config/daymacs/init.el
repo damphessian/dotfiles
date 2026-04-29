@@ -198,6 +198,22 @@ frames exist; otherwise kill Emacs."
         (if (eq dm/active-agent 'claude) 'codex 'claude))
   (message "Active agent: %s" dm/active-agent))
 
+(defun dm/active-agent-window ()
+  "Return the active agent window for the current project, if visible. NOTE: speculative."
+  (pcase dm/active-agent
+    ('claude
+     (when-let* ((buf (get-buffer (claude-code-ide--get-buffer-name))))
+       (get-buffer-window buf t)))
+    ('codex
+     (when-let* ((dir (codex-ide--working-directory))
+                 (buf (get-buffer (codex-ide--buffer-name dir))))
+       (get-buffer-window buf t)))))
+
+(defun dm/focus-active-agent-window ()
+  "Move focus to the active agent window when it is visible. NOTE: speculative."
+  (when-let* ((win (dm/active-agent-window)))
+    (select-window win)))
+
 (defun dm/agent-start ()
   "Start the active AI agent."
   (interactive)
