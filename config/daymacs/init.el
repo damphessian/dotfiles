@@ -101,6 +101,11 @@
   (load-theme 'doom-one t))
 
 (use-package doom-modeline
+  :init
+  (setq doom-modeline-major-mode-icon nil)
+  (setq doom-modeline-buffer-state-icon nil)
+  (setq doom-modeline-vcs-icon nil)
+  (setq doom-modeline-icon t)
   :config
   (doom-modeline-mode 1))
 
