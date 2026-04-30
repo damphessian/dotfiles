@@ -57,7 +57,8 @@
   (recentf-mode 1))
 (setq recentf-max-saved-items 200)
 
-;; Persist minibuffer history (commands, searches, consult inputs) across sessions.
+;; Persist minibuffer history (commands, searches, consult inputs)
+;; across sessions.
 (savehist-mode 1)
 (setq history-length 300)
 
@@ -136,7 +137,7 @@
 (use-package evil
   :init
   ;; These must be set before evil loads.
-  (setq evil-want-integration t)     ; integrates evil with other Emacs subsystems
+  (setq evil-want-integration t)
   (setq evil-want-keybinding nil)    ; evil-collection provides these instead
   (setq evil-undo-system 'undo-redo) ; use native Emacs 28+ undo/redo
   (setq evil-want-C-u-scroll t)      ; C-u scrolls up (mirrors vim default)
@@ -188,12 +189,14 @@ frames exist; otherwise kill Emacs."
   (interactive)
   (let ((top-level-frames
 	 (cl-remove-if
-	  (lambda (f) (eq (frame-parameter f 'minibuffer) 'only)) (frame-list))))
+	  (lambda (f) (eq (frame-parameter f 'minibuffer)
+			  'only))
+	  (frame-list))))
     (cond
-     ((not (one-window-p))                (delete-window))
-     ((> (length (tab-bar-tabs)) 1)       (tab-close))
-     ((> (length top-level-frames) 1)     (delete-frame))
-     (t                                   (save-buffers-kill-emacs)))))
+     ((not (one-window-p))             (delete-window))
+     ((> (length (tab-bar-tabs)) 1)    (tab-close))
+     ((> (length top-level-frames) 1)  (delete-frame))
+     (t                                (save-buffers-kill-emacs)))))
 
 (defvar dm/window-resize-step 5
   "Number of rows or columns to resize by in the window hydra.")
@@ -237,7 +240,9 @@ frames exist; otherwise kill Emacs."
   (message "Active agent: %s" dm/active-agent))
 
 (defun dm/active-agent-window ()
-  "Return the active agent window for the current project, if visible. NOTE: speculative."
+  "Return the active agent window for the current project, if visible.
+NOTE: speculative."
+
   (pcase dm/active-agent
     ('claude
      (when-let* ((buf (get-buffer (claude-code-ide--get-buffer-name))))
@@ -248,7 +253,8 @@ frames exist; otherwise kill Emacs."
        (get-buffer-window buf t)))))
 
 (defun dm/focus-active-agent-window ()
-  "Move focus to the active agent window when it is visible. NOTE: speculative."
+  "Move focus to the active agent window when it is visible.
+NOTE: speculative."
   (when-let* ((win (dm/active-agent-window)))
     (select-window win)))
 
@@ -303,26 +309,27 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "SPC" '(consult-buffer      :which-key "buffers")
 
     ;; Agent (claude-code-ide / codex-ide, toggled at runtime via SPC a A)
-    "a"   '(:ignore t       :which-key "agent")
-    "a a" '(dm/agent-open   :which-key "show or dismiss")
-    "a A" '(dm/toggle-agent :which-key "switch agent")
-    "a t" '(dm/agent-toggle :which-key "toggle window")
-    "a c" '(claude-code-ide-continue      :which-key "continue")
-    "a r" '(claude-code-ide-resume        :which-key "resume")
-    "a l" '(claude-code-ide-list-sessions :which-key "list sessions")
-    "a m" '(claude-code-ide-menu          :which-key "menu")
+    "a"   '(:ignore t                       :which-key "agent")
+    "a a" '(dm/agent-open                   :which-key "show or dismiss")
+    "a A" '(dm/toggle-agent                 :which-key "switch agent")
+    "a t" '(dm/agent-toggle                 :which-key "toggle window")
+    "a c" '(claude-code-ide-continue        :which-key "continue")
+    "a r" '(claude-code-ide-resume          :which-key "resume")
+    "a l" '(claude-code-ide-list-sessions   :which-key "list sessions")
+    "a m" '(claude-code-ide-menu            :which-key "menu")
+
     ;; Buffers
-    "b"   '(:ignore t			:which-key "buffer")
-    "b b" '(consult-buffer		:which-key "switch buffer")
+    "b"   '(:ignore t                   :which-key "buffer")
+    "b b" '(consult-buffer              :which-key "switch buffer")
     "b f" '(apheleia-format-buffer      :which-key "format")
-    "b d" '(kill-current-buffer		:which-key "kill buffer")
+    "b d" '(kill-current-buffer         :which-key "kill buffer")
 
 
     ;; Files
-    "f"   '(:ignore t           :which-key "file")
-    "f f" '(consult-fd          :which-key "find file")
-    "f p" '(dm/open-daymacs-init-in-new-tab :which-key "emacs init")
-    "f r" '(consult-recent-file :which-key "recent files")
+    "f"   '(:ignore t                           :which-key "file")
+    "f f" '(consult-fd                          :which-key "find file")
+    "f p" '(dm/open-daymacs-init-in-new-tab     :which-key "emacs init")
+    "f r" '(consult-recent-file                 :which-key "recent files")
 
     ;; Search
     "s"   '(:ignore t                        :which-key "search")
@@ -343,12 +350,12 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "g p" '(diff-hl-previous-hunk    :which-key "prev hunk")
 
     ;; Org
-    "o"   '(:ignore t           :which-key "org")
-    "o a" '(org-agenda          :which-key "agenda")
-    "o c" '(org-capture         :which-key "capture")
+    "o"   '(:ignore t     :which-key "org")
+    "o a" '(org-agenda    :which-key "agenda")
+    "o c" '(org-capture   :which-key "capture")
 
     ;; Toggle
-    "t"   '(:ignore t           :which-key "toggle")
+    "t"   '(:ignore t               :which-key "toggle")
     "t w" '(visual-fill-column-mode :which-key "word wrap")
 
     ;; Workspaces (tabspaces)
@@ -425,7 +432,8 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 (use-package mini-frame
   :config
   (mini-frame-mode 1)
-  (set-face-attribute 'child-frame-border nil :background (face-attribute 'mode-line :foreground))
+  (set-face-attribute 'child-frame-border nil
+		      :background (face-attribute 'mode-line :foreground))
   :custom
   (mini-frame-show-parameters
    (lambda ()
@@ -778,7 +786,9 @@ process buffers below the selected window."
 (use-package treesit-fold
   ;; Structural folding for tree-sitter modes; integrates with Evil's z* folds
   ;; when `treesit-fold-mode' is active in the buffer.
-  :straight (treesit-fold :type git :host github :repo "emacs-tree-sitter/treesit-fold")
+  :straight (treesit-fold :type git
+                          :host github
+                          :repo "emacs-tree-sitter/treesit-fold")
   :after treesit-auto
   :config
   (global-treesit-fold-mode 1))
