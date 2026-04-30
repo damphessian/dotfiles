@@ -218,6 +218,10 @@ frames exist; otherwise kill Emacs."
   (interactive)
   (enlarge-window dm/window-resize-step))
 
+(defun dm/dired-jump-keybindings ()
+  "Bind - to `dired-jump' in Evil normal state."
+  (evil-local-set-key 'normal (kbd "-") #'dired-jump))
+
 ;;; ————————————————————————————
 ;;; Active-agent dispatch (claude-code-ide / codex-ide)
 ;;; ————————————————————————————
@@ -502,6 +506,18 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
                          :sort 'visibility
                          :as #'buffer-name))))
     (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
+
+;;; ————————————————————————————
+;;; Dired
+;;; ————————————————————————————
+
+(use-package dired
+  :straight nil
+  :after evil
+  :init
+  (autoload 'dired-jump "dired-x" nil t)
+  :hook ((prog-mode . dm/dired-jump-keybindings)
+         (text-mode . dm/dired-jump-keybindings)))
 
 ;;; ————————————————————————————
 ;;; Markdown
