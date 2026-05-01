@@ -7,8 +7,6 @@ windows:
     - git pull --rebase --autostash
   - vim:
     - vim +PlugInstall +PlugUpgrade +PlugUpdate +qall
-  - doom:
-    - doom upgrade && bump-submodules
   - hosts:
     - hosts update
   - brew:

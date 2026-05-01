@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-# Run the doom installation script
-
-set -ex
-
-doom install

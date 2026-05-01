@@ -205,10 +205,6 @@ ensure_dropbox_synced
 ensure_locals_are_created
 ensure_gpg_permissions_are_set_correctly
 
-setup :doom_config do
-  script_install :doom
-end
-
 setup :pd_tool do
   install_launchagent "com.tensorconclave.pd"
   script_install :pd

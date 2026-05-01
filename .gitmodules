@@ -38,11 +38,6 @@
 	url = https://github.com/tmux-plugins/tmux-open.git
 	branch = master
 	update = rebase
-[submodule "share/doomemacs"]
-	path = share/doomemacs
-	branch = master
-	url = https://github.com/doomemacs/doomemacs
-	update = rebase
 [submodule "config/emacs"]
 	path = config/emacs
 	url = https://github.com/plexus/chemacs2.git
