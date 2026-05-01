@@ -14,7 +14,7 @@ PATH+=":${DOTFILES_DIR}/scripts/git"
 PATH+=":${XDG_DATA_HOME}/mise/shims"
 PATH+=":${XDG_DATA_HOME}/fzf/bin"
 PATH+=":${XDG_DATA_HOME}/doomemacs/bin"
-PATH+=":${PNPM_HOME}"
+PATH+=":${PNPM_HOME}/bin"
 PATH+=":${XDG_DATA_HOME}/npm/bin"
 
 PATH+=":${HOMEBREW_PREFIX}/opt/bison/bin"
