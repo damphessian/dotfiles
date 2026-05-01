@@ -1,10 +1,21 @@
 ;;; codex-ide.el --- Codex CLI integration via eat -*- lexical-binding: t; -*-
 
+(require 'project)
+
+(declare-function eat-mode "eat")
+(declare-function eat-exec "eat")
+(declare-function eat-semi-char-mode "eat")
+
 (defgroup codex-ide nil "Codex CLI integration." :group 'tools)
 
 (defcustom codex-ide-cli-path "codex"
   "Path to the codex CLI executable."
   :type 'string :group 'codex-ide)
+
+(defcustom codex-ide-cli-args '("--no-alt-screen")
+  "Arguments passed to the Codex CLI."
+  :type '(repeat string)
+  :group 'codex-ide)
 
 (defcustom codex-ide-window-side 'right
   "Side for the codex window."
@@ -52,7 +63,8 @@
   (with-current-buffer buf
     (cd dir)
     (eat-mode)
-    (eat-exec buf name codex-ide-cli-path nil nil)))
+    (eat-exec buf name codex-ide-cli-path nil codex-ide-cli-args)
+    (eat-semi-char-mode)))
 
 (defun codex-ide ()
   "Start or switch to a Codex session for the current project."
