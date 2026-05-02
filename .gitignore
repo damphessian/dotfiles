@@ -91,7 +91,7 @@ state
 /config/daymacs/eln-cache/
 /config/daymacs/history
 /config/daymacs/projects
-/config/daymacs/recentf
+/config/daymacs/recentf*
 /config/daymacs/straight/
 /config/daymacs/tabsession.el
 /config/daymacs/transient
