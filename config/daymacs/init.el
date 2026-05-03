@@ -525,7 +525,8 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   :init
   (autoload 'dired-jump "dired-x" nil t)
   :hook ((prog-mode . dm/dired-jump-keybindings)
-         (text-mode . dm/dired-jump-keybindings)))
+         (text-mode . dm/dired-jump-keybindings)
+         (sgml-mode . dm/dired-jump-keybindings)))
 
 ;;; ————————————————————————————
 ;;; Markdown
