@@ -890,6 +890,29 @@ process buffers below the selected window."
   (add-hook 'completion-at-point-functions #'cape-file))
 
 ;;; ————————————————————————————
+;;; Tempel — templates/snippets via completion-at-point
+;;; ————————————————————————————
+
+(use-package tempel
+  :bind (("M-+" . tempel-complete)
+         ("M-*" . tempel-insert)
+         :map tempel-map
+         ("C-j" . tempel-next)
+         ("C-k" . tempel-previous))
+  :init
+  (defun dm/tempel-setup-capf ()
+    "Add Tempel template expansion before the mode's main CAPF."
+    (setq-local completion-at-point-functions
+                (cons #'tempel-expand completion-at-point-functions)))
+
+  (add-hook 'conf-mode-hook #'dm/tempel-setup-capf)
+  (add-hook 'prog-mode-hook #'dm/tempel-setup-capf)
+  (add-hook 'text-mode-hook #'dm/tempel-setup-capf))
+
+(use-package tempel-collection
+  :after tempel)
+
+;;; ————————————————————————————
 ;;; Web editing
 ;;; ————————————————————————————
 
