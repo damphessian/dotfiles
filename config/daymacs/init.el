@@ -937,6 +937,8 @@ process buffers below the selected window."
   :custom
   (emmet-move-cursor-between-quotes t)
   :config
+  (keymap-set emmet-mode-keymap "TAB" #'emmet-expand-line)
+  (keymap-set emmet-mode-keymap "<tab>" #'emmet-expand-line)
   (dolist (mode '(js-ts-mode tsx-ts-mode))
     (add-to-list 'emmet-jsx-major-modes mode)))
 
