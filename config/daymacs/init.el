@@ -158,7 +158,9 @@
   (setq evil-split-window-below  t)
   (setq evil-echo-state nil)
   :config
-  (evil-mode 1))
+  (evil-mode 1)
+  (require 'dm-evil-text)
+  (dm-evil-text-setup))
 
 (use-package evil-collection
   ;; Provides sensible evil keybindings for magit, dired, help, ibuffer, etc.
