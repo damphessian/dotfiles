@@ -439,6 +439,21 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   :config
   (vertico-mode 1))
 
+(use-package vertico-multiform
+  ;; Built-in Vertico extension for per-command/category display styles.
+  :straight nil
+  :after vertico
+  :custom
+  (vertico-multiform-commands
+   '((consult-ripgrep buffer)
+     (consult-grep buffer)
+     (consult-git-grep buffer)
+     (consult-find buffer)
+     (consult-imenu buffer)
+     (consult-org-heading buffer)))
+  :config
+  (vertico-multiform-mode 1))
+
 (use-package mini-frame
   :config
   (mini-frame-mode 1)
