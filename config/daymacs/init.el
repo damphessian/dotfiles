@@ -240,6 +240,21 @@ frames exist; otherwise kill Emacs."
   "Bind - to `dired-jump' in Evil normal state."
   (evil-local-set-key 'normal (kbd "-") #'dired-jump))
 
+(defun dm/text-formatting-keybindings ()
+  "Bind Super text-formatting commands in the current buffer."
+  (dolist (state '(normal visual insert))
+    (evil-local-set-key state (kbd "s-b") #'dm-text-make-bold)
+    (evil-local-set-key state (kbd "s-i") #'dm-text-make-italic)
+    (evil-local-set-key state (kbd "s-u") #'dm-text-make-underlined)
+    (evil-local-set-key state (kbd "s-X") #'dm-text-make-strikethrough)))
+
+(dolist (hook '(LaTeX-mode-hook
+                latex-mode-hook
+                markdown-mode-hook
+                gfm-mode-hook
+                org-mode-hook))
+  (add-hook hook #'dm/text-formatting-keybindings))
+
 ;;; ————————————————————————————
 ;;; Active-agent dispatch (claude-code-ide / codex-ide)
 ;;; ————————————————————————————
