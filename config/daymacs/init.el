@@ -30,6 +30,15 @@
 (straight-use-package 'use-package)
 
 ;;; ————————————————————————————
+;;; Utility functions
+;;; ————————————————————————————
+
+(defun dm/disable-line-numbers-h ()
+  "Disable line numbers in the current buffer."
+  (display-line-numbers-mode -1))
+
+
+;;; ————————————————————————————
 ;;; Core Emacs settings
 ;;; ————————————————————————————
 
@@ -418,7 +427,8 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   ;; Essential while building muscle memory for the leader bindings above.
   :config
   (which-key-mode 1)
-  (setq which-key-idle-delay 0.4))
+  (setq which-key-idle-delay 0.15)
+  (setq which-key-idle-secondary-delay 0.1))
 
 ;;; ————————————————————————————
 ;;; Vertico — minibuffer completion UI
@@ -540,6 +550,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
 (use-package markdown-mode
   :hook ((markdown-mode . outline-minor-mode)
+	 (markdown-mode . dm/disable-line-numbers-h)
          (gfm-mode . outline-minor-mode))
   :mode (("\\.md\\'" . gfm-mode)
          ("\\.markdown\\'" . gfm-mode)))
@@ -629,7 +640,7 @@ process buffers below the selected window."
 
 (use-package eat
   :hook ((eshell-load . eat-eshell-mode)
-         (eat-mode    . (lambda () (display-line-numbers-mode -1))))
+         (eat-mode    . dm/disable-line-numbers-h))
   :custom
   (eat-kill-buffer-on-exit t)
   (eat-term-name "xterm-256color")
@@ -728,6 +739,7 @@ process buffers below the selected window."
 (use-package org
   ;; Use the ELPA version rather than the built-in one for up-to-date features.
   :straight t
+  :hook ((org-mode . dm/disable-line-numbers-h))
   :custom
   ;; ORG_HOME is set in env/emacs.sh; fall back to ~/Org.
   (org-directory (or (getenv "ORG_HOME") (expand-file-name "~/Org")))
