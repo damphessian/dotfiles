@@ -371,6 +371,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
     ;; Toggle
     "t"   '(:ignore t               :which-key "toggle")
+    "t c" '(copilot-mode            :which-key "copilot")
     "t w" '(visual-fill-column-mode :which-key "word wrap")
 
     ;; Workspaces (tabspaces)
@@ -746,6 +747,40 @@ process buffers below the selected window."
 ;;; ————————————————————————————
 
 (load (expand-file-name "codex-ide" user-emacs-directory) nil 'nomessage)
+
+
+;;; ————————————————————————————
+;;; Copilot — GitHub Copilot inline completions
+;;; ————————————————————————————
+
+(use-package copilot
+  :straight (:type git :host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ;; Fish-style bindings avoid stealing TAB from Corfu and indentation.
+              ("<right>" . copilot-accept-completion)
+              ("C-f" . copilot-accept-completion)
+              ("M-<right>" . copilot-accept-completion-by-word)
+              ("M-f" . copilot-accept-completion-by-word)
+              ("C-e" . copilot-accept-completion-by-line)
+              ("<end>" . copilot-accept-completion-by-line)
+              ("M-n" . copilot-next-completion)
+              ("M-p" . copilot-previous-completion)
+              ("C-g" . copilot-clear-overlay))
+  :init
+  (defun dm/copilot-disable-predicate ()
+    "Return non-nil when Copilot should stay quiet in the current buffer."
+    (or (minibufferp)
+        buffer-read-only
+        (not buffer-file-name)
+        (file-remote-p default-directory)
+        (derived-mode-p 'special-mode
+                        'comint-mode
+                        'term-mode
+                        'eat-mode
+                        'eshell-mode)))
+  :config
+  (add-to-list 'copilot-disable-predicates #'dm/copilot-disable-predicate))
 
 
 ;;; ————————————————————————————
