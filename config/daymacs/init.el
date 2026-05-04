@@ -29,9 +29,13 @@
 ;; use-package is the declaration macro. straight.el handles the installation.
 (straight-use-package 'use-package)
 
+(add-to-list 'load-path (expand-file-name "config" user-emacs-directory))
+
 ;;; ————————————————————————————
 ;;; Utility functions
 ;;; ————————————————————————————
+
+(require 'dm-text)
 
 (defun dm/disable-line-numbers-h ()
   "Disable line numbers in the current buffer."
