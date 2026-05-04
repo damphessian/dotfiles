@@ -764,8 +764,8 @@ process buffers below the selected window."
               ("M-f" . copilot-accept-completion-by-word)
               ("C-e" . copilot-accept-completion-by-line)
               ("<end>" . copilot-accept-completion-by-line)
-              ("M-n" . copilot-next-completion)
-              ("M-p" . copilot-previous-completion)
+              ("C-n" . copilot-next-completion)
+              ("C-p" . copilot-previous-completion)
               ("C-g" . copilot-clear-overlay))
   :init
   (defun dm/copilot-disable-predicate ()
@@ -878,9 +878,14 @@ process buffers below the selected window."
   ;; Popup at point for in-buffer completions. Pairs with eglot and cape.
   :custom
   (corfu-auto t)
-  (corfu-auto-delay 0.2)
+  (corfu-auto-delay 0.1)
   (corfu-quit-no-match t)
   :config
+  ;; Keep completion acceptance on Enter so TAB remains available for snippets.
+  (keymap-set corfu-map "RET" #'corfu-insert)
+  (keymap-set corfu-map "<return>" #'corfu-insert)
+  (keymap-unset corfu-map "TAB")
+  (keymap-unset corfu-map "<tab>")
   (global-corfu-mode 1))
 
 (use-package cape
@@ -897,6 +902,10 @@ process buffers below the selected window."
   :bind (("M-+" . tempel-complete)
          ("M-*" . tempel-insert)
          :map tempel-map
+         ("TAB" . tempel-next)
+         ("<tab>" . tempel-next)
+         ("S-TAB" . tempel-previous)
+         ("<backtab>" . tempel-previous)
          ("C-j" . tempel-next)
          ("C-k" . tempel-previous))
   :init
