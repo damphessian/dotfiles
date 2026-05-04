@@ -463,7 +463,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   (mini-frame-show-parameters
    (lambda ()
      `((top    . 0.3)
-       (width  . 0.7)
+       (width  . 0.4)
        (left   . 0.5)
        (child-frame-border-width . 1)
        (left-fringe . 25)
