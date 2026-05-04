@@ -622,6 +622,8 @@ process buffers below the selected window."
   (evil-make-overriding-map git-timemachine-mode-map 'normal)
   (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps))
 
+(use-package posframe)
+
 (use-package diff-hl
   ;; Inline git diff indicators in the fringe (added/modified/removed lines).
   :config
