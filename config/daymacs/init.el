@@ -351,12 +351,12 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "j j" '(avy-goto-char-2     :which-key "2-char")
 
     ;; Git
-    "g"   '(:ignore t                :which-key "git")
-    "g g" '(magit-status             :which-key "magit status")
-    "g b" '(magit-blame              :which-key "magit blame")
-    "g t" '(git-timemachine          :which-key "time machine")
-    "g n" '(diff-hl-next-hunk        :which-key "next hunk")
-    "g p" '(diff-hl-previous-hunk    :which-key "prev hunk")
+    "g"   '(:ignore t			:which-key "git")
+    "g g" '(magit-status		:which-key "magit status")
+    "g b" '(magit-blame			:which-key "magit blame")
+    "g t" '(git-timemachine		:which-key "time machine")
+    "g n" '(diff-hl-show-hunk-next      :which-key "next hunk")
+    "g p" '(diff-hl-show-hunk-previous  :which-key "prev hunk")
 
     ;; Org
     "o"   '(:ignore t     :which-key "org")
@@ -628,7 +628,14 @@ process buffers below the selected window."
   ;; Inline git diff indicators in the fringe (added/modified/removed lines).
   :config
   (global-diff-hl-mode 1)
-  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
+  (setq diff-hl-show-hunk-function #'diff-hl-show-hunk-posframe)
+
+  (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal
+      (kbd "[h") #'diff-hl-show-hunk-previous
+      (kbd "]h") #'diff-hl-show-hunk-next)))
 
 ;; Route GPG passphrase prompts through the Emacs minibuffer instead of a TTY
 ;; pinentry. Required for GPG commit signing to work in magit's subprocess.
