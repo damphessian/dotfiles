@@ -316,6 +316,31 @@ frames exist; otherwise kill Emacs."
   (add-hook hook #'dm-text-latex-keybindings))
 
 ;;; ————————————————————————————
+;;; ENV vars
+;;; ————————————————————————————
+
+(use-package exec-path-from-shell
+  :if (memq window-system '(mac ns x))
+  :custom
+  (exec-path-from-shell-variables
+   '("GIT_CG_PROVIDER"
+     "GOPATH"
+     "HEX_HOME"
+     "IPYTHONDIR"
+     "MANPATH"
+     "MISE_DIR"
+     "OLLAMA_API_KEY"
+     "OPENAI_API_KEY"
+     "OPENAI_API_KEY_GIT"
+     "ORG_HOME"
+     "PATH"
+     "PERL_CPANM_HOME"
+     "PNPM_HOME"
+     "RUSTUP_HOME"))
+  :config
+  (exec-path-from-shell-initialize))
+
+;;; ————————————————————————————
 ;;; Active-agent dispatch (claude-code-ide / codex-ide)
 ;;; ————————————————————————————
 
@@ -815,8 +840,7 @@ process buffers below the selected window."
 
 ;; Route GPG passphrase prompts through the Emacs minibuffer instead of a TTY
 ;; pinentry. Required for GPG commit signing to work in magit's subprocess.
-;; GNUPGHOME must be set explicitly — the XDG LaunchAgent doesn't export it,
-;; so GUI-launched Emacs would otherwise fall back to ~/.gnupg.
+;; GNUPGHOME is set by the XDG LaunchAgent.
 (setq epg-pinentry-mode 'loopback)
 
 ;;; ————————————————————————————
