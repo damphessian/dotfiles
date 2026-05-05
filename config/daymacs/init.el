@@ -526,6 +526,17 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   ;; consult-line, consult-recent-file, etc. Integrates with vertico.
   :config)
 
+(defun dm/search-project-for-symbol-at-point ()
+  "Search the current project for the symbol at point."
+  (interactive)
+  (let ((symbol (thing-at-point 'symbol t)))
+    (consult-ripgrep
+     (project-root (project-current t))
+     symbol)))
+
+(evil-define-key 'normal 'global
+  (kbd "SPC *") #'dm/search-project-for-symbol-at-point)
+
 (use-package marginalia
   ;; Adds annotations to completion candidates: file sizes, docstrings,
   ;; command key bindings, etc. Works with any completing-read UI.
