@@ -932,7 +932,11 @@ process buffers below the selected window."
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.1)
-  (corfu-quit-no-match t)
+  (corfu-cycle t)
+  (corfu-separator ?\s)
+  (corfu-quit-at-boundary nil)
+  (corfu-quit-no-match nil) ;; (corfu-quit-no-match t)
+  (corfu-preview-current nil)
   :config
   ;; Keep completion acceptance on Enter so TAB remains available for snippets.
   (keymap-set corfu-map "RET" #'corfu-insert)
