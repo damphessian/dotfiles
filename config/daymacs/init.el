@@ -686,6 +686,59 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   (advice-add #'treesit-auto--set-major-remap
               :around #'dm-skip-treesit-auto-for-git-commit-file-a))
 
+;;; ————————————————————————————
+;;; Magit (TODO: extract)
+;;; ————————————————————————————
+
+(defvar dm-magit-pending-generated-commit-message nil
+  "Generated commit message waiting to be inserted into a commit buffer.")
+
+(defun dm-git-commit-message-region-end ()
+  "Return end of editable commit message area before Git comment template."
+  (save-excursion
+    (goto-char (point-min))
+    (if (re-search-forward "^#" nil t)
+        (line-beginning-position)
+      (point-max))))
+
+(defun dm-git-commit-insert-pending-generated-message ()
+  "Insert pending generated commit message into the current commit buffer."
+  (when dm-magit-pending-generated-commit-message
+    (let ((message dm-magit-pending-generated-commit-message))
+      (setq dm-magit-pending-generated-commit-message nil)
+      (goto-char (point-min))
+      (delete-region (point-min) (dm-git-commit-message-region-end))
+      (insert message)
+      (unless (string-suffix-p "\n" message)
+        (insert "\n"))
+      (goto-char (point-min)))))
+
+(defun dm-git-commit-generated-message (&optional steering)
+  "Return a generated commit message for the staged diff."
+  (let* ((default-directory (magit-toplevel))
+         (args (append '("--message-only")
+                       (unless (string-empty-p steering)
+                         (list steering)))))
+    (with-temp-buffer
+      (let ((exit-code
+             (apply #'process-file
+                    "git-commit-generator"
+                    nil
+                    t
+                    nil
+                    args)))
+        (unless (zerop exit-code)
+          (error "git-commit-generator failed:\n%s" (buffer-string)))
+        (string-trim (buffer-string))))))
+
+(defun dm-magit-commit-generate ()
+  "Generate a commit message, then open Magit's commit buffer."
+  (interactive)
+  (let ((steering (read-string "Steering, optional: ")))
+    (setq dm-magit-pending-generated-commit-message
+          (dm-git-commit-generated-message steering))
+    (magit-commit-create)))
+
 (defun dm-magit-display-buffer-fn (buffer)
   "Display Magit buffers with less window churn.
 
@@ -735,8 +788,12 @@ process buffers below the selected window."
   (magit-commit-show-diff nil)
   :config
   (add-hook 'git-commit-mode-hook #'dm-git-commit-disable-completion 90)
+  (with-eval-after-load 'git-commit
+    (add-hook 'git-commit-setup-hook #'dm-git-commit-insert-pending-generated-message))
   (with-eval-after-load 'magit-commit
-    (oset (get 'magit-commit 'transient--prefix) value nil)))
+    (oset (get 'magit-commit 'transient--prefix) value nil)
+    (transient-append-suffix 'magit-commit "c"
+      '("g" "Generate commit message" dm-magit-commit-generate))))
 
 (use-package git-timemachine
   :config
