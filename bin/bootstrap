@@ -84,6 +84,7 @@ setup :development_tools do
   brew_install :gemini_cli
   brew_install :gh
   brew_install :git_delta
+  brew_install :hermes_agent
   brew_install :imsg
   brew_install :mise
   brew_install :nbdime
@@ -162,6 +163,8 @@ if machine_is?(:mac)
     cask_install :betterdisplay
     cask_install :bettertouchtool
     cask_install :brave_browser
+    cask_install :claude
+    cask_install :claude_code
     cask_install :coderunner
     cask_install :codex_app
     cask_install :figma
