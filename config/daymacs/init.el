@@ -41,7 +41,6 @@
   "Disable line numbers in the current buffer."
   (display-line-numbers-mode -1))
 
-
 ;;; ————————————————————————————
 ;;; Core Emacs settings
 ;;; ————————————————————————————
@@ -431,6 +430,8 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
    "s-}"   #'tab-bar-switch-to-next-tab
    "s-P"   #'execute-extended-command
    "s-C-p" #'execute-extended-command-for-buffer
+   "s-f"   #'avy-goto-char-2
+   "s-g"   #'magit-status
    "s-t"   #'tab-new
    "s-W"   #'tab-close
    "s-w"   #'dm/delete-window-dwim
@@ -796,7 +797,6 @@ process buffers below the selected window."
                         'eshell-mode)))
   :config
   (add-to-list 'copilot-disable-predicates #'dm/copilot-disable-predicate))
-
 
 ;;; ————————————————————————————
 ;;; claude-code-ide — Claude Code CLI with MCP bridge
