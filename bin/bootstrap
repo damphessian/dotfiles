@@ -119,8 +119,8 @@ setup :text_editing_cli_tools do
 end
 
 if machine_is?(:mac)
-  setup_emacs_plus(version: 30) do
-    options = %i[with_compress_install with_imagemagick with_xwidgets] if machine_is?(:apple)
+  setup_emacs_plus(version: 31) do
+    options = %i[with_compress_install with_xwidgets] if machine_is?(:apple)
     brew_install :emacs_plus, options: options
   end
 
