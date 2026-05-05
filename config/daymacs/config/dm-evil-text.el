@@ -1,9 +1,11 @@
-;;; dm-evil-text.el --- Daymacs Evil text objects and sorting -*- lexical-binding: t; -*-
+;;; dm-evil-text --- Summary: Daymacs Evil text objects and sorting
+
+;;; Commentary:
+
+;;; Code:
 
 (require 'cl-lib)
 (require 'evil)
-
-;;; Code:
 
 (defmacro dm-evil-text--define-and-bind-text-object (name key start-regex end-regex)
   "Define inner and outer Evil text objects named NAME on KEY.

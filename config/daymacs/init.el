@@ -1,10 +1,16 @@
 ;;; init.el --- -*- lexical-binding: t; -*-
 
+;;; Commentary:
+
+;; A bare-metal Emacs config.
+;; Minimal, fast, pragmatic. No fluff.
+
+;;; Code:
+
 ;;; ————————————————————————————
 ;;; straight.el bootstrap
 ;;; ————————————————————————————
 
-;; straight.el replaces package.el entirely: it clones packages from source,
 ;; pins exact commits, and integrates with use-package via :straight t.
 ;; Setting straight-use-package-by-default means every use-package form
 ;; automatically installs via straight unless told otherwise.
@@ -250,8 +256,9 @@
   (add-to-list 'evil-snipe-disabled-modes 'Info-mode))
 
 (defun dm-delete-window-dwim ()
-  "Delete window; close tab if sole window in tab; close frame if multiple
-frames exist; otherwise kill Emacs."
+  "Delete window, do what I mean.
+Close tab if sole window in tab, close frame if multiple frames exist,
+otherwise kill Emacs."
   (interactive)
   (let ((top-level-frames
 	 (cl-remove-if
@@ -360,7 +367,7 @@ frames exist; otherwise kill Emacs."
   "Currently active AI agent: `claude` or `codex`.")
 
 (defun dm-toggle-agent ()
-  "Switch active agent between claude-code-ide and codex-ide."
+  "Switch active agent between 'claude-code-ide' and 'codex-ide'."
   (interactive)
   (setq dm-active-agent
         (if (eq dm-active-agent 'claude) 'codex 'claude))
@@ -369,7 +376,6 @@ frames exist; otherwise kill Emacs."
 (defun dm-active-agent-window ()
   "Return the active agent window for the current project, if visible.
 NOTE: speculative."
-
   (pcase dm-active-agent
     ('claude
      (when-let* ((buf (get-buffer (claude-code-ide--get-buffer-name))))
@@ -711,7 +717,8 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 ;;; ————————————————————————————
 
 (defun dm-skip-treesit-auto-for-git-commit-file-a (fn &rest args)
-  "Skip `treesit-auto' remap setup for transient Git message buffers."
+  "Skip `treesit-auto' remap setup for transient Git message buffers.
+FN and ARGS are the advised `treesit-auto--set-major-remap' arguments."
   (unless (dm-git-commit-file-p)
     (apply fn args)))
 
@@ -751,21 +758,17 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
       (goto-char (point-min)))))
 
 (defun dm-git-commit-generated-message (&optional steering)
-  "Return a generated commit message for the staged diff."
+  "Return a generated commit message for the staged diff.
+Optionally, a string STEERING can be provided to tailor the content."
   (let* ((default-directory (magit-toplevel))
          (args (append '("--message-only")
                        (unless (string-empty-p steering)
                          (list steering)))))
     (with-temp-buffer
       (let ((exit-code
-             (apply #'process-file
-                    "git-commit-generator"
-                    nil
-                    t
-                    nil
-                    args)))
+             (apply #'process-file "git-commit-generator" nil t nil args)))
         (unless (zerop exit-code)
-          (error "git-commit-generator failed:\n%s" (buffer-string)))
+          (error "Git commit generator failed:\n%s" (buffer-string)))
         (string-trim (buffer-string))))))
 
 (defun dm-magit-commit-generate ()
@@ -777,8 +780,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     (magit-commit-create)))
 
 (defun dm-magit-display-buffer-fn (buffer)
-  "Display Magit buffers with less window churn.
-
+  "Display Magit BUFFER with less window churn.
 This follows Doom's strategy closely enough for the status-to-commit
 transition: reuse the current window for most non-diff buffers and keep
 process buffers below the selected window."
@@ -1204,3 +1206,6 @@ process buffers below the selected window."
           (lambda ()
             (setq gc-cons-threshold (* 16 1024 1024)
                   gc-cons-percentage 0.1)))
+
+(provide 'init)
+;;; init.el ends here

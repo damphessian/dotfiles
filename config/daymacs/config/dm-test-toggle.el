@@ -1,10 +1,12 @@
-;;; dm-test-toggle.el --- Daymacs test toggle helpers -*- lexical-binding: t; -*-
+;;; dm-test-toggle --- Summary: Daymacs test toggle helpers
+
+;;; Commentary:
+
+;;; Code:
 
 (require 'project)
 (require 'seq)
 (require 'subr-x)
-
-;;; Code:
 
 (defvar dm-test-toggle-rules
   '((:impl-dir "app/"  :test-dir "spec/" :test-suffix "_spec")

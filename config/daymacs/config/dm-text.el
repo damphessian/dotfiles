@@ -1,4 +1,8 @@
-;;; dm-text.el --- Daymacs text editing helpers -*- lexical-binding: t; -*-
+;;; dm-text --- Summary: Daymacs text editing helpers
+
+;;; Commentary:
+
+;;; Code:
 
 (require 'subr-x)
 
@@ -6,8 +10,6 @@
 (declare-function evil-insert "evil-commands")
 (declare-function evil-insert-state-p "evil-states")
 (declare-function evil-visual-state-p "evil-states")
-
-;;; Code:
 
 (defun dm-text-point-on-empty-line-p ()
   "Return t if the point is on an empty line, nil otherwise."
