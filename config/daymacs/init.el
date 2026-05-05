@@ -72,6 +72,17 @@
   (if (bound-and-true-p visual-line-mode)
       (dm/wrapping-disable)
     (dm/wrapping-enable)))
+;;; ————————————————————————————
+;;; Test/Implementation Toggle
+;;; ————————————————————————————
+(require 'dm-test-toggle)
+(with-eval-after-load 'evil
+  (evil-define-command dm-evil-toggle-test-implementation ()
+    "Toggle between implementation and test file."
+    :repeat nil
+    (dm-toggle-test-implementation))
+  (evil-ex-define-cmd "A" #'dm-evil-toggle-test-implementation)
+  (global-set-key (kbd "C-c t") #'dm-toggle-test-implementation))
 
 ;;; ————————————————————————————
 ;;; Core Emacs settings
