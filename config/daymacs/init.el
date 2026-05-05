@@ -93,6 +93,9 @@
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 
+;; Enable editorconfig mode (assumes Emacs >= 30)
+(editorconfig-mode 1)
+
 ;; Redirect backups to a single directory instead of littering alongside files.
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       backup-by-copying t       ; don't clobber symlinks
