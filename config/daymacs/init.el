@@ -656,6 +656,12 @@ process buffers below the selected window."
       (t
        '(display-buffer-pop-up-window))))))
 
+(defun dm/git-commit-disable-completion ()
+  "Disable dabbrev in Git commit message buffers."
+  (setq-local completion-at-point-functions nil)
+  (when (bound-and-true-p corfu-mode)
+    (corfu-mode -1)))
+
 (use-package magit
   :commands (magit-status magit-blame)
   :init
@@ -667,6 +673,7 @@ process buffers below the selected window."
   (magit-display-buffer-function #'dm/magit-display-buffer-fn)
   (magit-commit-show-diff nil)
   :config
+  (add-hook 'git-commit-mode-hook #'dm/git-commit-disable-completion 90)
   (with-eval-after-load 'magit-commit
     (oset (get 'magit-commit 'transient--prefix) value nil)))
 
