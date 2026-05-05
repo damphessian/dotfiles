@@ -94,9 +94,10 @@
 ;; Empty scratch buffer on launch (inhibit-startup-screen is in early-init.el).
 (setq initial-scratch-message nil)
 
-;; Use spaces for alignment
+;; Use spaces for alignment, don't truncate lines by default
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
+(setq-default truncate-lines t)
 
 (defconst dm/git-commit-filename-regexp
   "/\\(?:\\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(?:BRANCH\\|EDIT\\)_DESCRIPTION\\)\\'"
