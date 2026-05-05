@@ -254,6 +254,18 @@ frames exist; otherwise kill Emacs."
                 org-mode-hook))
   (add-hook hook #'dm/text-formatting-keybindings))
 
+(defun dm/text-latex-keybindings ()
+  "Bind latex-formatting commands in the current buffer."
+  (dolist (state '(visual))
+    (evil-local-set-key state (kbd "C-b") #'dm-text-latex-wrap-as-boxed)
+    (evil-local-set-key state (kbd "C-f") #'dm-text-latex-wrap-as-frac)
+    (evil-local-set-key state (kbd "C-e") #'dm-text-latex-evaluate-selection)
+    (evil-local-set-key state (kbd "C-m") #'dm-text-latex-wrap-as-math)
+    (evil-local-set-key state (kbd "C-s") #'dm-text-latex-wrap-as-si)))
+
+(dolist (hook '(LaTeX-mode-hook latex-mode-hook))
+  (add-hook hook #'dm/text-latex-keybindings))
+
 ;;; ————————————————————————————
 ;;; Active-agent dispatch (claude-code-ide / codex-ide)
 ;;; ————————————————————————————
