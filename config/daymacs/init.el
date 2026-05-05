@@ -29,7 +29,12 @@
 ;; use-package is the declaration macro. straight.el handles the installation.
 (straight-use-package 'use-package)
 
+;; Use built-in project.el
+(straight-use-package '(project :type built-in))
+
+;; Load config directory
 (add-to-list 'load-path (expand-file-name "config" user-emacs-directory))
+
 
 ;;; ————————————————————————————
 ;;; Utility functions
