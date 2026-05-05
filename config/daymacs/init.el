@@ -785,16 +785,16 @@ process buffers below the selected window."
   :straight (:type git :host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
-              ;; Fish-style bindings avoid stealing TAB from Corfu and indentation.
-              ("<right>" . copilot-accept-completion)
-              ("C-f" . copilot-accept-completion)
-              ("M-<right>" . copilot-accept-completion-by-word)
-              ("M-f" . copilot-accept-completion-by-word)
-              ("C-e" . copilot-accept-completion-by-line)
-              ("<end>" . copilot-accept-completion-by-line)
-              ("C-n" . copilot-next-completion)
-              ("C-p" . copilot-previous-completion)
-              ("C-g" . copilot-clear-overlay))
+	      ;; Fish-style bindings avoid stealing TAB from Corfu and indentation.
+              ("<return>"   . copilot-accept-completion)
+              ("C-f"        . copilot-accept-completion)
+              ("M-<right>"  . copilot-accept-completion-by-word)
+              ("M-f"        . copilot-accept-completion-by-word)
+              ("C-e"        . copilot-accept-completion-by-line)
+              ("<end>"      . copilot-accept-completion-by-line)
+              ("C-n"        . copilot-next-completion)
+              ("C-p"        . copilot-previous-completion)
+              ("C-g"        . copilot-clear-overlay))
   :init
   (defun dm/copilot-disable-predicate ()
     "Return non-nil when Copilot should stay quiet in the current buffer."
@@ -808,6 +808,7 @@ process buffers below the selected window."
                         'eat-mode
                         'eshell-mode)))
   :config
+  (setq copilot-indent-offset-warning-disable t)
   (add-to-list 'copilot-disable-predicates #'dm/copilot-disable-predicate))
 
 ;;; ————————————————————————————
