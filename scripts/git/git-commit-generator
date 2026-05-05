@@ -4,7 +4,7 @@
 git-commit-generator
 
 Usage:
-    git-commit-generator [--provider NAME] [--stream]
+    git-commit-generator [--provider NAME] [--stream] [--message-only] [steering message]
 
 Dependencies:
     - OpenAI
@@ -56,9 +56,12 @@ def generate_prompt(diff: str):
     return f"""Generate a Git commit message for the following staged diff.
 
 Rules:
-- Subject line < 80 characters long.
+
+- Subject line is less than 80 characters long.
+- Subject includes a prefix ("fix:", "feat:", "feat(shell):", "docs:", "refactor:")
+  if the diff is cleanly categorizable
 - Blank line after the subject line.
-- Short descriptive summary (1–4 sentences) if warranted.
+- Concise summary (1–4 sentences), the minimum warranted.
 - Prefer itemized lists in the body.
 - No chain-of-thought or explanation.
 - Output ONLY the commit message.
@@ -108,7 +111,7 @@ def call_chat_nonstream(client: OpenAI, model: str, prompt: str):
         fatal(f"Chat API request failed: {e}")
 
     try:
-        return resp.choices[0].message["content"]
+        return resp.choices[0].message.content
     except Exception:
         fatal(f"Model returned no commit message. Full response:\n{resp}")
 
@@ -210,9 +213,11 @@ def commit_message(msg: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(add_help=False)
+    parser = argparse.ArgumentParser(add_help=True)
     parser.add_argument("--provider", default=None)
     parser.add_argument("--stream", action="store_true", help="Enable streamed output")
+    parser.add_argument("--message-only", action="store_true",
+                        help="Print the generated commit message and exit without prompting or committing")
     parser.add_argument("steering", nargs="?", default=None,
                         help="Optional steering message to pre-seed generation")
     args, _ = parser.parse_known_args()
@@ -264,7 +269,7 @@ def main():
         # -------------------------
         # Call appropriate engine
         # -------------------------
-        if args.stream:
+        if args.stream and not args.message_only:
             if protocol == "responses":
                 msg = call_responses_stream(client, model, prompt)
             else:
@@ -275,6 +280,8 @@ def main():
             else:
                 msg = call_chat_nonstream(client, model, prompt)
             print(msg)
+            if args.message_only:
+                return
 
         print("------------------------------------------------------------\n")
 
