@@ -807,11 +807,9 @@ process buffers below the selected window."
   :config
   (global-diff-hl-mode 1)
   (setq diff-hl-show-hunk-function #'diff-hl-show-hunk-posframe)
-
-  (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
   (with-eval-after-load 'evil
-    (evil-define-key 'normal
+    (evil-define-key 'normal 'global
       (kbd "[h") #'diff-hl-show-hunk-previous
       (kbd "]h") #'diff-hl-show-hunk-next)))
 
