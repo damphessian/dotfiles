@@ -57,12 +57,20 @@ def generate_prompt(diff: str):
 
 Rules:
 
-- Subject line is less than 80 characters long.
-- Subject includes a prefix ("fix:", "feat:", "feat(shell):", "docs:", "refactor:")
-  if the diff is cleanly categorizable
-- Blank line after the subject line.
-- Concise summary (1–4 sentences), the minimum warranted.
-- Prefer itemized lists in the body.
+Subject Line:
+
+- Max 50 chars long.
+- Begins with a capital letter after a prefix tag.
+- Includes a prefix of the form "prefix:" / "prefix(topic):", falling back to "misc(topic):".
+- Examples: "fix:", "feat:", "feat(shell):", "docs:", "refactor(emacs):", etc.
+
+Body:
+
+- Preceded by a blank line separating it from the subject line.
+- Max 72 chars long.
+- Is a concise summary (0–4 sentences), the minimum warranted.
+- Do not restate simple changes.
+- Prefer compact lists with narrative introduction.
 - No chain-of-thought or explanation.
 - Output ONLY the commit message.
 
