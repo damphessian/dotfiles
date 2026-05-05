@@ -42,11 +42,11 @@
 
 (require 'dm-text)
 
-(defun dm/disable-line-numbers-h ()
+(defun dm-disable-line-numbers-h ()
   "Disable line numbers in the current buffer."
   (display-line-numbers-mode -1))
 
-(defun dm/wrapping-disable ()
+(defun dm-wrapping-disable ()
   "Disable visual wrapping in the current buffer."
   (interactive)
   (visual-line-mode -1)
@@ -56,7 +56,7 @@
   (setq-local truncate-lines t)
   (recenter))
 
-(defun dm/wrapping-enable ()
+(defun dm-wrapping-enable ()
   "Enable visual wrapping in the current buffer."
   (interactive)
   (visual-line-mode 1)
@@ -66,12 +66,13 @@
   (setq-local truncate-lines nil)
   (recenter))
 
-(defun dm/wrapping-toggle ()
+(defun dm-wrapping-toggle ()
   "Toggle visual line wrapping in the current buffer."
   (interactive)
   (if (bound-and-true-p visual-line-mode)
-      (dm/wrapping-disable)
-    (dm/wrapping-enable)))
+      (dm-wrapping-disable)
+    (dm-wrapping-enable)))
+
 ;;; ————————————————————————————
 ;;; Test/Implementation Toggle
 ;;; ————————————————————————————
@@ -142,18 +143,18 @@
 (setq-default tab-width 8)
 (setq-default truncate-lines t)
 
-(defconst dm/git-commit-filename-regexp
+(defconst dm-git-commit-filename-regexp
   "/\\(?:\\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(?:BRANCH\\|EDIT\\)_DESCRIPTION\\)\\'"
   "Regexp matching Git message files that `git-commit' edits.")
 
-(defun dm/git-commit-file-p (&optional file)
+(defun dm-git-commit-file-p (&optional file)
   "Return non-nil when FILE or the current buffer is a Git message file."
   (let ((path (or file buffer-file-name)))
     (and path
-         (string-match-p dm/git-commit-filename-regexp path))))
+         (string-match-p dm-git-commit-filename-regexp path))))
 
 ;; Show project name in title bar, falling back to buffer name.
-(defun dm/frame-title-project-or-buffer ()
+(defun dm-frame-title-project-or-buffer ()
   "Show project name in title bar, falling back to buffer name."
   (if-let* ((proj (project-current)))
       (project-name proj)
@@ -161,9 +162,9 @@
 
 (setq frame-title-format
       '((:eval
-         (dm/frame-title-project-or-buffer))))
+         (dm-frame-title-project-or-buffer))))
 
-(defun dm/open-daymacs-init-in-new-tab ()
+(defun dm-open-daymacs-init-in-new-tab ()
   "Open the Daymacs init.el file in a new tab."
   (interactive)
   (tab-new)
@@ -245,7 +246,7 @@
   (add-to-list 'evil-snipe-disabled-modes 'magit-mode)
   (add-to-list 'evil-snipe-disabled-modes 'Info-mode))
 
-(defun dm/delete-window-dwim ()
+(defun dm-delete-window-dwim ()
   "Delete window; close tab if sole window in tab; close frame if multiple
 frames exist; otherwise kill Emacs."
   (interactive)
@@ -260,34 +261,34 @@ frames exist; otherwise kill Emacs."
      ((> (length top-level-frames) 1)  (delete-frame))
      (t                                (save-buffers-kill-emacs)))))
 
-(defvar dm/window-resize-step 5
+(defvar dm-window-resize-step 5
   "Number of rows or columns to resize by in the window hydra.")
 
-(defun dm/window-shrink-horizontally ()
+(defun dm-window-shrink-horizontally ()
   "Shrink the current window horizontally."
   (interactive)
-  (shrink-window-horizontally dm/window-resize-step))
+  (shrink-window-horizontally dm-window-resize-step))
 
-(defun dm/window-enlarge-horizontally ()
+(defun dm-window-enlarge-horizontally ()
   "Enlarge the current window horizontally."
   (interactive)
-  (enlarge-window-horizontally dm/window-resize-step))
+  (enlarge-window-horizontally dm-window-resize-step))
 
-(defun dm/window-shrink-vertically ()
+(defun dm-window-shrink-vertically ()
   "Shrink the current window vertically."
   (interactive)
-  (shrink-window dm/window-resize-step))
+  (shrink-window dm-window-resize-step))
 
-(defun dm/window-enlarge-vertically ()
+(defun dm-window-enlarge-vertically ()
   "Enlarge the current window vertically."
   (interactive)
-  (enlarge-window dm/window-resize-step))
+  (enlarge-window dm-window-resize-step))
 
-(defun dm/dired-jump-keybindings ()
+(defun dm-dired-jump-keybindings ()
   "Bind - to `dired-jump' in Evil normal state."
   (evil-local-set-key 'normal (kbd "-") #'dired-jump))
 
-(defun dm/text-formatting-keybindings ()
+(defun dm-text-formatting-keybindings ()
   "Bind Super text-formatting commands in the current buffer."
   (dolist (state '(normal visual insert))
     (evil-local-set-key state (kbd "s-b") #'dm-text-make-bold)
@@ -300,9 +301,9 @@ frames exist; otherwise kill Emacs."
                 markdown-mode-hook
                 gfm-mode-hook
                 org-mode-hook))
-  (add-hook hook #'dm/text-formatting-keybindings))
+  (add-hook hook #'dm-text-formatting-keybindings))
 
-(defun dm/text-latex-keybindings ()
+(defun dm-text-latex-keybindings ()
   "Bind latex-formatting commands in the current buffer."
   (dolist (state '(visual))
     (evil-local-set-key state (kbd "C-b") #'dm-text-latex-wrap-as-boxed)
@@ -312,27 +313,27 @@ frames exist; otherwise kill Emacs."
     (evil-local-set-key state (kbd "C-s") #'dm-text-latex-wrap-as-si)))
 
 (dolist (hook '(LaTeX-mode-hook latex-mode-hook))
-  (add-hook hook #'dm/text-latex-keybindings))
+  (add-hook hook #'dm-text-latex-keybindings))
 
 ;;; ————————————————————————————
 ;;; Active-agent dispatch (claude-code-ide / codex-ide)
 ;;; ————————————————————————————
 
-(defvar dm/active-agent 'claude
+(defvar dm-active-agent 'claude
   "Currently active AI agent: `claude` or `codex`.")
 
-(defun dm/toggle-agent ()
+(defun dm-toggle-agent ()
   "Switch active agent between claude-code-ide and codex-ide."
   (interactive)
-  (setq dm/active-agent
-        (if (eq dm/active-agent 'claude) 'codex 'claude))
-  (message "Active agent: %s" dm/active-agent))
+  (setq dm-active-agent
+        (if (eq dm-active-agent 'claude) 'codex 'claude))
+  (message "Active agent: %s" dm-active-agent))
 
-(defun dm/active-agent-window ()
+(defun dm-active-agent-window ()
   "Return the active agent window for the current project, if visible.
 NOTE: speculative."
 
-  (pcase dm/active-agent
+  (pcase dm-active-agent
     ('claude
      (when-let* ((buf (get-buffer (claude-code-ide--get-buffer-name))))
        (get-buffer-window buf t)))
@@ -341,25 +342,25 @@ NOTE: speculative."
                  (buf (get-buffer (codex-ide--buffer-name dir))))
        (get-buffer-window buf t)))))
 
-(defun dm/focus-active-agent-window ()
+(defun dm-focus-active-agent-window ()
   "Move focus to the active agent window when it is visible.
 NOTE: speculative."
-  (when-let* ((win (dm/active-agent-window)))
+  (when-let* ((win (dm-active-agent-window)))
     (select-window win)))
 
-(defun dm/agent-open ()
+(defun dm-agent-open ()
   "Show the active AI agent, or dismiss its window when already visible."
   (interactive)
-  (if (dm/active-agent-window)
-      (dm/agent-toggle)
-    (if (eq dm/active-agent 'claude)
+  (if (dm-active-agent-window)
+      (dm-agent-toggle)
+    (if (eq dm-active-agent 'claude)
         (claude-code-ide)
       (codex-ide))))
 
-(defun dm/agent-toggle ()
+(defun dm-agent-toggle ()
   "Toggle the active AI agent's window."
   (interactive)
-  (if (eq dm/active-agent 'claude)
+  (if (eq dm-active-agent 'claude)
       (claude-code-ide-toggle)
     (codex-ide-toggle)))
 
@@ -370,14 +371,14 @@ NOTE: speculative."
 (use-package hydra
   ;; Repeatable keymaps for commands you want to apply several times in a row.
   :config
-  (defhydra dm/window-resize-hydra (:hint nil)
+  (defhydra dm-window-resize-hydra (:hint nil)
     "
 Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balance [_q_] quit
 "
-    ("h" dm/window-shrink-horizontally)
-    ("j" dm/window-shrink-vertically)
-    ("k" dm/window-enlarge-vertically)
-    ("l" dm/window-enlarge-horizontally)
+    ("h" dm-window-shrink-horizontally)
+    ("j" dm-window-shrink-vertically)
+    ("k" dm-window-enlarge-vertically)
+    ("l" dm-window-enlarge-horizontally)
     ("=" balance-windows)
     ("q" nil :color blue)))
 
@@ -399,9 +400,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
     ;; Agent (claude-code-ide / codex-ide, toggled at runtime via SPC a A)
     "a"   '(:ignore t                       :which-key "agent")
-    "a a" '(dm/agent-open                   :which-key "show or dismiss")
-    "a A" '(dm/toggle-agent                 :which-key "switch agent")
-    "a t" '(dm/agent-toggle                 :which-key "toggle window")
+    "a a" '(dm-agent-open                   :which-key "show or dismiss")
+    "a A" '(dm-toggle-agent                 :which-key "switch agent")
+    "a t" '(dm-agent-toggle                 :which-key "toggle window")
     "a c" '(claude-code-ide-continue        :which-key "continue")
     "a r" '(claude-code-ide-resume          :which-key "resume")
     "a l" '(claude-code-ide-list-sessions   :which-key "list sessions")
@@ -417,7 +418,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     ;; Files
     "f"   '(:ignore t                           :which-key "file")
     "f f" '(consult-fd                          :which-key "find file")
-    "f p" '(dm/open-daymacs-init-in-new-tab     :which-key "emacs init")
+    "f p" '(dm-open-daymacs-init-in-new-tab     :which-key "emacs init")
     "f r" '(consult-recent-file                 :which-key "recent files")
 
     ;; Search
@@ -446,7 +447,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     ;; Toggle
     "t"   '(:ignore t          :which-key "toggle")
     "t c" '(copilot-mode       :which-key "copilot")
-    "t w" '(dm/wrapping-toggle :which-key "word wrap")
+    "t w" '(dm-wrapping-toggle :which-key "word wrap")
 
     ;; Workspaces (tabspaces)
     "TAB"   '(:ignore t                    :which-key "workspace")
@@ -475,9 +476,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "w"   '(:ignore t                  :which-key "window")
     "w v" '(evil-window-vsplit         :which-key "vertical split")
     "w s" '(evil-window-split          :which-key "horizontal split")
-    "w d" '(dm/delete-window-dwim         :which-key "close")
+    "w d" '(dm-delete-window-dwim         :which-key "close")
     "w m" '(delete-other-windows       :which-key "maximize")
-    "w r" '(dm/window-resize-hydra/body :which-key "resize hydra")
+    "w r" '(dm-window-resize-hydra/body :which-key "resize hydra")
     "w h" '(windmove-left              :which-key "go left")
     "w l" '(windmove-right             :which-key "go right")
     "w j" '(windmove-down              :which-key "go down")
@@ -494,7 +495,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
    "s-g"   #'magit-status
    "s-t"   #'tab-new
    "s-W"   #'tab-close
-   "s-w"   #'dm/delete-window-dwim
+   "s-w"   #'dm-delete-window-dwim
    "s-k"   #'kill-current-buffer
    "s-'"   #'eat
    "C-,"   #'embark-act
@@ -539,7 +540,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
 (use-package mini-frame
   :config
-  (defun dm/mini-frame-clamped-dimensions ()
+  (defun dm-mini-frame-clamped-dimensions ()
     (let* ((parent (selected-frame))
 	   (frame-cols (frame-parameter parent 'width)) ; in columns
 	   (desired (* 0.7 frame-cols))
@@ -552,7 +553,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 	(left-fringe . 25)
 	(right-fringe . 25)
 	(background-color . ,(face-attribute 'default :background)))))
-  (setq mini-frame-show-parameters #'dm/mini-frame-clamped-dimensions)
+  (setq mini-frame-show-parameters #'dm-mini-frame-clamped-dimensions)
   (set-face-attribute 'child-frame-border nil :background (face-attribute 'mode-line :foreground))
   (mini-frame-mode 1))
 
@@ -570,7 +571,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   ;; consult-line, consult-recent-file, etc. Integrates with vertico.
   :config)
 
-(defun dm/search-project-for-symbol-at-point ()
+(defun dm-search-project-for-symbol-at-point ()
   "Search the current project for the symbol at point."
   (interactive)
   (let ((symbol (thing-at-point 'symbol t)))
@@ -579,7 +580,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
      symbol)))
 
 (evil-define-key 'normal 'global
-  (kbd "SPC *") #'dm/search-project-for-symbol-at-point)
+  (kbd "SPC *") #'dm-search-project-for-symbol-at-point)
 
 (use-package marginalia
   ;; Adds annotations to completion candidates: file sizes, docstrings,
@@ -646,9 +647,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   :after evil
   :init
   (autoload 'dired-jump "dired-x" nil t)
-  :hook ((prog-mode . dm/dired-jump-keybindings)
-         (text-mode . dm/dired-jump-keybindings)
-         (sgml-mode . dm/dired-jump-keybindings)))
+  :hook ((prog-mode . dm-dired-jump-keybindings)
+         (text-mode . dm-dired-jump-keybindings)
+         (sgml-mode . dm-dired-jump-keybindings)))
 
 ;;; ————————————————————————————
 ;;; Markdown
@@ -662,7 +663,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
 (use-package markdown-mode
   :hook ((markdown-mode . outline-minor-mode)
-	 (markdown-mode . dm/disable-line-numbers-h)
+	 (markdown-mode . dm-disable-line-numbers-h)
          (gfm-mode . outline-minor-mode))
   :mode (("\\.md\\'" . gfm-mode)
          ("\\.markdown\\'" . gfm-mode)))
@@ -671,9 +672,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 ;;; Git
 ;;; ————————————————————————————
 
-(defun dm/skip-treesit-auto-for-git-commit-file-a (fn &rest args)
+(defun dm-skip-treesit-auto-for-git-commit-file-a (fn &rest args)
   "Skip `treesit-auto' remap setup for transient Git message buffers."
-  (unless (dm/git-commit-file-p)
+  (unless (dm-git-commit-file-p)
     (apply fn args)))
 
 (with-eval-after-load 'treesit-auto
@@ -682,9 +683,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   ;; and the targeted tracer shows the hand-rolled config is spending most of
   ;; its extra time in the unwrapped portion of `git-commit-setup'.
   (advice-add #'treesit-auto--set-major-remap
-              :around #'dm/skip-treesit-auto-for-git-commit-file-a))
+              :around #'dm-skip-treesit-auto-for-git-commit-file-a))
 
-(defun dm/magit-display-buffer-fn (buffer)
+(defun dm-magit-display-buffer-fn (buffer)
   "Display Magit buffers with less window churn.
 
 This follows Doom's strategy closely enough for the status-to-commit
@@ -715,7 +716,7 @@ process buffers below the selected window."
       (t
        '(display-buffer-pop-up-window))))))
 
-(defun dm/git-commit-disable-completion ()
+(defun dm-git-commit-disable-completion ()
   "Disable dabbrev in Git commit message buffers."
   (setq-local completion-at-point-functions nil)
   (when (bound-and-true-p corfu-mode)
@@ -729,10 +730,10 @@ process buffers below the selected window."
         magit-save-repository-buffers nil
         magit-git-executable (or (executable-find "git") "git"))
   :custom
-  (magit-display-buffer-function #'dm/magit-display-buffer-fn)
+  (magit-display-buffer-function #'dm-magit-display-buffer-fn)
   (magit-commit-show-diff nil)
   :config
-  (add-hook 'git-commit-mode-hook #'dm/git-commit-disable-completion 90)
+  (add-hook 'git-commit-mode-hook #'dm-git-commit-disable-completion 90)
   (with-eval-after-load 'magit-commit
     (oset (get 'magit-commit 'transient--prefix) value nil)))
 
@@ -768,12 +769,12 @@ process buffers below the selected window."
 
 (use-package eat
   :hook ((eshell-load . eat-eshell-mode)
-         (eat-mode    . dm/disable-line-numbers-h))
+         (eat-mode    . dm-disable-line-numbers-h))
   :custom
   (eat-kill-buffer-on-exit t)
   (eat-term-name "xterm-256color")
   :config
-  (defun dm/eat--string-for-terminal (text)
+  (defun dm-eat--string-for-terminal (text)
     "Return TEXT as a plain string suitable for sending to Eat."
     (let ((string (cond
                    ((stringp text) (copy-sequence text))
@@ -783,11 +784,11 @@ process buffers below the selected window."
       (set-text-properties 0 (length string) nil string)
       string))
 
-  (defun dm/eat--send-string-as-yank (text &optional count)
+  (defun dm-eat--send-string-as-yank (text &optional count)
     "Send TEXT to the current Eat terminal COUNT times."
     (unless eat-terminal
       (user-error "Process not running"))
-    (let* ((string (dm/eat--string-for-terminal text))
+    (let* ((string (dm-eat--string-for-terminal text))
            (repeat (max 1 (prefix-numeric-value count))))
       (when (> (length string) 0)
         (eat-term-send-string-as-yank
@@ -795,7 +796,7 @@ process buffers below the selected window."
          (apply #'concat (make-list repeat string))))))
 
   (with-eval-after-load 'evil
-    (evil-define-command dm/eat-evil-paste-after (count &optional register)
+    (evil-define-command dm-eat-evil-paste-after (count &optional register)
       "Send the current Evil paste text to the Eat terminal."
       :suppress-operator t
       (interactive "P<x>")
@@ -803,15 +804,15 @@ process buffers below the selected window."
                       (evil-get-register register)
                     (current-kill 0))))
         (setq evil-this-register nil)
-        (dm/eat--send-string-as-yank text count)))
+        (dm-eat--send-string-as-yank text count)))
 
-    (evil-define-command dm/eat-evil-paste-before (count &optional register)
+    (evil-define-command dm-eat-evil-paste-before (count &optional register)
       "Send the current Evil paste text to the Eat terminal."
       :suppress-operator t
       (interactive "P<x>")
-      (dm/eat-evil-paste-after count register)))
+      (dm-eat-evil-paste-after count register)))
 
-  (defun dm/eat-setup-paste-bindings ()
+  (defun dm-eat-setup-paste-bindings ()
     "Route paste commands through Eat instead of inserting into the buffer."
     (define-key eat-mode-map (kbd "s-v") #'eat-yank)
     (define-key eat-mode-map [remap yank] #'eat-yank)
@@ -826,8 +827,8 @@ process buffers below the selected window."
     (define-key eat-char-mode-map [remap clipboard-yank] #'eat-yank)
     (with-eval-after-load 'evil
       (evil-define-key 'normal eat-mode-map
-        (kbd "p") #'dm/eat-evil-paste-after
-        (kbd "P") #'dm/eat-evil-paste-before)
+        (kbd "p") #'dm-eat-evil-paste-after
+        (kbd "P") #'dm-eat-evil-paste-before)
       (evil-define-key 'insert eat-mode-map
         (kbd "s-v") #'eat-yank
         (kbd "C-y") #'eat-yank
@@ -835,9 +836,9 @@ process buffers below the selected window."
         [remap yank] #'eat-yank
         [remap clipboard-yank] #'eat-yank)))
 
-  (dm/eat-setup-paste-bindings)
+  (dm-eat-setup-paste-bindings)
   (with-eval-after-load 'evil-collection-eat
-    (dm/eat-setup-paste-bindings)))
+    (dm-eat-setup-paste-bindings)))
 
 ;;; ————————————————————————————
 ;;; codex-ide — OpenAI Codex CLI
@@ -865,7 +866,7 @@ process buffers below the selected window."
               ("C-p"        . copilot-previous-completion)
               ("C-g"        . copilot-clear-overlay))
   :init
-  (defun dm/copilot-disable-predicate ()
+  (defun dm-copilot-disable-predicate ()
     "Return non-nil when Copilot should stay quiet in the current buffer."
     (or (minibufferp)
         buffer-read-only
@@ -878,7 +879,7 @@ process buffers below the selected window."
                         'eshell-mode)))
   :config
   (setq copilot-indent-offset-warning-disable t)
-  (add-to-list 'copilot-disable-predicates #'dm/copilot-disable-predicate))
+  (add-to-list 'copilot-disable-predicates #'dm-copilot-disable-predicate))
 
 ;;; ————————————————————————————
 ;;; claude-code-ide — Claude Code CLI with MCP bridge
@@ -901,7 +902,7 @@ process buffers below the selected window."
 (use-package org
   ;; Use the ELPA version rather than the built-in one for up-to-date features.
   :straight t
-  :hook ((org-mode . dm/disable-line-numbers-h))
+  :hook ((org-mode . dm-disable-line-numbers-h))
   :custom
   ;; ORG_HOME is set in env/emacs.sh; fall back to ~/Org.
   (org-directory (or (getenv "ORG_HOME") (expand-file-name "~/Org")))
@@ -1010,14 +1011,14 @@ process buffers below the selected window."
          ("C-j" . tempel-next)
          ("C-k" . tempel-previous))
   :init
-  (defun dm/tempel-setup-capf ()
+  (defun dm-tempel-setup-capf ()
     "Add Tempel template expansion before the mode's main CAPF."
     (setq-local completion-at-point-functions
                 (cons #'tempel-expand completion-at-point-functions)))
 
-  (add-hook 'conf-mode-hook #'dm/tempel-setup-capf)
-  (add-hook 'prog-mode-hook #'dm/tempel-setup-capf)
-  (add-hook 'text-mode-hook #'dm/tempel-setup-capf))
+  (add-hook 'conf-mode-hook #'dm-tempel-setup-capf)
+  (add-hook 'prog-mode-hook #'dm-tempel-setup-capf)
+  (add-hook 'text-mode-hook #'dm-tempel-setup-capf))
 
 (use-package tempel-collection
   :after tempel)
@@ -1071,7 +1072,7 @@ process buffers below the selected window."
 	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
 	  (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
 
-(defun dm/treesit-install-all-languages ()
+(defun dm-treesit-install-all-languages ()
   "Install all Tree-sitter grammars defined in `treesit-language-source-alist'."
   (interactive)
   (dolist (lang treesit-language-source-alist)
