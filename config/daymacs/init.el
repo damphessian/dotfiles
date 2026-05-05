@@ -94,6 +94,10 @@
 ;; Empty scratch buffer on launch (inhibit-startup-screen is in early-init.el).
 (setq initial-scratch-message nil)
 
+;; Use spaces for alignment
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 8)
+
 (defconst dm/git-commit-filename-regexp
   "/\\(?:\\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(?:BRANCH\\|EDIT\\)_DESCRIPTION\\)\\'"
   "Regexp matching Git message files that `git-commit' edits.")
