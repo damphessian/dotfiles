@@ -81,6 +81,26 @@ With DISPLAYMODE-P, use display math delimiters."
       (kill-region (mark) (point))
       (insert wrapped-text))))
 
+(defun dm-text-latex-wrap-as-math-display ()
+  "Wrap selected text, or text around point, in LaTeX display math delimiters."
+  (interactive)
+  (dm-text-latex-wrap-as-math t))
+
+(defun dm-text-latex-wrap-as-frac ()
+  "Wrap selected text, or text around point, in a LaTeX fraction command."
+  (interactive)
+  (let* ((selected-text (dm-text--selected-text))
+	 (split-pos (string-match "/" selected-text))
+	 (numerator (if split-pos
+			(string-trim (substring selected-text 0 split-pos))
+		      selected-text))
+	 (denominator (if split-pos
+			 (string-trim (substring selected-text (1+ split-pos)))
+		       "1"))
+	 (formatted-string (format "\\frac{%s}{%s}" numerator denominator)))
+    (kill-region (mark) (point))
+    (insert formatted-string)))
+
 (defun dm-text-latex-wrap-as-boxed ()
   "Wrap selected text, or text around point, in a LaTeX boxed command."
   (interactive)
