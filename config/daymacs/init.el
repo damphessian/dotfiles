@@ -41,6 +41,33 @@
   "Disable line numbers in the current buffer."
   (display-line-numbers-mode -1))
 
+(defun dm/wrapping-disable ()
+  "Disable visual wrapping in the current buffer."
+  (interactive)
+  (visual-line-mode -1)
+  (when (fboundp 'visual-fill-column-mode)
+    (visual-fill-column-mode -1))
+  (setq-local word-wrap nil)
+  (setq-local truncate-lines t)
+  (recenter))
+
+(defun dm/wrapping-enable ()
+  "Enable visual wrapping in the current buffer."
+  (interactive)
+  (visual-line-mode 1)
+  (when (fboundp 'visual-fill-column-mode)
+    (visual-fill-column-mode 1))
+  (setq-local word-wrap t)
+  (setq-local truncate-lines nil)
+  (recenter))
+
+(defun dm/wrapping-toggle ()
+  "Toggle visual line wrapping in the current buffer."
+  (interactive)
+  (if (bound-and-true-p visual-line-mode)
+      (dm/wrapping-disable)
+    (dm/wrapping-enable)))
+
 ;;; ————————————————————————————
 ;;; Core Emacs settings
 ;;; ————————————————————————————
@@ -401,9 +428,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "o c" '(org-capture   :which-key "capture")
 
     ;; Toggle
-    "t"   '(:ignore t               :which-key "toggle")
-    "t c" '(copilot-mode            :which-key "copilot")
-    "t w" '(visual-fill-column-mode :which-key "word wrap")
+    "t"   '(:ignore t          :which-key "toggle")
+    "t c" '(copilot-mode       :which-key "copilot")
+    "t w" '(dm/wrapping-toggle :which-key "word wrap")
 
     ;; Workspaces (tabspaces)
     "TAB"   '(:ignore t                    :which-key "workspace")
