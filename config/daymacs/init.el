@@ -663,8 +663,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
 (use-package markdown-mode
   :hook ((markdown-mode . outline-minor-mode)
-	 (markdown-mode . dm-disable-line-numbers-h)
-         (gfm-mode . outline-minor-mode))
+         (markdown-mode . dm-disable-line-numbers-h)
+         (gfm-mode . outline-minor-mode)
+         (gfm-mode . dm-disable-line-numbers-h))
   :mode (("\\.md\\'" . gfm-mode)
          ("\\.markdown\\'" . gfm-mode)))
 
