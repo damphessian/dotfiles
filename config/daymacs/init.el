@@ -783,7 +783,7 @@ process buffers below the selected window."
 
 (use-package copilot
   :straight (:type git :host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :hook (prog-mode . copilot-mode)
+  ;; :hook (prog-mode . copilot-mode) ; disabled by default
   :bind (:map copilot-completion-map
 	      ;; Fish-style bindings avoid stealing TAB from Corfu and indentation.
               ("<return>"   . copilot-accept-completion)
