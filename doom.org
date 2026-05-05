@@ -7,40 +7,11 @@
 
 See [[https://github.com/hlissner/doom-emacs/blob/develop/modules/lang/emacs-lisp/demos.org][API Demos]] for examples.
 
-** confirm-kill-emacs
-
-#+begin_src elisp
-(setq confirm-kill-emacs nil)
-#+end_src
-
 ** select-enable-clipboard
 
 #+begin_src elisp
 (setq select-enable-clipboard nil
       x-select-enable-clipboard nil)
-#+end_src
-
-** which-key
-
-#+begin_src elisp
-(setq
- which-key-idle-delay 0.15
- which-key-idle-secondary-delay 0.1)
-#+end_src
-
-** literate config
-
-#+begin_src elisp :tangle no
-(remove-hook 'org-mode-hook #'+literate-enable-recompile-h)
-#+end_src
-
-Provide a command to trigger tangling manually.
-
-#+begin_src elisp
-(defun do/config:tangle ()
-  "Tangle config.org to Emacs lisp."
-  (interactive)
-  (+literate-tangle-h))
 #+end_src
 
 ** display
@@ -237,117 +208,6 @@ Enable hl-todo mode in certain text modes.
   (add-hook! org-mode #'hl-todo-mode))
 #+end_src
 
-** display: line numbers
-
-Disable line-numbering in org and markdown modes
-
-#+begin_src elisp
-(defun do/config:display:disable-line-numbers-h ()
-  "Disable line numbers in the current buffer."
-  (setq-local display-line-numbers nil))
-
-(add-hook! '(org-mode-hook markdown-mode-hook) #'do/config:display:disable-line-numbers-h)
-#+end_src
-
-** display: layout
-
-#+begin_src elisp
-(defun do/layout-main ()
-  (interactive)
-  (let ((w-main nil)
-        (w-top (selected-window))
-        (w-btm nil)
-        (b-main (dired-noselect (or (projectile-project-root) "~/.dotfiles")))
-        (b-top (find-file-noselect (format "%s/%s" (getenv "ORG_HOME") +org-capture-todo-file)))
-        (b-btm (get-buffer-create "*scratch*")))
-    (delete-other-windows)
-    (set-window-buffer w-top b-top)
-    (setq w-main
-          (window--display-buffer
-           b-main
-           (split-window w-top (/ (window-width) 4) 'left)
-           'window
-           '((display-buffer-mark-dedicated . t))))
-    (setq w-btm
-          (window--display-buffer
-           b-btm
-           (split-window w-top (* 2 (/ (window-height) 3)) 'below)
-           'window
-           '((display-buffer-mark-dedicated . t))))
-    (select-window w-main)))
-#+end_src
-
-** display: prettification
-
-#+begin_src elisp
-(setq +ligatures-extra-symbols
-      '(;; org
-        :name          "»"
-        :src_block     "»"
-        :src_block_end "«"
-        :quote         "“"
-        :quote_end     "”"
-        ;; Functional
-        :lambda        "λ"
-        :def           "ƒ"
-        :composition   "∘"
-        :map           "↦"
-        ;; Types
-        :null          "∅"
-        ;; :true          "𝕋"
-        ;; :false         "𝔽"
-        ;; :int           "ℤ"
-        ;; :float         "ℝ"
-        ;; :str           "𝕊"
-        ;; :bool          "𝔹"
-        ;; :list          "𝕃"
-        ;; Flow
-        :not           "￢"
-        :in            "∈"
-        :not-in        "∉"
-        :and           "∧"
-        :or            "∨"
-        :for           "∀"
-        :some          "∃"
-        :return        "⟼"
-        :yield         "⟻"
-        ;; Other
-        :union         "⋃"
-        :intersect     "∩"
-        :diff          "∖"
-        :tuple         "⨂"
-        ;; :pipe          "" ;; FIXME: find a non-private char
-        :dot           "•")
-      )
-#+end_src
-
-** scrolling
-
-QUESTION: Is this disabled or not? Supposedly not being tangled.
-
-#+begin_src elisp :tangle no
-(defun do/scroll-other-window-up ()
-  "Scroll the other window up."
-  (interactive)
-  (scroll-other-window -3))
-
-(defun do/scroll-other-window-down ()
-  "Scroll the other window down."
-  (interactive)
-  (scroll-other-window 3))
-
-(map! "M-p" #'do/scroll-other-window-up)
-(map! "M-n" #'do/scroll-other-window-down)
-#+end_src
-
-** leader keys
-
-Use comma for the local leader key.
-
-#+begin_src elisp
-(setq doom-localleader-key ",")
-#+end_src
-
 ** super keys
 
 *** GUI Emacs
@@ -445,63 +305,10 @@ Use =s-`= to cycle between frames.
 (map! :ni "s-<return>" #'+make/run)
 #+end_src
 
-** identity
-
-Some functionality uses this to identify you, e.g. GPG configuration, email
-clients, file templates and snippets.
-
-#+begin_src elisp
-(setq user-full-name "Jacob Romer"
-      user-mail-address "jmromer@tensorconclave.com")
-#+end_src
-
-** credentials
-
-Required [[https://gist.github.com/Azeirah/542f1db12e3ef904abfc7e9c2e83310e][setup]] for using [[https://magit.vc/manual/forge/][forge]].
-
-#+begin_src elisp
-(setq authinfo-file (format "%s/config/authinfo.gpg" (getenv "XDG_SECURE_DIR"))
-      auth-sources (list 'macos-keychain-generic 'macos-keychain-internet authinfo-file))
-#+end_src
-
-** local variables
-
-Allow remembering risky local variables.
-
-#+begin_src elisp
-(advice-add 'risky-local-variable-p :override #'ignore)
-#+end_src
-
 ** indentation
 
 #+begin_src elisp
 (setq-default standard-indent 2)
-#+end_src
-
-** word counts
-
-#+begin_src elisp
-(setq doom-modeline-continuous-word-count-modes
-      '(markdown-mode gfm-mode org-mode fundamental-mode))
-#+end_src
-
-#+begin_src elisp
-(defun do/config:enable-continuous-word-count ()
-  (interactive)
-  (if (member major-mode doom-modeline-continuous-word-count-modes)
-      (setq doom-modeline-enable-word-count (not doom-modeline-enable-word-count))
-    (error (format "`%s' not in `doom-modeline-continuous-word-count-modes'" major-mode))))
-
-(map! :leader :prefix "t" :desc "Word count" "W" #'do/config:enable-continuous-word-count)
-#+end_src
-
-** tmux-ish keybindings
-
-#+begin_src elisp
-(map! "C-h"    #'projectile-switch-project
-      "C-a ,"  #'do/workspace:open-dotfiles
-      "C-a -"  #'evil-window-split
-      "C-a \\" #'evil-window-vsplit)
 #+end_src
 
 ** recent buffers toggling
@@ -840,28 +647,6 @@ Prompts for an optional commit message suffix."
           "--no-attribute-commit-message-committer"
           )))
 #+end_src
-* copilots
-
-** gh-copilot
-
-Accept completion from GitHub Copilot and fallback to company
-
-#+begin_src elisp
-(map! :map copilot-completion-map
-      "<return>" #'copilot-accept-completion
-      "RET"   #'copilot-accept-completion)
-#+end_src
-
-Silence warnings when an indentation offset can't be inferred.
-
-#+begin_src elisp
-;; ⛔ Warning (copilot): copilot--infer-indentation-offset found no
-;;   mode-specific indentation offset.
-(setq copilot-indent-offset-warning-disable t)
-#+end_src
-
-Strongly recommend to enable childframe option in company module
-=((company +childframe))= to prevent overlay conflict.
 
 * completion
 
@@ -898,96 +683,7 @@ https://github.com/company-mode/company-mode
         :desc "search"         "C-s" #'company-search-candidates))
 #+end_src
 
-* diff-hl
-
-Enable [[https://github.com/dgutov/diff-hl][diff-highlight]] modes globally.
-
-#+begin_src elisp
-(after! diff-hl
-  (global-diff-hl-mode))
-#+end_src
-
-#+begin_src elisp
-(map! :n "[h" #'diff-hl-show-hunk-previous
-      :n "]h" #'diff-hl-show-hunk-next)
-#+End_src
-
-Use a posframe for displaying hunks.
-
-#+begin_src elisp
-(after! diff-hl
-  (setq diff-hl-show-hunk-function #'diff-hl-show-hunk-posframe))
-#+end_src
-
-Add refresh hooks for magit > 2.4.0.
-
-#+begin_src elisp
-(after! (:all diff-hl magit)
-  (add-hook! magit-pre-refresh #'diff-hl-magit-pre-refresh)
-  (add-hook! magit-post-refresh #'diff-hl-magit-post-refresh))
-#+end_src
-
-* dired
-
-From the normal state:
-- Enter dired in the CWD of the current buffer's file with =-=
-
-#+begin_src elisp
-(defun do/config:keybindings:dired-jump-h ()
-  (map! :n "-" #'dired-jump))
-(add-hook! prog-mode #'do/config:keybindings:dired-jump-h)
-(add-hook! text-mode #'do/config:keybindings:dired-jump-h)
-#+end_src
-
-From the normal state in dired mode:
-- Ensure quit with ZQ works
-
-#+begin_src elisp
-(defun do/config:keybindings:dired-h ()
-  (map! :map dired-mode-map
-        :n "Z q" #'evil-quit
-        :localleader
-        :n "," #'casual-dired-tmenu))
-(add-hook! dired-mode #'do/config:keybindings:dired-h)
-#+end_src
-
 * evil
-
-** cursor mode indicators
-
-#+begin_src elisp
-(setq evil-normal-state-cursor '(box "light blue")
-      evil-insert-state-cursor '(bar "medium sea green")
-      evil-visual-state-cursor '(hollow "orange"))
-#+end_src
-
-** state messages
-
-Silence state messages.
-
-#+begin_src elisp
-(setq evil-emacs-state-message nil
-      evil-iedit-insert-state-message nil
-      evil-iedit-state-message nil
-      evil-insert-state-message nil
-      evil-motion-state-message nil
-      evil-replace-state-message nil
-      evil-visual-state-message nil)
-#+end_src
-
-** window navigation
-
-Re-map keybindings to follow when splitting by default.
-
-#+begin_src elisp
-(setq evil-vsplit-window-right t
-      evil-split-window-below t)
-
-(map! :leader
-      :prefix ("w" . "window")
-      :desc "split below"  "s"  #'evil-window-split
-      :desc "split right"  "v"  #'evil-window-vsplit)
-#+end_src
 
 ** hybrid evil/emacs keybindings
 
@@ -1167,45 +863,6 @@ Use =g~= operator to cycle through inflection transformations.
   (require 'evil-string-inflection))
 #+end_src
 
-** evil text objects
-
-*** delimiters
-
-#+begin_src elisp
-(defmacro define-and-bind-text-object (name key start-regex end-regex)
-  (let ((inner-name (make-symbol (concat "evil-inner-" name)))
-        (outer-name (make-symbol (concat "evil-a-" name))))
-    `(progn
-       (evil-define-text-object ,inner-name (count &optional beg end type)
-         (evil-select-paren ,start-regex ,end-regex beg end type count nil))
-       (evil-define-text-object ,outer-name (count &optional beg end type)
-         (evil-select-paren ,start-regex ,end-regex beg end type count t))
-       (define-key evil-inner-text-objects-map ,key #',inner-name)
-       (define-key evil-outer-text-objects-map ,key #',outer-name))))
-#+end_src
-
-#+begin_src elisp
-(define-and-bind-text-object "bracket" "[" "\\[" "\\]")
-(define-and-bind-text-object "dash" "-" "-" "-")
-(define-and-bind-text-object "dollar" "$" "\\$" "\\$")
-(define-and-bind-text-object "pipe" "|" "|" "|")
-(define-and-bind-text-object "slash" "/" "/" "/")
-(define-and-bind-text-object "underscore" "_" "_" "_")
-#+end_src
-
-*** evil-inner-buffer
-
-#+begin_src elisp
-(evil-define-text-object evil-inner-buffer (count &optional beg end type)
-  "Select inner buffer."
-  :type line
-  (evil-select-inner-object 'buffer beg end type count t))
-#+end_src
-
-*** ruby text objects
-#+begin_src elisp
-(add-hook! ruby-mode #'evil-ruby-text-objects-mode)
-#+end_src
 
 * exercism
 
@@ -1398,38 +1055,6 @@ If in an evil visual state, wrap the current selection in math mode."
       (insert formatted-string))))
 #+end_src
 
-** Utilities
-
-*** evaluate selection mathematically
-
-#+begin_src elisp
-(defun do/LaTeX:evaluate-selection ()
-  "Evaluate the selected expression numerically, converting LaTeX to
-  mathematical operators as needed."
-  (interactive)
-  (let* ((selected-text (string-trim (buffer-substring (mark) (point))))
-         (replaced-text (replace-regexp-in-string "\\\\cdot" "*" selected-text))
-         (replaced-text (replace-regexp-in-string "\\\\ln" "ln" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\\\pi" "3.14159" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\\\exp" "exp" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\\\L" "" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\\\R" "" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\\\SI{\\([^}]+\\)}{[^}]*}" "\\1" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\\\p{\\([^}]+\\)}" "(\\1)" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\\\frac{\\([^}]+\\)}{\\([^}]+\\)}" "((\\1)/(\\2))" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\\\dfrac{\\([^}]+\\)}{\\([^}]+\\)}" "((\\1)/(\\2))" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\\\sfrac{\\([^}]+\\)}{\\([^}]+\\)}" "((\\1)/(\\2))" replaced-text))
-         (replaced-text (replace-regexp-in-string "{" "(" replaced-text))
-         (replaced-text (replace-regexp-in-string "}" ")" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\[" "(" replaced-text))
-         (replaced-text (replace-regexp-in-string "\\]" ")" replaced-text))
-         (result (calc-eval replaced-text)))
-    (progn
-      (message (format "Evaluating: %s = %s" replaced-text result))
-      (kill-region (mark) (point))
-      (insert (format "%s" result)))))
-#+end_src
-
 ** Keybindings
 
 #+begin_src elisp
@@ -1541,155 +1166,6 @@ Otherwise, assume the current file is the main doc."
   (do/LaTeX:open-doc t))
 #+end_src
 
-* text utilities
-
-*** do/point-on-empty-line-p
-
-#+begin_src elisp
-(defun do/point-on-empty-line-p ()
-  "Return t if the point is on an empty line, nil otherwise."
-  (interactive)
-  (save-excursion
-    (beginning-of-line)
-    (looking-at-p "^\\s-*$")))
-#+end_src
-
-*** make selection between whitespace/delimiters
-
-#+begin_src elisp
-(defun do/select-around-point-to-whitespace-or-delimiters ()
-  "Select characters around the current point up to whitespace in both directions."
-  (interactive)
-  (let ((start (point))
-        (end (point)))
-    ;; Move start backward to the first whitespace or beginning of the buffer
-    (while (and (not (bobp))
-                (not (looking-back "\\s-\\|\n"))
-                (not (looking-back "[,;=]")))
-      (backward-char))
-    (setq start (point))
-
-    ;; Move end forward to the first whitespace or end of the buffer
-    (goto-char end)
-    (while (and (not (eobp))
-                (not (looking-at "\\s-\\|\n"))
-                (not (looking-at "[,;.]")))
-      (forward-char))
-    (setq end (point))
-
-    ;; Select the region
-    (set-mark start)
-    (goto-char end)
-    (activate-mark)))
-#+end_src
-
-*** text selection and delimiters
-
-#+begin_src elisp
-(defun do/selected-text ()
-  (if (evil-visual-state-p)
-      (string-trim (buffer-substring (mark) (point)))
-    (progn
-      (do/select-around-point-to-whitespace-or-delimiters)
-      (string-trim (buffer-substring (mark) (point))))))
-
-(defun do/delimit-with (char)
-  (let ((selected-text (do/selected-text)))
-    (progn
-      (kill-region (mark) (point))
-      (insert (format "%s%s%s" char selected-text char)))))
-
-(defun do/LaTeX:wrap-in-cmd (cmd)
-  (interactive "sCommand: ")
-  (let ((selected-text (do/selected-text)))
-    (progn
-      (kill-region (mark) (point))
-      (insert (format "\\%s{%s}" cmd selected-text)))))
-#+end_src
-
-*** text formatting: LaTeX, Markdown, Org
-
-#+begin_src elisp
-(defun do/text:make-bold ()
-  (interactive)
-  (pcase major-mode
-    ((or 'latex-mode 'LaTeX-mode)
-     (do/LaTeX:wrap-in-cmd "textbf"))
-    ('org-mode
-     (do/delimit-with "*"))
-    ((or 'markdown-mode 'gfm-mode)
-     (do/delimit-with "**"))
-    (_
-     (message "Unrecognized mode: %s" major-mode))))
-
-(defun do/text:make-italic ()
-  (interactive)
-  (pcase major-mode
-    ((or 'latex-mode 'LaTeX-mode)
-     (do/LaTeX:wrap-in-cmd "textit"))
-    ('org-mode
-     (do/delimit-with "/"))
-    ((or 'markdown-mode 'gfm-mode)
-     (do/delimit-with "*"))
-    (_
-     (message "Unrecognized mode: %s" major-mode))))
-
-(defun do/text:make-underlined ()
-  (interactive)
-  (pcase major-mode
-    ((or 'latex-mode 'LaTeX-mode)
-     (do/LaTeX:wrap-in-cmd "underline"))
-    ('org-mode
-     (do/delimit-with "_"))
-    ((or 'markdown-mode 'gfm-mode)
-     (do/delimit-with "_"))
-    (_
-     (message "Unrecognized mode: %s" major-mode))))
-
-(defun do/text:make-strikethrough ()
-  (interactive)
-  (pcase major-mode
-    ((or 'latex-mode 'LaTeX-mode)
-     (do/LaTeX:wrap-in-cmd "sout"))
-    ('org-mode
-     (do/delimit-with "+"))
-    ((or 'markdown-mode 'gfm-mode)
-     (do/delimit-with "~~"))
-    (_
-     (message "Unrecognized mode: %s" major-mode))))
-#+end_src
-
-* lookup
-
-** web searches
-
-Use xwidgets to browse online search results online. (disabled)
-
-#+begin_src elisp :tangle no
-(setq +lookup-open-url-fn #'+lookup-xwidget-webkit-open-url-fn)
-#+end_src
-
-** dash-at-point
-
-https://github.com/stanaka/dash-at-point
-
-Lookup Dash docs quickly from the normal state.
-
-#+begin_src elisp
-(map! :map (emacs-lisp-mode-map org-mode-map)
-      :nv "H" #'helpful-at-point)
-
-(map! :map prog-mode-map
-      :nv "H" #'dash-at-point)
-#+end_src
-
-Un-define doom's Dash-related functions since they're not installed.
-
-#+begin_src elisp
-(fmakunbound '+lookup:dash)
-(fmakunbound '+lookup/in-docsets)
-(fmakunbound '+lookup/in-all-docsets)
-#+end_src
 
 * lsp
 
@@ -3286,27 +2762,6 @@ kill any open pytest compilation buffers
   nil)
 #+end_src
 
-* react & web
-
-** Emmet
-
-Use =C-RET= to expand emmet tags.
-
-#+begin_src elisp
-(defun do/config:keybindings:web-h ()
-  (map! :ni "C-<return>" #'emmet-expand-line))
-
-(add-hook! '(web-mode-hook) #'do/config:keybindings:web-h)
-#+end_src
-
-Emmet should expand classes as =className= in JSX modes.
-
-#+begin_src elisp
-(defun do/config:emmet-expand-jsx-classname-h ()
-  (setq emmet-expand-jsx-className? t))
-(add-hook! '(typescript-tsx-mode-hook) #'do/config:emmet-expand-jsx-classname-h)
-#+end_src
-
 * ruby
 
 ** keybindings
@@ -3663,56 +3118,6 @@ Look for a request spec if there's no controller spec."
 (add-hook! ruby-mode #'do/config:flycheck-set-checker-ruby-h)
 #+end_src
 
-* rust
-
-Use tree-sitter.
-#+begin_src elisp
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-#+end_src
-
-Use =rustc= for syntax checking.
-#+begin_src elisp
-(defun do/config:flycheck-set-checker-rust-h ()
-  (flycheck-select-checker 'rust))
-(add-hook! rust-ts-mode #'do/config:flycheck-set-checker-rust-h)
-#+end_src
-
-* smartparens
-
-Enable strict smartparens mode wherever smartparens is enabled.
-
-#+begin_src elisp
-(after! smartparens
-  (setq smartparens-global-mode nil
-        smartparens-global-strict-mode nil))
-#+end_src
-
-* treesitter
-
-#+begin_src elisp
-(after! treesit
-  (setq treesit-language-source-alist
-        '((rust "https://github.com/tree-sitter/tree-sitter-rust" nil "src")
-          (c      "https://github.com/tree-sitter/tree-sitter-c" nil "src")
-          (cpp    "https://github.com/tree-sitter/tree-sitter-cpp" nil "src")
-          (r    "https://github.com/r-lib/tree-sitter-r" nil "src"))))
-#+end_src
-
-* typopunct
-
-https://www.emacswiki.org/emacs/TypographicalPunctuationMarks
-
-#+begin_src elisp
-(require 'typopunct)
-
-(defun do/config:typopunct:enable-h ()
-  "Set up typopunct mode."
-  (typopunct-change-language 'english t)
-  (typopunct-mode 1))
-
-;; (add-hook! '(org-mode-hook markdown-mode-hook) #'do/config:typopunct:enable-h)
-#+end_src
-
 * webkit
 
 Reminders:
@@ -3836,224 +3241,6 @@ Precedence order:
 (do/config:add-to-word-char-list)
 #+end_src
 
-* workspaces
-
-** open config workspace
-
-#+begin_src elisp
-(defun do/workspace:open-dotfiles ()
-  "Create a new workspace, switch to it, then open the DOTFILES_DIR in dired."
-  (interactive)
-  (progn
-    (+workspace/new "dotfiles")
-    (+workspace/switch-to-final)
-    (find-file (getenv "DOTFILES_DIR"))))
-#+end_src
-
-** startup workspace
-
-Open on main org todo doc.
-
-#+begin_src elisp :tangle no
-(defun do/workspace:open-org-todos-h ()
-  "Open the main Org mode file in the main workspace."
-  (find-file (format "%s/%s" (getenv "ORG_HOME") +org-capture-todo-file)))
-(add-hook! emacs-startup #'do/workspace:open-org-todos-h)
-#+end_src
-
-Open on an empty buffer in the main workspace.
-
-#+begin_src elisp
-(after! persp-mode
-  (setq persp-emacsclient-init-frame-behaviour-override "main") ;; Ensure clients attach to the "main" workspace
-  (setq persp-set-last-persp-for-new-frames t)) ;; Keep last workspace for new frames
-#+end_src
-
-** configuration
-
-#+begin_src elisp
-(setq +workspaces-on-switch-project-behavior 'non-empty)
-#+end_src
-
-** keybindings
-
-#+begin_src elisp
-(map! "s-t" #'do/workspace:clone
-      "s-T" #'+workspace/new
-      "s-;" #'+workspace/other
-      "s-{" #'+workspace/switch-left
-      "s-}" #'+workspace/switch-right)
-#+end_src
-
-** new tab behavior
-
-Clone the current workspace when opening a new one. Name it intelligently.
-
-#+begin_src elisp
-(defun do/workspace:clone ()
-  "Clone the current workspace, naming it with the next available sequential index.
-If started from an indexed workspace (e.g., 'name:5'), fills in gaps from 1 upward.
-Creates 'name:1' if it doesn't exist yet and places it to the left.
-Only creates the next higher index if all lower indices exist."
-  (interactive)
-  (let* ((curr-name (+workspace-current-name))
-         ;; Extract base name and current index (if any)
-         (curr-has-index (string-match "\\(.*\\):\\([0-9]+\\)$" curr-name))
-         (base-name (if curr-has-index
-                        (match-string 1 curr-name)
-                      curr-name))
-         (curr-index (when curr-has-index
-                       (string-to-number (match-string 2 curr-name))))
-         (names (+workspace-list-names))
-         ;; Find all workspaces with the same base name and extract their indices
-         (indices (delq nil
-                        (mapcar (lambda (name)
-                                  (when (string-match (concat (regexp-quote base-name) ":\\([0-9]+\\)$") name)
-                                    (string-to-number (match-string 1 name))))
-                                names)))
-         ;; Sort indices to find gaps
-         (sorted-indices (sort indices #'<))
-
-         ;; Find the next sequential gap starting from 1, regardless of current index
-         (next-index (let ((expected 1))
-                       (while (member expected sorted-indices)
-                         (setq expected (1+ expected)))
-                       expected))
-
-         ;; If all sequential indices from 1 up to current max exist, then use the next number
-         (highest-index (if sorted-indices (apply #'max sorted-indices) 0))
-         (next-index (if (and (= next-index (1+ highest-index))
-                              (= (length sorted-indices) highest-index))
-                         (1+ highest-index)
-                       next-index))
-
-         ;; New workspace name with the next available index
-         (next-name (format "%s:%d" base-name next-index))
-
-         ;; Find the indices immediately before and after our new index
-         (index-before (cl-loop for idx in sorted-indices
-                                when (< idx next-index)
-                                collect idx into before-indices
-                                finally return (if before-indices
-                                                   (apply #'max before-indices)
-                                                 nil)))
-         (index-after (cl-loop for idx in sorted-indices
-                               when (> idx next-index)
-                               return idx
-                               finally return nil))
-
-         ;; Get workspace names for positioning
-         (workspace-before (cond
-                            (index-before (format "%s:%d" base-name index-before))
-                            ((= next-index 1) base-name) ; If creating index 1, position after base
-                            (t nil)))
-         (workspace-after (and index-after (format "%s:%d" base-name index-after)))
-
-         ;; Find positions in the workspace list
-         (before-pos (and workspace-before (cl-position workspace-before names :test #'equal)))
-         (after-pos (and workspace-after (cl-position workspace-after names :test #'equal))))
-
-    ;; Create the new workspace
-    (+workspace/new next-name t)
-
-    ;; Determine where to insert the new workspace
-    (let* ((updated-names (+workspace-list-names))
-           (new-pos (cl-position next-name updated-names :test #'equal)))
-      (cond
-       ;; If there's a workspace after where this should go, position before it
-       (after-pos
-        (let ((target-pos after-pos)
-              (current-pos new-pos))
-          (when (> current-pos target-pos)
-            ;; We need to move the workspace left
-            (+workspace/swap-left (- current-pos target-pos)))))
-
-       ;; If there's a workspace before where this should go, position after it
-       (before-pos
-        (let ((target-pos (1+ before-pos))
-              (current-pos new-pos))
-          (cond
-           ((> current-pos target-pos)
-            ;; Need to move left
-            (+workspace/swap-left (- current-pos target-pos)))
-           ((< current-pos target-pos)
-            ;; Need to move right
-            (+workspace/swap-right (- target-pos current-pos))))))
-
-       ;; If this is the first indexed workspace, place it after the base workspace
-       (t
-        (let ((base-pos (cl-position base-name updated-names :test #'equal)))
-          (when base-pos
-            (let ((target-pos (1+ base-pos))
-                  (current-pos new-pos))
-              (when (> current-pos target-pos)
-                (+workspace/swap-left (- current-pos target-pos))))))))
-
-      ;; Keep the focus on the new workspace
-      (+workspace-switch next-name))
-    (+workspace/display)))
-#+end_src
-
-Helper function to increment a string with a numeric suffix.
-
-#+begin_src elisp
-(defun do/workspace:--increment-name (text)
-  "Transform workspace names by adding or incrementing a numeric suffix.
-Examples: 'workspace' -> 'workspace:1', 'workspace:1' -> 'workspace:2'"
-  (interactive "sEnter workspace text: ")
-  (let ((result
-         (if (string-match "\\(.*\\):\\([0-9]+\\)$" text)
-             ;; If text ends with :number, increment the number
-             (let* ((base (match-string 1 text))
-                    (num (string-to-number (match-string 2 text))))
-               (format "%s:%d" base (1+ num)))
-           ;; If no number exists, add :1
-           (format "%s:1" text))))
-    (when (called-interactively-p 'interactive)
-      (message "%s" result))
-    result))
-#+end_src
-
-** project switching
-
-When switching to a project, abbreviate the workspace name.
-
-#+begin_src elisp
-(defun +name-workspace-open-project-dired (project)
-  "Switch to a project and open dired, while setting a custom workspace name."
-  (interactive)
-  (let* ((proj-root (doom-project-root project))
-         (raw-name (file-name-nondirectory (directory-file-name proj-root)))
-         (proj-name (string-trim raw-name "^[[:punct:]]+" "[[:punct:]]+$"))
-         (new-name (cond ((string-match-p "-" proj-name)
-                          (car (split-string proj-name "-")))
-                         ((string-match-p " " proj-name)
-                          (downcase (mapconcat (lambda (s) (substring s 0 1))
-                                               (split-string proj-name " ")
-                                               "")))
-                         (t proj-name))))
-    (dired proj-root)
-    (+workspace/rename new-name)))
-
-(setq +workspaces-switch-project-function #'+name-workspace-open-project-dired)
-#+end_src
-
-#+end_src
-
-** =+workspace/kill= behavior
-
-When killing a workspace, consistently move to the one on the immediate left.
-
-#+begin_src elisp
-(after! persp-mode
-  (defadvice! +workspace/kill-and-shift-left (orig-fn &rest args)
-    "Move to the workspace on the left after deleting the current one."
-    :around #'+workspace/kill
-    (let ((name (+workspace-current-name)))
-      (+workspace/switch-left 1)
-      (funcall orig-fn name))))
-#+end_src
-
 * yankee
 
 Set keybindings for visual mode.
@@ -4164,19 +3351,4 @@ Add some yankee motions for evil mode.
   (mapconcat 'do/yas:to-field-assignment
              (split-string str ",")
              (do/yas:indented-newline)))
-#+end_src
-
-* hacks
-
-Workaround for an upstream bug. Linux emacs build with harfbuzz doesn't need ligature.el, so a
-=(void-function global-ligature-mode)= error ensues.
-#+begin_src elisp
-(if (string= (getenv "MACHINE") "linux")
-    (remove-hook 'doom-init-ui-hook #'global-ligature-mode))
-#+end_src
-
-* local overrides
-#+begin_src elisp
-(load-file (format "%s/config/emacs/config.el" (getenv "XDG_SECURE_DIR")))
-(load-file (format "%s/config/emacs/config.el" (getenv "XDG_LOCALS_DIR")))
 #+end_src
