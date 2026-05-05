@@ -980,17 +980,34 @@ process buffers below the selected window."
 (use-package treesit-auto
   ;; Auto-installs tree-sitter grammars and remaps major modes to *-ts-mode.
   :custom
-  (treesit-auto-install 'prompt)
+  (treesit-auto-install t)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode 1))
+  (global-treesit-auto-mode 1)
+  (setq treesit-language-source-alist
+	'((bash "https://github.com/tree-sitter/tree-sitter-bash")
+	  (cmake "https://github.com/uyha/tree-sitter-cmake")
+	  (css "https://github.com/tree-sitter/tree-sitter-css")
+	  (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+	  (go "https://github.com/tree-sitter/tree-sitter-go")
+	  (html "https://github.com/tree-sitter/tree-sitter-html")
+	  (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+	  (json "https://github.com/tree-sitter/tree-sitter-json")
+	  (make "https://github.com/alemuller/tree-sitter-make")
+	  (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+	  (python "https://github.com/tree-sitter/tree-sitter-python")
+	  (toml "https://github.com/tree-sitter/tree-sitter-toml")
+	  (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+	  (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
 
-(use-package hideshow
-  ;; Evil's z* folds need one of its supported backends.  Elisp does not always
-  ;; get `treesit-fold-mode', so keep a sexp-based fallback active there.
-  :straight nil
-  :hook ((emacs-lisp-mode . hs-minor-mode)
-         (lisp-interaction-mode . hs-minor-mode)))
+(defun dm/treesit-install-all-languages ()
+  "Install all Tree-sitter grammars defined in `treesit-language-source-alist'."
+  (interactive)
+  (dolist (lang treesit-language-source-alist)
+    (let ((lang-symbol (car lang)))
+      (unless (treesit-language-available-p lang-symbol)
+        (treesit-install-language-grammar lang-symbol)))))
 
 (use-package treesit-fold
   ;; Structural folding for tree-sitter modes; integrates with Evil's z* folds
@@ -1001,6 +1018,17 @@ process buffers below the selected window."
   :after treesit-auto
   :config
   (global-treesit-fold-mode 1))
+
+;;; ————————————————————————————
+;;; Hideshow - fallback folding
+;;; ————————————————————————————
+
+(use-package hideshow
+  ;; Evil's z* folds need one of its supported backends.  Elisp does not always
+  ;; get `treesit-fold-mode', so keep a sexp-based fallback active there.
+  :straight nil
+  :hook ((emacs-lisp-mode . hs-minor-mode)
+         (lisp-interaction-mode . hs-minor-mode)))
 
 ;;; ————————————————————————————
 ;;; GC reset
