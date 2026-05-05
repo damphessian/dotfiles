@@ -491,19 +491,22 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
 (use-package mini-frame
   :config
-  (mini-frame-mode 1)
-  (set-face-attribute 'child-frame-border nil
-		      :background (face-attribute 'mode-line :foreground))
-  :custom
-  (mini-frame-show-parameters
-   (lambda ()
-     `((top    . 0.3)
-       (width  . 0.4)
-       (left   . 0.5)
-       (child-frame-border-width . 1)
-       (left-fringe . 25)
-       (right-fringe . 25)
-       (background-color . ,(face-attribute 'default :background))))))
+  (defun dm/mini-frame-clamped-dimensions ()
+    (let* ((parent (selected-frame))
+	   (frame-cols (frame-parameter parent 'width)) ; in columns
+	   (desired (* 0.7 frame-cols))
+	   (max-cols 120)
+	   (width (min desired max-cols)))
+      `((top . 0.3)
+	(left . 0.5)
+	(width . ,(truncate width))
+	(child-frame-border-width . 1)
+	(left-fringe . 25)
+	(right-fringe . 25)
+	(background-color . ,(face-attribute 'default :background)))))
+  (setq mini-frame-show-parameters #'dm/mini-frame-clamped-dimensions)
+  (set-face-attribute 'child-frame-border nil :background (face-attribute 'mode-line :foreground))
+  (mini-frame-mode 1))
 
 (use-package orderless
   ;; Matching style: space-separated components match in any order.
