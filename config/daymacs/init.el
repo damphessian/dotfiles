@@ -261,10 +261,10 @@ Close tab if sole window in tab, close frame if multiple frames exist,
 otherwise kill Emacs."
   (interactive)
   (let ((top-level-frames
-	 (cl-remove-if
-	  (lambda (f) (eq (frame-parameter f 'minibuffer)
-			  'only))
-	  (frame-list))))
+         (cl-remove-if
+          (lambda (f) (eq (frame-parameter f 'minibuffer)
+                          'only))
+          (frame-list))))
     (cond
      ((not (one-window-p))             (delete-window))
      ((> (length (tab-bar-tabs)) 1)    (tab-close))
@@ -475,10 +475,10 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "j j" '(avy-goto-char-2     :which-key "2-char")
 
     ;; Git
-    "g"   '(:ignore t			:which-key "git")
-    "g g" '(magit-status		:which-key "magit status")
-    "g b" '(magit-blame			:which-key "magit blame")
-    "g t" '(git-timemachine		:which-key "time machine")
+    "g"   '(:ignore t                   :which-key "git")
+    "g g" '(magit-status                :which-key "magit status")
+    "g b" '(magit-blame                 :which-key "magit blame")
+    "g t" '(git-timemachine             :which-key "time machine")
     "g n" '(diff-hl-show-hunk-next      :which-key "next hunk")
     "g p" '(diff-hl-show-hunk-previous  :which-key "prev hunk")
 
@@ -585,17 +585,17 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   :config
   (defun dm-mini-frame-clamped-dimensions ()
     (let* ((parent (selected-frame))
-	   (frame-cols (frame-parameter parent 'width)) ; in columns
-	   (desired (* 0.7 frame-cols))
-	   (max-cols 120)
-	   (width (min desired max-cols)))
+           (frame-cols (frame-parameter parent 'width)) ; in columns
+           (desired (* 0.7 frame-cols))
+           (max-cols 120)
+           (width (min desired max-cols)))
       `((top . 0.3)
-	(left . 0.5)
-	(width . ,(truncate width))
-	(child-frame-border-width . 1)
-	(left-fringe . 25)
-	(right-fringe . 25)
-	(background-color . ,(face-attribute 'default :background)))))
+        (left . 0.5)
+        (width . ,(truncate width))
+        (child-frame-border-width . 1)
+        (left-fringe . 25)
+        (right-fringe . 25)
+        (background-color . ,(face-attribute 'default :background)))))
   (setq mini-frame-show-parameters #'dm-mini-frame-clamped-dimensions)
   (set-face-attribute 'child-frame-border nil :background (face-attribute 'mode-line :foreground))
   (mini-frame-mode 1))
@@ -949,7 +949,7 @@ process buffers below the selected window."
   :straight (:type git :host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
   ;; :hook (prog-mode . copilot-mode) ; disabled by default
   :bind (:map copilot-completion-map
-	      ;; Fish-style bindings avoid stealing TAB from Corfu and indentation.
+              ;; Fish-style bindings avoid stealing TAB from Corfu and indentation.
               ("<return>"   . copilot-accept-completion)
               ("C-f"        . copilot-accept-completion)
               ("M-<right>"  . copilot-accept-completion-by-word)
@@ -1150,21 +1150,21 @@ process buffers below the selected window."
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode 1)
   (setq treesit-language-source-alist
-	'((bash "https://github.com/tree-sitter/tree-sitter-bash")
-	  (cmake "https://github.com/uyha/tree-sitter-cmake")
-	  (css "https://github.com/tree-sitter/tree-sitter-css")
-	  (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-	  (go "https://github.com/tree-sitter/tree-sitter-go")
-	  (html "https://github.com/tree-sitter/tree-sitter-html")
-	  (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-	  (json "https://github.com/tree-sitter/tree-sitter-json")
-	  (make "https://github.com/alemuller/tree-sitter-make")
-	  (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-	  (python "https://github.com/tree-sitter/tree-sitter-python")
-	  (toml "https://github.com/tree-sitter/tree-sitter-toml")
-	  (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-	  (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
+        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (cmake "https://github.com/uyha/tree-sitter-cmake")
+          (css "https://github.com/tree-sitter/tree-sitter-css")
+          (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+          (go "https://github.com/tree-sitter/tree-sitter-go")
+          (html "https://github.com/tree-sitter/tree-sitter-html")
+          (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+          (json "https://github.com/tree-sitter/tree-sitter-json")
+          (make "https://github.com/alemuller/tree-sitter-make")
+          (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+          (python "https://github.com/tree-sitter/tree-sitter-python")
+          (toml "https://github.com/tree-sitter/tree-sitter-toml")
+          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
 
 (defun dm-treesit-install-all-languages ()
   "Install all Tree-sitter grammars defined in `treesit-language-source-alist'."
