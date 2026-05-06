@@ -1,4 +1,4 @@
-;;; dm-evil-text --- Summary: Daymacs Evil text objects and sorting
+;;; dm-evil-text --- Summary: Daymacs Evil text objects and sorting  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

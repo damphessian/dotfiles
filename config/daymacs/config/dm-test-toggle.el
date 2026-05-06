@@ -1,4 +1,4 @@
-;;; dm-test-toggle --- Summary: Daymacs test toggle helpers
+;;; dm-test-toggle --- Summary: Daymacs test toggle helpers  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

@@ -1,4 +1,4 @@
-;;; dm-text --- Summary: Daymacs text editing helpers
+;;; dm-text --- Summary: Daymacs text editing helpers  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
