@@ -79,6 +79,14 @@
       (dm-wrapping-disable)
     (dm-wrapping-enable)))
 
+(with-eval-after-load 'evil
+  (evil-define-operator evil-unfill (beg end type)
+    "Unfill text in motion/selection."
+    :move-point nil
+    (let ((fill-column most-positive-fixnum))
+      (fill-region beg end)))
+  (define-key evil-normal-state-map "gQ" #'evil-unfill))
+
 ;;; ————————————————————————————
 ;;; Popup window dismissals
 ;;; ————————————————————————————
