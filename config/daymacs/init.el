@@ -144,6 +144,9 @@
 ;; Follow symlinks to version-controlled files without prompting.
 (setq vc-follow-symlinks t)
 
+;; Drop legacy and hipster VCS integrations you don't use.
+(setq-default vc-handled-backends '(Git))
+
 ;; Empty scratch buffer on launch (inhibit-startup-screen is in early-init.el).
 (setq initial-scratch-message nil)
 
