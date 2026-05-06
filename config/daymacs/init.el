@@ -165,6 +165,10 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
 (setq-default truncate-lines t)
+(setq-default fill-column 80)
+
+;; Display column number in the modeline
+(column-number-mode)
 
 ;; delete by moving to trash
 (setq delete-by-moving-to-trash t)
