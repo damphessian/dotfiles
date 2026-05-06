@@ -240,8 +240,9 @@
 (use-package evil-numbers
   :after evil
   :config
-  (evil-local-set-key 'normal (kbd "g-") #'evil-numbers/dec-at-pt)
-  (evil-local-set-key 'normal (kbd "g=") #'evil-numbers/inc-at-pt))
+  (evil-define-key 'normal 'global
+    (kbd "g-") #'evil-numbers/dec-at-pt
+    (kbd "g=") #'evil-numbers/inc-at-pt))
 
 (use-package evil-surround
   :after evil
@@ -655,8 +656,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
      (project-root (project-current t))
      symbol)))
 
-(evil-define-key 'normal 'global
-  (kbd "SPC *") #'dm-search-project-for-symbol-at-point)
+(with-eval-after-load 'evil
+  (evil-define-key 'normal 'global
+    (kbd "SPC *") #'dm-search-project-for-symbol-at-point))
 
 (use-package marginalia
   ;; Adds annotations to completion candidates: file sizes, docstrings,
