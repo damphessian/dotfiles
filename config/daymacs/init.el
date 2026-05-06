@@ -242,6 +242,13 @@
   :config
   (global-evil-surround-mode 1))
 
+(use-package evil-embrace
+  :after evil-surround
+  :config
+  (with-eval-after-load 'org
+    (add-hook 'org-mode-hook 'embrace-org-mode-hook))
+  (evil-embrace-enable-evil-surround-integration))
+
 (use-package evil-iedit-state
   :after evil)
 
@@ -260,6 +267,11 @@
   (evil-snipe-override-mode 1)
   (add-to-list 'evil-snipe-disabled-modes 'magit-mode)
   (add-to-list 'evil-snipe-disabled-modes 'Info-mode))
+
+(use-package evil-visualstar
+  :after evil
+  :config
+  (global-evil-visualstar-mode))
 
 (defun dm-delete-window-dwim ()
   "Delete window, do what I mean.
