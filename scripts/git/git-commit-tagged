@@ -23,7 +23,7 @@ usage() {
 branch="$(git rev-parse --abbrev-ref HEAD)"
 if [[ "$branch" =~ ^[a-zA-Z]+-[0-9]+- ]]; then
   tag="$(echo $branch | sed -E 's/(^[a-zA-Z]+-[0-9]+)-.+/\1/')"
-  tag="${tag^^}"
+  tag="[${tag^^}]"
   message="$*"
 fi
 
@@ -34,13 +34,12 @@ if [[ -z "${tag}" ]] && [[ $# -eq 0 ]]; then
 fi
 
 if [[ -z "${tag}" ]]; then
-  tag="${1,,}"
+  tag="${1,,}:"
   message="${2^} ${@:3}"
 fi
 
-if [[ -z "${message}" ]]; then
-  git commit-quick "[${tag}] "
-  git commit-amend
+if [[ "${message}" =~ ^[[:space:]]*$ ]]; then
+  git commit -e -m "${tag} "
 else
-  git commit-quick "[${tag}] ${message^}"
+  git commit-quick "${tag} ${message^}"
 fi
