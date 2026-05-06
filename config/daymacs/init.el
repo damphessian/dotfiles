@@ -155,6 +155,9 @@
 (setq-default tab-width 8)
 (setq-default truncate-lines t)
 
+;; delete by moving to trash
+(setq delete-by-moving-to-trash t)
+
 (defconst dm-git-commit-filename-regexp
   "/\\(?:\\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(?:BRANCH\\|EDIT\\)_DESCRIPTION\\)\\'"
   "Regexp matching Git message files that `git-commit' edits.")
