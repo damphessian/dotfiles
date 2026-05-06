@@ -264,6 +264,13 @@
   (avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   (avy-style 'at-full))
 
+(use-package evil-lion
+  :after evil
+  :config
+  (setq evil-lion-left-align-key (kbd "g l"))
+  (setq evil-lion-right-align-key (kbd "g L"))
+  (evil-lion-mode 1))
+
 (use-package evil-snipe
   ;; Extends s/S to 2-char sneak motions (like vim-sneak/leap).
   ;; Disabled in modes where evil-collection claims s/S.
