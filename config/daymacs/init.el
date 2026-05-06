@@ -260,6 +260,8 @@
 
 (use-package avy
   :after evil
+  :hook
+  (org-mode . avy-setup-default)
   :custom
   (avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   (avy-style 'at-full))
