@@ -237,6 +237,12 @@
   :config
   (evil-commentary-mode))
 
+(use-package evil-numbers
+  :after evil
+  :config
+  (evil-local-set-key 'normal (kbd "g-") #'evil-numbers/dec-at-pt)
+  (evil-local-set-key 'normal (kbd "g=") #'evil-numbers/inc-at-pt))
+
 (use-package evil-surround
   :after evil
   :config
