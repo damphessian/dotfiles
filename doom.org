@@ -632,57 +632,6 @@ Prompts for an optional commit message suffix."
      (buffer-list)))))
 #+end_src
 
-* aider
-#+begin_src elisp :tangle no
-(use-package aider
-  :config
-  (setq aider-args
-        '(
-          "--model"  "gpt-4o"
-          "--weak-model" "o3-mini"
-          "--no-auto-commits"
-          "--no-attribute-author"
-          "--no-attribute-committer"
-          "--no-attribute-commit-message-author"
-          "--no-attribute-commit-message-committer"
-          )))
-#+end_src
-
-* completion
-
-** company
-
-https://github.com/company-mode/company-mode
-
-#+begin_src elisp
-(after! company
-  (setq +company-backend-alist
-        '((text-mode
-           (company-dabbrev :with company-yasnippet)
-           (:separate company-ispell))
-          (prog-mode
-           (company-capf    :with company-yasnippet)
-           company-files
-           (company-dabbrev-code :separate)
-           company-keywords
-           company-dabbrev)
-          (conf-mode
-           company-capf
-           company-dabbrev-code
-           company-yasnippet))))
-#+end_src
-
-*** keybindings
-
-#+begin_src elisp
-(after! company
-  (map! :map company-active-map
-        :desc "filter"         "C-f" #'company-filter-candidates
-        :desc "helpdoc"        "C-h" #'company-show-doc-buffer
-        :desc "implementation" "C-i" #'company-show-location
-        :desc "search"         "C-s" #'company-search-candidates))
-#+end_src
-
 * evil
 
 ** hybrid evil/emacs keybindings
@@ -2534,14 +2483,6 @@ See `org-capture-templates' for more information."
             (when (org-element-property :EXPORT_DATE hl)
               (goto-char (org-element-property :begin hl))
               (org-hugo-export-wim-to-md t))))))))
-#+end_src
-
-** avy
-
-#+begin_src elisp
-(use-package! avy
-  :after org
-  :hook (org-mode . avy-setup-default))
 #+end_src
 
 * projectile
