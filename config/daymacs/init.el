@@ -80,6 +80,17 @@
     (dm-wrapping-enable)))
 
 ;;; ————————————————————————————
+;;; Popup window dismissals
+;;; ————————————————————————————
+(require 'dm-popup-quit)
+
+(setq dm-quit-or-close-popup-buffer-names
+      '("*compilation*" "*Messages*" "*Warnings*" "*Help*"))
+
+(setq dm-quit-or-close-popup-buffer-prefixes
+      '("*Flycheck" "*Embark Collect" "*xref"))
+
+;;; ————————————————————————————
 ;;; Test/Implementation Toggle
 ;;; ————————————————————————————
 (require 'dm-test-toggle)
@@ -577,6 +588,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
    "s-'"   #'eat
    "C-,"   #'embark-act
    "C-;"   #'embark-dwim
+   "C-g"     #'dm-quit-or-close-popup
    "C-c C-'" #'claude-code-ide-menu))
 
 ;;; ————————————————————————————
