@@ -42,8 +42,7 @@ in `dm-quit-or-close-popup-buffer-names' or starts with one of
   (let ((win
          (seq-find
           (lambda (w)
-            (and (not (eq w (selected-window)))
-                 (dm-quit-or-close-popup--popup-buffer-p
+            (and (dm-quit-or-close-popup--popup-buffer-p
                   (window-buffer w))))
           (window-list nil 'no-minibuf (selected-window)))))
     (if win
