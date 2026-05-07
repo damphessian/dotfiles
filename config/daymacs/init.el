@@ -614,6 +614,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "l"   '(:ignore t                             :which-key "lsp")
     "l r" '(eglot-rename                          :which-key "rename")
     "l a" '(eglot-code-actions                    :which-key "actions")
+    "l e" '(consult-flymake                       :which-key "errors")
     "l d" '(flymake-show-project-diagnostics      :which-key "diagnostics")
 
     ;; Windows
