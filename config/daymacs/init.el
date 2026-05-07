@@ -125,10 +125,17 @@ visual wrapping more closely matches the intended `fill-column'."
 (require 'dm-popup-quit)
 
 (setq dm-quit-or-close-popup-buffer-names
-      '("*compilation*" "*Messages*" "*Warnings*" "*Help*" "*eldoc*"))
+      '("*Backtrace*"
+        "*Help*"
+        "*Messages*"
+        "*Warnings*"
+        "*compilation*"
+        "*eldoc*"))
 
 (setq dm-quit-or-close-popup-buffer-prefixes
-      '("*Flycheck" "*Embark Collect" "*xref"))
+      '("*Embark Collect"
+        "*Flycheck"
+        "*xref"))
 
 ;;; ————————————————————————————
 ;;; Test/Implementation Toggle
