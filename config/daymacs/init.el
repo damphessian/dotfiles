@@ -555,6 +555,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     ;; Search
     "s"   '(:ignore t                        :which-key "search")
     "s e" '(evil-iedit-state/iedit-mode      :which-key "iedit")
+    "s i" '(consult-imenu-multi              :which-key "imenu")
     "s p" '(consult-ripgrep                  :which-key "ripgrep")
     "s s" '(consult-line                     :which-key "line in buffer")
 
@@ -591,6 +592,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
     ;; Project (project.el — built-in)
     "p"   '(:ignore t                  :which-key "project")
+    "p d" '(project-dired              :which-key "dired")
     "p p" '(project-switch-project     :which-key "switch project")
     "p f" '(project-find-file          :which-key "find file")
     "p b" '(project-switch-to-buffer   :which-key "project buffer")
