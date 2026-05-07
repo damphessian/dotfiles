@@ -981,8 +981,23 @@ process buffers below the selected window."
   (magit-display-buffer-function #'dm-magit-display-buffer-fn)
   (magit-commit-show-diff nil)
   :config
-  (add-hook 'git-commit-mode-hook #'dm-git-commit-disable-completion 90)
+  ;; Remove sections to speed up load
+  (remove-hook 'magit-status-sections-hook #'magit-insert-status-headers)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-am-sequence)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-bisect-log)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-bisect-output)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-bisect-rest)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-merge-log)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-rebase-sequence)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-sequencer-sequence)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-stashes)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-unpulled-from-pushremote)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-unpulled-from-upstream)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-unpushed-to-pushremote)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-unpushed-to-upstream-or-recent)
+  (remove-hook 'magit-status-sections-hook #'magit-insert-untracked-files)
   (with-eval-after-load 'git-commit
+    (add-hook 'git-commit-mode-hook #'dm-git-commit-disable-completion 90)
     (add-hook 'git-commit-setup-hook #'dm-git-commit-insert-pending-generated-message))
   (with-eval-after-load 'magit-commit
     (oset (get 'magit-commit 'transient--prefix) value nil)
