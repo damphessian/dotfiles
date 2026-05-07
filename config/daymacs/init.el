@@ -314,6 +314,12 @@ visual wrapping more closely matches the intended `fill-column'."
   :config
   (with-eval-after-load 'org
     (add-hook 'org-mode-hook 'embrace-org-mode-hook))
+  ;; Route single-char fence delimiters through evil-surround so `cs-_'
+  ;; etc. resolve via the text objects in `dm-evil-text-setup'. Anything
+  ;; outside this list goes to embrace, which requires `embrace-add-pair'.
+  (setq-default evil-embrace-evil-surround-keys
+                (append (default-value 'evil-embrace-evil-surround-keys)
+                        '(?- ?_ ?| ?/ ?$)))
   (evil-embrace-enable-evil-surround-integration))
 
 (use-package evil-iedit-state
