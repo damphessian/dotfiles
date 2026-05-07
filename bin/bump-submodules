@@ -14,7 +14,7 @@ git submodule | awk '{ print $2 }' | xargs git add -f
 
 echo "Syncing dotfiles..."
 
-git commit -m "[submodule] Sync ${DATE}"
+git commit -m "submodules: Sync ${DATE}"
 git push origin
 
 echo "Done."
