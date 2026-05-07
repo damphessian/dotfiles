@@ -1162,6 +1162,29 @@ process buffers below the selected window."
   (eglot-autoshutdown t))
 
 ;;; ————————————————————————————
+;;; Helpful — richer help buffers
+;;; ————————————————————————————
+
+(use-package helpful
+  :commands (helpful-at-point
+             helpful-callable
+             helpful-command
+             helpful-function
+             helpful-key
+             helpful-symbol
+             helpful-variable)
+  :init
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal emacs-lisp-mode-map
+      (kbd "K") #'helpful-at-point)
+    (evil-define-key 'normal lisp-interaction-mode-map
+      (kbd "K") #'helpful-at-point))
+  :config
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal helpful-mode-map
+      (kbd "K") #'helpful-at-point)))
+
+;;; ————————————————————————————
 ;;; Apheleia — async code formatting
 ;;; ————————————————————————————
 
