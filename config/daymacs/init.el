@@ -1156,10 +1156,32 @@ process buffers below the selected window."
 
 (use-package eglot
   :straight nil
-  ;; Add per-language hooks as needed, e.g.:
-  ;;   (add-hook 'python-ts-mode-hook #'eglot-ensure)
+  :hook ((python-mode        . eglot-ensure)
+         (python-ts-mode     . eglot-ensure)
+         (js-mode            . eglot-ensure)
+         (js-ts-mode         . eglot-ensure)
+         (jsx-ts-mode        . eglot-ensure)
+         (typescript-mode    . eglot-ensure)
+         (typescript-ts-mode . eglot-ensure)
+         (tsx-ts-mode        . eglot-ensure)
+         (go-mode            . eglot-ensure)
+         (go-ts-mode         . eglot-ensure)
+         (rust-mode          . eglot-ensure)
+         (rust-ts-mode       . eglot-ensure)
+         (elixir-mode        . eglot-ensure)
+         (elixir-ts-mode     . eglot-ensure)
+         (heex-ts-mode       . eglot-ensure)
+         (sh-mode            . eglot-ensure)
+         (bash-ts-mode       . eglot-ensure))
   :custom
-  (eglot-autoshutdown t))
+  (eglot-autoshutdown t)
+  :config
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode)
+                 . ("basedpyright-langserver" "--stdio")))
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal eglot-mode-map
+      (kbd "K") #'eldoc-doc-buffer)))
 
 ;;; ————————————————————————————
 ;;; Helpful — richer help buffers
