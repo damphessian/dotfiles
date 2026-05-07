@@ -5,6 +5,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'dm-lisp)
 (require 'evil)
 
 (defmacro dm-evil-text--define-and-bind-text-object (name key start-regex end-regex)
@@ -65,6 +66,7 @@ With prefix argument DESC, sort in descending order."
 
 (defun dm-evil-text-setup ()
   "Install Daymacs Evil text objects and sort bindings."
+  ;; text objects
   (dm-evil-text--define-and-bind-text-object "bracket" "[" "\\[" "\\]")
   (dm-evil-text--define-and-bind-text-object "dash" "-" "-" "-")
   (dm-evil-text--define-and-bind-text-object "dollar" "$" "\\$" "\\$")
@@ -75,6 +77,8 @@ With prefix argument DESC, sort in descending order."
     "Select inner buffer."
     :type line
     (evil-select-inner-object 'buffer beg end type count t))
+
+  ;; sort motions
   (evil-define-key* 'normal 'global
     (kbd "g s i p") #'dm-evil-text-sort-inner-paragraph
     (kbd "g s i g") #'dm-evil-text-sort-inner-buffer
@@ -83,7 +87,14 @@ With prefix argument DESC, sort in descending order."
     (kbd "g s i [") #'dm-evil-text-sort-inner-bracket
     (kbd "g s i ]") #'dm-evil-text-sort-inner-bracket
     (kbd "g s i (") #'dm-evil-text-sort-inner-paren
-    (kbd "g s i )") #'dm-evil-text-sort-inner-paren))
+    (kbd "g s i )") #'dm-evil-text-sort-inner-paren)
+
+  ;; emacs lisp
+  (evil-define-key 'normal emacs-lisp-mode-map
+    (kbd "g e") #'dm-evil-eval-sexp-dwim)
+  (evil-define-key 'visual emacs-lisp-mode-map
+    (kbd "g e") #'dm-evil-eval-sexp-dwim)
+  nil)
 
 (provide 'dm-evil-text)
 ;;; dm-evil-text.el ends here
