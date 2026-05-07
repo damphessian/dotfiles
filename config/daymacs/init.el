@@ -716,9 +716,11 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   ;; e.g. "foo bar" finds "bar-foo" and "foobar-baz".
   ;; The override for 'file keeps basic prefix matching for path completion,
   ;; where orderless can otherwise interfere with / separators.
+  :ensure t
   :custom
   (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
+  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
 
 (use-package consult
   ;; Rich completion commands: consult-ripgrep, consult-find, consult-buffer,
