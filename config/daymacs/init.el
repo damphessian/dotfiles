@@ -675,7 +675,14 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 (use-package consult
   ;; Rich completion commands: consult-ripgrep, consult-find, consult-buffer,
   ;; consult-line, consult-recent-file, etc. Integrates with vertico.
-  :config)
+  :config
+  ;; Avoid jumping through target buffers while scrolling search candidates.
+  ;; Press M-. on a candidate to preview it explicitly.
+  (consult-customize
+   consult-ripgrep
+   consult-grep
+   consult-git-grep
+   :preview-key "M-."))
 
 (defun dm-search-project-for-symbol-at-point ()
   "Search the current project for the symbol at point."
