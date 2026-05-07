@@ -622,6 +622,8 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
 (use-package vertico
   ;; Replaces the default horizontal completion with a clean vertical list.
+  :custom
+  (vertico-cycle t)
   :config
   (vertico-mode 1))
 
