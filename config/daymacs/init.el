@@ -52,6 +52,31 @@
   "Disable line numbers in the current buffer."
   (display-line-numbers-mode -1))
 
+(defcustom dm-visual-fill-column-extra-width 5
+  "Extra visual columns used when enabling visual wrapping.
+
+`visual-fill-column-width' is specified in columns, but Emacs
+ultimately wraps displayed text according to rendered pixel width.
+Depending on font metrics, scaling, ligatures, and word-boundary
+wrapping, an 80-column visual fill area may wrap slightly before
+80 logical buffer columns.  This value adds a small cushion so
+visual wrapping more closely matches the intended `fill-column'."
+  :type 'integer)
+
+(defun dm-wrapping-enable ()
+  "Enable visual wrapping in the current buffer."
+  (interactive)
+  (setq-local visual-fill-column-width
+              (+ fill-column dm-visual-fill-column-extra-width))
+  (setq-local visual-fill-column-center-text nil)
+  (setq-local word-wrap t)
+  (setq-local truncate-lines nil)
+  (visual-line-mode 1)
+  (when (fboundp 'visual-fill-column-mode)
+    (visual-fill-column-mode 1)
+    (visual-fill-column-adjust))
+  (recenter))
+
 (defun dm-wrapping-disable ()
   "Disable visual wrapping in the current buffer."
   (interactive)
@@ -60,16 +85,6 @@
     (visual-fill-column-mode -1))
   (setq-local word-wrap nil)
   (setq-local truncate-lines t)
-  (recenter))
-
-(defun dm-wrapping-enable ()
-  "Enable visual wrapping in the current buffer."
-  (interactive)
-  (visual-line-mode 1)
-  (when (fboundp 'visual-fill-column-mode)
-    (visual-fill-column-mode 1))
-  (setq-local word-wrap t)
-  (setq-local truncate-lines nil)
   (recenter))
 
 (defun dm-wrapping-toggle ()
