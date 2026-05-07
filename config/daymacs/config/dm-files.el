@@ -216,6 +216,25 @@ If the buffer has no file, report that instead."
             (revert-buffer)
             (message "Deleted %S" short-path)))))))
 
+(defcustom dm-project-discovery-depth 5
+  "Maximum directory depth for `dm-project-discover-projects'."
+  :type 'integer)
+
+;;;###autoload
+(defun dm-project-discover-projects (&optional directory)
+  "Discover Git projects under DIRECTORY using fd and remember them with project.el.
+DIRECTORY defaults to the user's home directory."
+  (interactive
+   (list (read-directory-name "Starting directory: " "~/" nil t)))
+  (let* ((directory (file-name-as-directory
+                     (expand-file-name (or directory "~/"))))
+         (cmd (format "fd -H -t d -d %d '^\\.git$' %s"
+                      dm-project-discovery-depth
+                      (shell-quote-argument directory))))
+    (dolist (git-dir (split-string (shell-command-to-string cmd) "\n" t))
+      (let ((dir (file-name-directory (directory-file-name git-dir))))
+        (when-let* ((project (project-current nil dir)))
+          (project-remember-project project))))))
 
 (provide 'dm-files)
 ;;; dm-files.el ends here
