@@ -102,6 +102,22 @@ visual wrapping more closely matches the intended `fill-column'."
       (fill-region beg end)))
   (define-key evil-normal-state-map "gQ" #'evil-unfill))
 
+(defun dm-find-in-home ()
+  "Two-stage `fd' selection for directory and file within $HOME."
+  (interactive)
+  (let* ((home (expand-file-name "~"))
+         (default-directory home)
+         (find-dir  "fd . --max-depth 10 --type directory --hidden")
+         (find-file "fd . --max-depth 3 --type file --type symlink --hidden")
+         (dirs (split-string (shell-command-to-string find-dir) "\n" t))
+         (choice-dir (completing-read "Directory: " dirs nil t)))
+    (when (and choice-dir (not (string-empty-p choice-dir)))
+      (let* ((default-directory (expand-file-name (format "~/%s" choice-dir)))
+             (files (split-string (shell-command-to-string find-file) "\n" t))
+             (choice-file (completing-read "File: " files nil t)))
+        (when (and choice-file (not (string-empty-p choice-file)))
+          (find-file choice-file))))))
+
 ;;; ————————————————————————————
 ;;; Popup window dismissals
 ;;; ————————————————————————————
@@ -532,6 +548,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     ;; Files
     "f"   '(:ignore t                           :which-key "file")
     "f f" '(consult-fd                          :which-key "find file")
+    "f h" '(dm-find-in-home                     :which-key "find in ~")
     "f p" '(dm-open-daymacs-init-in-new-tab     :which-key "emacs init")
     "f r" '(consult-recent-file                 :which-key "recent files")
 
