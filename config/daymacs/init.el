@@ -682,20 +682,19 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   ;; M-U -> `vertico-multiform-unobtrusive'
   ;; M-V -> `vertico-multiform-vertical'
   (vertico-multiform-commands
-   '((consult-find buffer)
-     (consult-git-grep buffer)
-     (consult-grep buffer)
-     (consult-imenu buffer)
-     (consult-imenu-multi buffer)
+   '((consult-find buffer reverse)
+     (consult-git-grep buffer reverse)
+     (consult-grep buffer reverse)
+     (consult-imenu buffer reverse)
+     (consult-imenu-multi buffer reverse)
      (consult-line unobtrusive)
-     (consult-outline buffer)
-     (consult-org-heading buffer)
-     (consult-ripgrep buffer)
+     (consult-outline buffer reverse)
+     (consult-org-heading buffer reverse)
+     (consult-ripgrep buffer reverse)
      (project-find-file grid))
    vertico-multiform-categories
    '((file grid)))
   :config
-  (vertico-reverse-mode)
   (vertico-mouse-mode 1)
   (vertico-multiform-mode 1))
 
