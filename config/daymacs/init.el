@@ -804,6 +804,14 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   (wgrep-auto-save-buffer t))
 
 ;;; ————————————————————————————
+;;; Persistent scratch buffer
+;;; ————————————————————————————
+
+(use-package persistent-scratch
+  :ensure t
+  :hook (emacs-startup . persistent-scratch-setup-default))
+
+;;; ————————————————————————————
 ;;; Tabspaces — per-tab buffer isolation
 ;;; ————————————————————————————
 
