@@ -545,6 +545,10 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "b f" '(apheleia-format-buffer      :which-key "format")
     "b d" '(kill-current-buffer         :which-key "kill buffer")
 
+    ;; Directory
+    "d"   '(:ignore t                  :which-key "directory")
+    "d o" '(dm-directory-open          :which-key "open here")
+    "d p" '(dm-directory-open-project  :which-key "open at project root")
 
     ;; Files
     "f"   '(:ignore t                           :which-key "file")
@@ -553,6 +557,11 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "f h" '(dm-find-in-home                     :which-key "find in ~")
     "f p" '(dm-open-daymacs-init-in-new-tab     :which-key "emacs init")
     "f r" '(consult-recent-file                 :which-key "recent files")
+    "f o" '(dm-file-open                        :which-key "open")
+    "f y" '(:ignore t                           :which-key "yank")
+    "f y p" '(dm-copy-file-path-dwim            :which-key "path")
+    "f y a" '(dm-copy-file-abspath              :which-key "/ path")
+    "f y h" '(dm-copy-file-path                 :which-key "~ path")
 
     ;; Search
     "s"   '(:ignore t                        :which-key "search")
