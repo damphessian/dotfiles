@@ -47,6 +47,7 @@
 ;;; ————————————————————————————
 
 (require 'dm-text)
+(require 'dm-files)
 
 (defun dm-disable-line-numbers-h ()
   "Disable line numbers in the current buffer."
@@ -547,6 +548,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 
     ;; Files
     "f"   '(:ignore t                           :which-key "file")
+    "f d" '(dm-delete-this-file                 :which-key "delete")
     "f f" '(consult-fd                          :which-key "find file")
     "f h" '(dm-find-in-home                     :which-key "find in ~")
     "f p" '(dm-open-daymacs-init-in-new-tab     :which-key "emacs init")
