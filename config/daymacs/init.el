@@ -169,7 +169,7 @@
 ;; Empty scratch buffer on launch (inhibit-startup-screen is in early-init.el).
 (setq initial-scratch-message nil)
 
-;; Use spaces for alignment, don't truncate lines by default
+;; Use spaces for alignment, truncate lines by default
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
 (setq-default truncate-lines t)
@@ -212,9 +212,7 @@
 ;;; Appearance
 ;;; ————————————————————————————
 
-(set-face-attribute 'default nil
-                    :family "Source Code Pro Ligaturized"
-                    :height 180)
+(set-face-attribute 'default nil :family "Source Code Pro" :height 180)
 
 (use-package doom-themes
   :config
