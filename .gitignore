@@ -86,6 +86,7 @@ state
 /config/configstore/update-notifier-npm.json
 /config/cups/
 /config/cursor/
+/config/daymacs/.persistent-scratch
 /config/daymacs/backups/
 /config/daymacs/bookmarks
 /config/daymacs/eln-cache/
