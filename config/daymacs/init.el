@@ -1175,10 +1175,38 @@ process buffers below the selected window."
          (bash-ts-mode       . eglot-ensure))
   :custom
   (eglot-autoshutdown t)
+  ;; Don't auto-reconnect on crash. The default (3s) creates an infinite
+  ;; restart loop when the cause is persistent (e.g. FD exhaustion).
+  (eglot-autoreconnect nil)
+  ;; Drop the 2 MB JSON-RPC log buffer kept per server; re-enable ad hoc
+  ;; when debugging an LSP interaction.
+  (eglot-events-buffer-config '(:size 0 :format full))
   :config
+  ;; Refuse server-requested file-notify watchers. Each consumes a kqueue
+  ;; FD on macOS; dependency-heavy projects exhaust the per-process limit.
+  ;; Tradeoff: out-of-Emacs file changes aren't picked up until re-open.
+  (cl-defmethod eglot-register-capability
+    (_server (_method (eql workspace/didChangeWatchedFiles))
+             _id &key _watchers &allow-other-keys)
+    nil)
+
   (add-to-list 'eglot-server-programs
                '((python-mode python-ts-mode)
                  . ("basedpyright-langserver" "--stdio")))
+
+  ;; Keep basedpyright out of venvs and build dirs and restrict diagnostics
+  ;; to open files, so the initial workspace scan stays cheap. Project-wide
+  ;; warnings (unused imports across files) only appear once each is opened.
+  ;; basedpyright's defaults already exclude **/node_modules, **/__pycache__,
+  ;; and **/.* — only non-dot paths need to be listed here.
+  (setq-default eglot-workspace-configuration
+                '(:python
+                  (:analysis
+                   (:diagnosticMode "openFilesOnly"
+                    :useLibraryCodeForTypes :json-false
+                    :exclude ["**/venv" "**/env"
+                              "**/dist" "**/build"]))))
+
   (with-eval-after-load 'evil
     (evil-define-key 'normal eglot-mode-map
       (kbd "K") #'eldoc-doc-buffer)))
