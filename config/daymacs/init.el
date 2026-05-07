@@ -173,6 +173,10 @@ visual wrapping more closely matches the intended `fill-column'."
 ;; Lock files (.#foo) are only useful for multi-user editing; skip them.
 (setq create-lockfiles nil)
 
+;; auto-revert files, avoid polling
+(setq auto-revert-avoid-polling t)
+(global-auto-revert-mode t)
+
 ;; Track recently visited files; used by consult-recent-file.
 (setq recentf-auto-cleanup "11:00pm")
 (let ((inhibit-message t)
