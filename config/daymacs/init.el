@@ -642,24 +642,28 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   :config
   (vertico-multiform-mode 1))
 
-(use-package mini-frame
-  :config
-  (defun dm-mini-frame-clamped-dimensions ()
-    (let* ((parent (selected-frame))
-           (frame-cols (frame-parameter parent 'width)) ; in columns
-           (desired (* 0.7 frame-cols))
-           (max-cols 120)
-           (width (min desired max-cols)))
-      `((top . 0.3)
-        (left . 0.5)
-        (width . ,(truncate width))
-        (child-frame-border-width . 1)
-        (left-fringe . 25)
-        (right-fringe . 25)
-        (background-color . ,(face-attribute 'default :background)))))
-  (setq mini-frame-show-parameters #'dm-mini-frame-clamped-dimensions)
-  (set-face-attribute 'child-frame-border nil :background (face-attribute 'mode-line :foreground))
-  (mini-frame-mode 1))
+;; Unstable:
+;; > Personally I am critical of using child frames for minibuffer completion. From my experience it introduces more problems than it solves. Most importantly child frames hide the content of the underlying buffer. Furthermore child frames do not play well together with changing windows and entering recursive minibuffer sessions. On top, child frames can feel slow and sometimes flicker.
+;; https://github.com/minad/vertico#child-frames-and-popups
+;;
+;; (use-package mini-frame
+;;   :config
+;;   (defun dm-mini-frame-clamped-dimensions ()
+;;     (let* ((parent (selected-frame))
+;;            (frame-cols (frame-parameter parent 'width)) ; in columns
+;;            (desired (* 0.9 frame-cols))
+;;            (max-cols 120)
+;;            (width (min desired max-cols)))
+;;       `((top . 0.15)
+;;         (left . 0.5)
+;;         (width . ,(truncate width))
+;;         (child-frame-border-width . 1)
+;;         (left-fringe . 25)
+;;         (right-fringe . 25)
+;;         (background-color . ,(face-attribute 'default :background)))))
+;;   (setq mini-frame-show-parameters #'dm-mini-frame-clamped-dimensions)
+;;   (set-face-attribute 'child-frame-border nil :background (face-attribute 'mode-line :foreground))
+;;   (mini-frame-mode 1))
 
 (use-package orderless
   ;; Matching style: space-separated components match in any order.
