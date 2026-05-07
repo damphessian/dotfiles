@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: attr_accessor ...
-# group: definitions
-# key: attr
-# --
-attr_${1:accessor} :$0

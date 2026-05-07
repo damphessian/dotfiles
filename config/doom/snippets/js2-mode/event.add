@@ -1,4 +1,0 @@
-# -*- mode: snippet -*-
-#name : addEvent
-# --
-window.addEvent('${1:event}', ${2:($3)} => $4)$0

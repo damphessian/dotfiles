@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-#name: before_hook do |model| ... end
-#group: fabrication
-# --
-before_${1:$$(yas-choose-value '("create" "save" "validation"))} do |${2:`(ruby-factory--yas-fabrication-model-name)`}|
-  $0
-end

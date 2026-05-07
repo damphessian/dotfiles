@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-#name: association :name
-#group: factory_girl
-# --
-association :${1:name}

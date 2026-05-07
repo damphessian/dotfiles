@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: SI Speed of light
-# key: si-c
-# --
-\SI{2.998e8}{\m\per\s}

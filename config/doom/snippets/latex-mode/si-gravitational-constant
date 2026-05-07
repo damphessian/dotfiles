@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: SI gravitational constant
-# key: si-g
-# --
-\SI{6.672e-11}{\N\m\squared\per\kg\squared}

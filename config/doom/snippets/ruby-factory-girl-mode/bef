@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-#name: before :create do |model| ... end
-#group: factory_girl
-# --
-before :create do |${1:`(ruby-factory--yas-factory-girl-model-name)`}|
-  $0
-end

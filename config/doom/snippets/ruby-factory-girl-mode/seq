@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-#name: sequence(:attribute) { |i| ... }
-#group: factory_girl
-# --
-sequence(:${1:attribute}) { |i| $0 }

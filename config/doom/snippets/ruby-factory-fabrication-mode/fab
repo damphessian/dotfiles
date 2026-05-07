@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-#name: Fabricator :model do ... end
-#group: fabrication
-# --
-Fabricator :${1:`(ruby-factory--yas-fabrication-model-name)`} do
-  $0
-end

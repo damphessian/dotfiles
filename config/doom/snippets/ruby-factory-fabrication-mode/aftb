@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-#name: after_build do |model| ... end
-#group: fabrication
-# --
-after_build do |${1:`(ruby-factory--yas-fabrication-model-name)`}|
-  $0
-end

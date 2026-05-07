@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: SI Stefan-Boltzmann constant
-# key: si-sbc
-# --
-\SI{5.67e-8}{\W\per\m\squared\per\K\tothe{4}}

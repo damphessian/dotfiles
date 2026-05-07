@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: frozen_string_literal comment
-# group: general
-# key: fsl
-# --
-# frozen_string_literal: true

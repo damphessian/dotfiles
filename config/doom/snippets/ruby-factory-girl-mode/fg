@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-#name: FactoryGirl.define do ... end
-#group: factory_girl
-# --
-FactoryGirl.define do
-  $0
-end

@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name : def initialize ... end
-# key : defi
-# --
-attr_accessor ${2:$(yas/to-ruby-accessors yas/text)}
-
-def initialize${1:(${2:args})}
-    ${2:$(yas/to-ruby-setters yas/text)}
-end

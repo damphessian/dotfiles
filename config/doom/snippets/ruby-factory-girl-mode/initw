@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-#name: initialize_with { ... }
-#group: factory_girl
-# --
-initialize_with { ${1:new($2)}$0 }

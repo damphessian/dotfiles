@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-#name: before_save do |model| ... end
-#group: fabrication
-# --
-before_save do |${1:`(ruby-factory--yas-fabrication-model-name)`}|
-  $0
-end

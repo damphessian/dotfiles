@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: pagebreak
-# key: pb
-# --
-\pagebreak%$0

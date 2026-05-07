@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: frac
-# key: frac
-# uuid: frac
-# condition: (texmathp)
-# --
-\frac{$1}{$2}$0

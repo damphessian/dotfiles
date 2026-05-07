@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-#name: trait do ... end
-#group: factory_girl
-# --
-trait :${1:name} do
-  $0
-end

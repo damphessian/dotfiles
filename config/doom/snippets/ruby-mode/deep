@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: deep_copy(...)
-# group: general
-# key: deep
-# --
-Marshal.load(Marshal.dump($0))

@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-#name: after :hook do |model| ... end
-#group: factory_girl
-# --
-after :${1:$$(yas-choose-value '("build" "create" "stub"))} do |${2:`(ruby-factory--yas-factory-girl-model-name)`}|
-  $0
-end

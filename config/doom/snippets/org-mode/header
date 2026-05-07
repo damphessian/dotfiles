@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name : header
-# key : head
-# --
-#+title: ${1:`(mapconcat 'capitalize (split-string (file-name-base (buffer-file-name (current-buffer))) "[^[:word:]]") " ")`}
-#+author: ${2:`(user-full-name)`}
-#+email: ${3:`(user-login-name)`}
-#+date: ${4:`(shell-command-to-string "echo -n $(date +%Y-%m-%d)")`}
-#+property:

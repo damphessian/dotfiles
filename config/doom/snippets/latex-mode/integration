@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: Integration
-# key: Int           
-# --
-\Int[$1]{$2}{$3}{$4}$0

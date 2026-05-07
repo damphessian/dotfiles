@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: Equal (aligned)
-# key: ==
-# --
-& = $0 \\\

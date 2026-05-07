@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: Reference (equation)
-# key: eqref
-# --
-\eqref{eq:${1}}$0
