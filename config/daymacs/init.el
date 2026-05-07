@@ -277,7 +277,13 @@ visual wrapping more closely matches the intended `fill-column'."
   :config
   (evil-mode 1)
   (require 'dm-evil-text)
-  (dm-evil-text-setup))
+  (dm-evil-text-setup)
+  ;; Let the main readline-style keys fall through to the global map in insert state.
+  ;; C-k is kept for `evil-insert-digraph' (`kill-line' in normal state)
+  ;; C-t for `evil-shift-right-line'
+  ;; C-y for `evil-copy-from-above'
+  (dolist (key '("C-a" "C-e" "C-b" "C-f" "C-n" "C-p" "C-d"))
+    (define-key evil-insert-state-map (kbd key) nil)))
 
 (use-package evil-collection
   ;; Provides sensible evil keybindings for magit, dired, help, ibuffer, etc.
