@@ -1318,9 +1318,16 @@ process buffers below the selected window."
 ;;; Tempel — templates/snippets via completion-at-point
 ;;; ————————————————————————————
 
+(defun dm-tab-dwim ()
+  "Smart TAB: advance Tempel field, expand snippet, or indent."
+  (interactive)
+  (cond
+   ((bound-and-true-p tempel--active) (tempel-next 1))
+   ((tempel-expand t))
+   (t (indent-for-tab-command))))
+
 (use-package tempel
-  :bind (("<tab>" . tempel-complete)
-         ("C-l" . tempel-insert)
+  :bind (("C-l" . tempel-insert)
          :map tempel-map
          ("C-j" . tempel-next)
          ("C-k" . tempel-previous))
@@ -1329,10 +1336,16 @@ process buffers below the selected window."
     "Add Tempel template expansion before the mode's main CAPF."
     (setq-local completion-at-point-functions
                 (cons #'tempel-expand completion-at-point-functions)))
-
   (add-hook 'conf-mode-hook #'dm-tempel-setup-capf)
   (add-hook 'prog-mode-hook #'dm-tempel-setup-capf)
-  (add-hook 'text-mode-hook #'dm-tempel-setup-capf))
+  (add-hook 'text-mode-hook #'dm-tempel-setup-capf)
+  ;; Bind tab to complete (selectively)
+  (defun dm-tab-dwim-setup ()
+    (local-set-key (kbd "<tab>") #'dm-tab-dwim)
+    (local-set-key (kbd "TAB")   #'dm-tab-dwim))
+  (add-hook 'conf-mode-hook #'dm-tab-dwim-setup)
+  (add-hook 'prog-mode-hook #'dm-tab-dwim-setup)
+  (add-hook 'text-mode-hook #'dm-tab-dwim-setup))
 
 (use-package tempel-collection
   :after tempel)
