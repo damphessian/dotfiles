@@ -236,13 +236,14 @@
 (use-package evil
   :init
   ;; These must be set before evil loads.
+  (setq evil-echo-state nil)
+  (setq evil-respect-visual-line-mode t) ; j/k act like gj/gk when VL mode enabled
+  (setq evil-split-window-below  t)
+  (setq evil-undo-system 'undo-redo) ; use native Emacs 28+ undo/redo
+  (setq evil-vsplit-window-right t)
+  (setq evil-want-C-u-scroll nil)
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)    ; evil-collection provides these instead
-  (setq evil-undo-system 'undo-redo) ; use native Emacs 28+ undo/redo
-  (setq evil-want-C-u-scroll t)      ; C-u scrolls up (mirrors vim default)
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below  t)
-  (setq evil-echo-state nil)
   :config
   (evil-mode 1)
   (require 'dm-evil-text)
