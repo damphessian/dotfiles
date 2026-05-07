@@ -979,7 +979,7 @@ process buffers below the selected window."
         magit-git-executable (or (executable-find "git") "git"))
   :custom
   (magit-display-buffer-function #'dm-magit-display-buffer-fn)
-  (magit-commit-show-diff nil)
+  (magit-commit-show-diff t)
   :config
   ;; Remove sections to speed up load
   (remove-hook 'magit-status-sections-hook #'magit-insert-status-headers)
