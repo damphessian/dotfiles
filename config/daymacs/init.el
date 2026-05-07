@@ -1312,13 +1312,9 @@ process buffers below the selected window."
 ;;; ————————————————————————————
 
 (use-package tempel
-  :bind (("M-+" . tempel-complete)
-         ("M-*" . tempel-insert)
+  :bind (("<tab>" . tempel-complete)
+         ("C-l" . tempel-insert)
          :map tempel-map
-         ("TAB" . tempel-next)
-         ("<tab>" . tempel-next)
-         ("S-TAB" . tempel-previous)
-         ("<backtab>" . tempel-previous)
          ("C-j" . tempel-next)
          ("C-k" . tempel-previous))
   :init
