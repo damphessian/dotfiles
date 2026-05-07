@@ -662,14 +662,28 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   :straight nil
   :after vertico
   :custom
+  ;; M-B -> `vertico-multiform-buffer'
+  ;; M-F -> `vertico-multiform-flat'
+  ;; M-G -> `vertico-multiform-grid'
+  ;; M-R -> `vertico-multiform-reverse'
+  ;; M-U -> `vertico-multiform-unobtrusive'
+  ;; M-V -> `vertico-multiform-vertical'
   (vertico-multiform-commands
-   '((consult-ripgrep buffer)
-     (consult-grep buffer)
+   '((consult-find buffer)
      (consult-git-grep buffer)
-     (consult-find buffer)
+     (consult-grep buffer)
      (consult-imenu buffer)
-     (consult-org-heading buffer)))
+     (consult-imenu-multi buffer)
+     (consult-line unobtrusive)
+     (consult-outline buffer)
+     (consult-org-heading buffer)
+     (consult-ripgrep buffer)
+     (project-find-file grid))
+   vertico-multiform-categories
+   '((file grid)))
   :config
+  (vertico-reverse-mode)
+  (vertico-mouse-mode 1)
   (vertico-multiform-mode 1))
 
 ;; Unstable:
