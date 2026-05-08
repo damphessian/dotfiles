@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# NOTE: This is WIP and untested
+
 SCRIPT_NAME="$(basename "$0")"
 OS_NAME="macos-tahoe"
 
