@@ -65,110 +65,8 @@
 
 ;; Eager, cross-cutting setup lives in cohesive modules; command-only helpers
 ;; keep using autoload cookies and stay out of the startup path.
+(require 'dm-core)
 (require 'dm-ui)
-
-;;; ————————————————————————————
-;;; Popup window dismissals
-;;; ————————————————————————————
-
-(setq dm-quit-or-close-popup-buffer-names
-      '("*Backtrace*"
-        "*Compile-Log*"
-        "*Help*"
-        "*Messages*"
-        "*Warnings*"
-        "*compilation*"
-        "*eldoc*"))
-
-(setq dm-quit-or-close-popup-buffer-prefixes
-      '("*Embark Collect"
-        "*Flycheck"
-        "*xref"))
-
-;;; ————————————————————————————
-;;; Test/Implementation Toggle
-;;; ————————————————————————————
-(with-eval-after-load 'evil
-  (evil-define-command dm-evil-toggle-test-implementation ()
-    "Toggle between implementation and test file."
-    :repeat nil
-    (dm-toggle-test-implementation))
-  (evil-ex-define-cmd "A" #'dm-evil-toggle-test-implementation)
-  (global-set-key (kbd "C-c t") #'dm-toggle-test-implementation))
-
-;;; ————————————————————————————
-;;; Core Emacs settings
-;;; ————————————————————————————
-
-;; Prefer UTF-8 everywhere.
-(set-language-environment "UTF-8")
-(set-default-coding-systems 'utf-8)
-
-;; Redirect backups to a single directory instead of littering alongside files.
-(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      backup-by-copying t       ; don't clobber symlinks
-      version-control t         ; numbered backup files
-      delete-old-versions t)
-
-;; Auto-save files also go to a dedicated directory.
-(setq auto-save-file-name-transforms
-      `((".*" ,(concat user-emacs-directory "auto-save/") t)))
-
-;; Lock files (.#foo) are only useful for multi-user editing; skip them.
-(setq create-lockfiles nil)
-
-;; auto-revert files, avoid polling
-(setq auto-revert-avoid-polling t)
-
-;; Track recently visited files; used by consult-recent-file.
-(setq recentf-auto-cleanup "11:00pm")
-(setq recentf-max-saved-items 200)
-
-;; Run recentf cleanup quietly. With `recentf-auto-cleanup' set to a time
-;; string, cleanup runs via `run-at-time' — an async timer dispatch that
-;; loses any `inhibit-message' let-binding from the surrounding call site.
-(with-eval-after-load 'recentf
-  (advice-add 'recentf-cleanup :around
-              (lambda (fn &rest args)
-                (let ((inhibit-message t)
-                      (message-log-max nil))
-                  (apply fn args)))))
-
-;; Persist minibuffer history (commands, searches, consult inputs) across sessions.
-(setq history-length 300)
-
-;; Activate cross-cutting global modes after the first frame is up. None of
-;; these need to run before the user can start typing, and recentf-mode in
-;; particular reads/writes its history file — push that off the boot path.
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (editorconfig-mode 1)
-            (global-auto-revert-mode 1)
-            (let ((inhibit-message t)
-                  (message-log-max nil))
-              (recentf-mode 1))
-            (savehist-mode 1)))
-
-;; Follow symlinks to version-controlled files without prompting.
-(setq vc-follow-symlinks t)
-
-;; Drop legacy and hipster VCS integrations you don't use.
-(setq-default vc-handled-backends '(Git))
-
-;; Empty scratch buffer on launch (inhibit-startup-screen is in early-init.el).
-(setq initial-scratch-message nil)
-
-;; Empty scratch buffer in fundamental-mode
-(setq initial-major-mode 'fundamental-mode)
-
-;; Use spaces for alignment, truncate lines by default
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 8)
-(setq-default truncate-lines t)
-(setq-default fill-column 80)
-
-;; delete by moving to trash
-(setq delete-by-moving-to-trash t)
 
 (defconst dm-git-commit-filename-regexp
   "/\\(?:\\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(?:BRANCH\\|EDIT\\)_DESCRIPTION\\)\\'"
@@ -1464,18 +1362,6 @@ Eglot's connect call blocks redisplay until the LSP server returns its
   :straight nil
   :hook ((emacs-lisp-mode . hs-minor-mode)
          (lisp-interaction-mode . hs-minor-mode)))
-
-;;; ————————————————————————————
-;;; GC reset
-;;; ————————————————————————————
-
-;; Lower GC threshold back to something reasonable now that startup is done.
-;; 16 MB is a comfortable value for interactive use; adjust upward if you
-;; notice GC pauses during heavy operations.
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 16 1024 1024)
-                  gc-cons-percentage 0.1)))
 
 (provide 'init)
 ;;; init.el ends here
