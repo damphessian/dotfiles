@@ -1261,6 +1261,14 @@ Eglot's connect call blocks redisplay until the LSP server returns its
 
 (use-package eglot
   :straight nil
+  :init
+  ;; eglot's `eglot-code-action-indicator' defcustom picks a glyph by calling
+  ;; `char-displayable-p' on a list of unicode chars. On macOS the first such
+  ;; call forces a Core Text font scan (~120 ms). Pre-set the variable so the
+  ;; defcustom default form is skipped. (The :type form has the same loop and
+  ;; runs anyway at load time; that residual is shifted off the critical path
+  ;; by the idle-time pre-load below.)
+  (setq eglot-code-action-indicator "*")
   :hook ((python-mode        . dm-eglot-ensure-deferred)
          (python-ts-mode     . dm-eglot-ensure-deferred)
          (js-mode            . dm-eglot-ensure-deferred)
@@ -1315,6 +1323,16 @@ Eglot's connect call blocks redisplay until the LSP server returns its
   (with-eval-after-load 'evil
     (evil-define-key 'normal eglot-mode-map
       (kbd "K") #'eldoc-doc-buffer)))
+
+;; Pre-load eglot just after startup so the one-time cold-load costs (the
+;; `char-displayable-p' font probe in its defcustom :type, plus the require
+;; cascade) are paid before any file open. `run-with-idle-timer' isn't
+;; reliable here — it never fires if the user starts working immediately.
+;; Use a fixed-delay timer scheduled from `emacs-startup-hook' so it fires
+;; ~0.5 s after the frame is up regardless of idle state.
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (run-with-timer 0.5 nil (lambda () (require 'eglot)))))
 
 ;;; ————————————————————————————
 ;;; Helpful — richer help buffers
