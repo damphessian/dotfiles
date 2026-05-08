@@ -230,6 +230,16 @@ back to a synchronous fd run on the first invocation after startup."
 (setq recentf-auto-cleanup "11:00pm")
 (setq recentf-max-saved-items 200)
 
+;; Run recentf cleanup quietly. With `recentf-auto-cleanup' set to a time
+;; string, cleanup runs via `run-at-time' — an async timer dispatch that
+;; loses any `inhibit-message' let-binding from the surrounding call site.
+(with-eval-after-load 'recentf
+  (advice-add 'recentf-cleanup :around
+              (lambda (fn &rest args)
+                (let ((inhibit-message t)
+                      (message-log-max nil))
+                  (apply fn args)))))
+
 ;; Persist minibuffer history (commands, searches, consult inputs) across sessions.
 (setq history-length 300)
 
