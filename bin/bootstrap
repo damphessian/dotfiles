@@ -5,7 +5,7 @@
 require_relative "../lib/bootstrap"
 
 setup :xdg_base_directory_environment do
-  install_launchagent "com.tensorconclave.xdg"
+  install_launchagent "com.dmarksys.xdg"
   install_system_zshenv
 end
 
@@ -209,7 +209,7 @@ ensure_locals_are_created
 ensure_gpg_permissions_are_set_correctly
 
 setup :pd_tool do
-  install_launchagent "com.tensorconclave.pd"
+  install_launchagent "com.dmarksys.pd"
   script_install :pd
 end
 

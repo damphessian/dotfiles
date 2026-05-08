@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>com.tensorconclave.check_pages</string>
-    <!---->
+    <string>com.dmarksys.xdg</string>
+
     <key>Program</key>
     <string>/bin/zsh</string>
-    <!---->
+
     <key>ProgramArguments</key>
     <array>
       <string>/bin/zsh</string>
       <string>-c</string>
-      <string>exec check-pages</string>
+      <string>
+        launchctl setenv XDG_CONFIG_HOME "${HOME}/.dotfiles/config";
+        launchctl setenv ZDOTDIR "${HOME}/.dotfiles/config/zsh";
+        launchctl setenv GNUPGHOME "${HOME}/Dropbox/gnupg";
+      </string>
     </array>
-    <!---->
+
     <key>RunAtLoad</key>
-    <false/>
-    <!---->
-    <key>StartInterval</key>
-    <integer>43200</integer>
-    <!---->
-    <key>StandardErrorPath</key>
-    <string>/tmp/com.tensorconclave.check_pages.err</string>
-    <!---->
+    <true />
+
     <key>StandardOutPath</key>
-    <string>/tmp/com.tensorconclave.check_pages.out</string>
+    <string>/tmp/com.dmarksys.xdg.out</string>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/com.dmarksys.xdg.err</string>
   </dict>
 </plist>

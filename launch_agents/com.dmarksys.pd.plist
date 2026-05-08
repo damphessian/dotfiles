@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>com.tensorconclave.xdg</string>
+    <string>com.dmarksys.pd</string>
 
     <key>Program</key>
     <string>/bin/zsh</string>
@@ -15,18 +14,28 @@
       <string>-c</string>
       <string>
         launchctl setenv XDG_CONFIG_HOME "${HOME}/.dotfiles/config";
+        launchctl setenv XDG_STATE_HOME "${HOME}/.dotfiles/state";
         launchctl setenv ZDOTDIR "${HOME}/.dotfiles/config/zsh";
-        launchctl setenv GNUPGHOME "${HOME}/Dropbox/gnupg";
+        ${HOME}/.dotfiles/bin/pd --pd-refresh
       </string>
     </array>
+
+    <key>Nice</key>
+    <integer>1</integer>
 
     <key>RunAtLoad</key>
     <true />
 
+    <key>KeepAlive</key>
+    <false />
+
+    <key>StartInterval</key>
+    <integer>3600</integer>
+
     <key>StandardOutPath</key>
-    <string>/tmp/com.tensorconclave.xdg.out</string>
+    <string>/tmp/com.dmarksys.pd.out</string>
 
     <key>StandardErrorPath</key>
-    <string>/tmp/com.tensorconclave.xdg.err</string>
+    <string>/tmp/com.dmarksys.pd.err</string>
   </dict>
 </plist>

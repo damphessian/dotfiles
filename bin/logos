@@ -21,7 +21,7 @@ BLUE="\033[0;34m"
 RESET="\033[0m"
 CONTENT_DIR="content"
 
-SERVE_AGENT=~/Library/LaunchAgents/com.tensorconclave.notes_serve.plist
+SERVE_AGENT=~/Library/LaunchAgents/com.dmarksys.notes_serve.plist
 
 SUBCOMMAND=${1:-reload}
 FLAG=${2}
@@ -41,8 +41,8 @@ regenerate_content() {
 }
 
 deploy_site() {
-  echo > /tmp/com.tensorconclave.notes_deploy.out
-  echo > /tmp/com.tensorconclave.notes_deploy.err
+  echo > /tmp/com.dmarksys.notes_deploy.out
+  echo > /tmp/com.dmarksys.notes_deploy.err
   printf "\n[Deploy: %s]\n " "$(date)"
 
   if ./bin/deploy "$1"; then
@@ -56,7 +56,7 @@ deploy_site() {
 reload_launch_agent() {
   printf "Reloading launch agent... "
   # check if agent is loaded
-  if launchctl list | grep -q "com.tensorconclave.notes_serve"; then
+  if launchctl list | grep -q "com.dmarksys.notes_serve"; then
     printf "unloading... "
     launchctl unload $SERVE_AGENT
   fi
@@ -68,7 +68,7 @@ reload_launch_agent() {
 stop_launch_agent() {
   printf "Stopping launch agent... "
   # check if agent is loaded
-  if launchctl list | grep -q "com.tensorconclave.notes_serve"; then
+  if launchctl list | grep -q "com.dmarksys.notes_serve"; then
     printf "unloading... "
     launchctl unload $SERVE_AGENT
     printf "${GREEN}%s${RESET}.\n" "done"
@@ -78,16 +78,16 @@ stop_launch_agent() {
 }
 
 serve_site_locally() {
-  echo > /tmp/com.tensorconclave.notes_serve.out
-  echo > /tmp/com.tensorconclave.notes_serve.err
+  echo > /tmp/com.dmarksys.notes_serve.out
+  echo > /tmp/com.dmarksys.notes_serve.err
   ./bin/serve "$1"
 }
 
 tail_logs() {
   if [[ "${1}" == "--deploy" ]]; then
-    tail -f /tmp/com.tensorconclave.notes_deploy.{out,err}
+    tail -f /tmp/com.dmarksys.notes_deploy.{out,err}
   else
-    tail -f /tmp/com.tensorconclave.notes_serve.{out,err}
+    tail -f /tmp/com.dmarksys.notes_serve.{out,err}
   fi
 }
 
