@@ -713,6 +713,19 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "l e" '(consult-flymake                       :which-key "errors")
     "l d" '(flymake-show-project-diagnostics      :which-key "diagnostics")
 
+    ;; REPL / tight loop
+    "r"   '(:ignore t                  :which-key "repl")
+    "r r" '(dm-repl-start-or-pop       :which-key "start/pop")
+    "r e" '(dm-repl-eval-dwim          :which-key "eval dwim")
+    "r l" '(dm-repl-eval-line          :which-key "eval line")
+    "r b" '(dm-repl-eval-buffer        :which-key "eval buffer")
+    "r c" '(dm-repl-eval-cell          :which-key "eval cell")
+    "r n" '(dm-repl-next-cell          :which-key "next cell")
+    "r p" '(dm-repl-previous-cell      :which-key "prev cell")
+    "r k" '(dm-repl-check-dwim         :which-key "check")
+    "r t" '(dm-repl-test-dwim          :which-key "test dwim")
+    "r a" '(dm-repl-test-all           :which-key "test all")
+
     ;; Windows
     "w"   '(:ignore t                  :which-key "window")
     "w v" '(evil-window-vsplit         :which-key "vertical split")
@@ -1357,6 +1370,23 @@ Eglot's connect call blocks redisplay until the LSP server returns its
   (with-eval-after-load 'evil
     (evil-define-key 'normal eglot-mode-map
       (kbd "K") #'eldoc-doc-buffer)))
+
+;;; ————————————————————————————
+;;; REPL / tight feedback loop
+;;; ————————————————————————————
+
+(dolist (hook '(python-base-mode-hook
+                elixir-mode-hook
+                elixir-ts-mode-hook
+                rust-mode-hook
+                rust-ts-mode-hook
+                js-mode-hook
+                js-ts-mode-hook
+                jsx-ts-mode-hook
+                typescript-mode-hook
+                typescript-ts-mode-hook
+                tsx-ts-mode-hook))
+  (add-hook hook #'dm-repl-local-keybindings))
 
 ;; Pre-load eglot just after startup so the one-time cold-load costs (the
 ;; `char-displayable-p' font probe in its defcustom :type, plus the require
