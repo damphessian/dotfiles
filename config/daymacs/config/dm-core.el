@@ -21,6 +21,7 @@
 (setq dm-quit-or-close-popup-buffer-prefixes
       '("*Embark Collect"
         "*Flycheck"
+        "*helpful"
         "*xref"))
 
 ;;; Test/implementation toggle bridge.
