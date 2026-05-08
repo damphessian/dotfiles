@@ -1236,6 +1236,12 @@ FN and ARGS are the advised `treesit-auto--set-major-remap' arguments."
   :straight t
   :hook ((org-mode . dm-disable-line-numbers-h))
   :custom
+  ;; Skip the default `org-modules' cascade (ol-doi ol-w3m ol-bbdb ol-bibtex
+  ;; ol-docview ol-gnus ol-info ol-irc ol-mhe ol-rmail ol-eww). Loading them
+  ;; via `org-load-modules-maybe' on first org-mode activation accounted for
+  ;; ~50% of the open cost. Add specific modules back here if a link type
+  ;; needs them (e.g. `(ol-info ol-eww)' for info: and eww: links).
+  (org-modules nil)
   ;; ORG_HOME is set in env/emacs.sh; fall back to ~/Org.
   (org-directory (or (getenv "ORG_HOME") (expand-file-name "~/Org")))
   (org-agenda-files (list org-directory))
