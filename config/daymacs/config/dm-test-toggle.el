@@ -169,7 +169,16 @@
      (t
       (find-file
        (expand-file-name
-        (completing-read "Related file: " candidates nil t)
+        (completing-read
+         "Related file: "
+         (mapcar (lambda (f)
+                   (or (and root
+                            (file-relative-name f root))
+                       (and (string-prefix-p (getenv "HOME") f)
+                            (file-relative-name f (getenv "HOME")))
+                       f))
+                 candidates)
+         nil t)
         root))))))
 
 (provide 'dm-test-toggle)
