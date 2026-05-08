@@ -41,6 +41,11 @@ Otherwise it runs:
       '(("pdf" . "Skim")
         ("md"  . "Marked 2")))
 
+(defun dm-file-open-app-for-file (file)
+  "Return configured macOS app for FILE, or nil."
+  (when-let* ((extension (file-name-extension file)))
+    (alist-get (downcase extension) dm-file-open-apps nil nil #'string=)))
+
 (defun dm-buffer-file-name ()
   "Return the current buffer's file name, or nil."
   (or buffer-file-name
@@ -206,15 +211,14 @@ If the buffer has no file, report that instead."
          (short-path (and path (abbreviate-file-name path))))
     (unless path
       (user-error "Buffer is not visiting any file"))
-    (let ((buf (current-buffer)))
-      (unwind-protect
-          (progn (delete-file path t) t)
-        (if (file-exists-p path)
-            (error "Failed to delete %S" short-path)
-          (progn
-            (kill-buffer)
-            (revert-buffer)
-            (message "Deleted %S" short-path)))))))
+    (unwind-protect
+        (progn (delete-file path t) t)
+      (if (file-exists-p path)
+          (error "Failed to delete %S" short-path)
+        (progn
+          (kill-buffer)
+          (revert-buffer)
+          (message "Deleted %S" short-path))))))
 
 (defcustom dm-project-discovery-depth 5
   "Maximum directory depth for `dm-project-discover-projects'."
@@ -222,7 +226,7 @@ If the buffer has no file, report that instead."
 
 ;;;###autoload
 (defun dm-project-discover-projects (&optional directory)
-  "Discover Git projects under DIRECTORY using fd and remember them with project.el.
+  "Discover Git projects under DIRECTORY and remember them with project.el.
 DIRECTORY defaults to the user's home directory."
   (interactive
    (list (read-directory-name "Starting directory: " "~/" nil t)))

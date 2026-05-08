@@ -51,7 +51,7 @@ If the buffer has no file, report that instead." t)
 
 (fn &optional PATH)" t)
 (autoload 'dm-project-discover-projects "dm-files"
-"Discover Git projects under DIRECTORY using fd and remember them with project.el.
+"Discover Git projects under DIRECTORY and remember them with project.el.
 DIRECTORY defaults to the user's home directory.
 
 (fn &optional DIRECTORY)" t)
@@ -155,6 +155,7 @@ process buffers below the selected window.
 (autoload 'dm-repl-local-keybindings "dm-repl"
 "Install tight-loop local bindings and mode helpers in programming buffers.")
 (register-definition-prefixes "dm-repl" '("dm-"))
+
 
 ;;; End of scraped data
 
