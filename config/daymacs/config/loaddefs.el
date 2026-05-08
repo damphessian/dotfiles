@@ -186,6 +186,12 @@ process buffers below the selected window.
 Close tab if sole window in tab, close frame if multiple frames exist,
 otherwise kill Emacs." t)
 (register-definition-prefixes "dm-window" '("dm-window-"))
+
+
+;;; Generated autoloads from dm-completion.el
+
+(autoload 'dm-search-project-for-symbol-at-point "dm-completion"
+"Search the current project for the symbol at point." t)
 
 ;;; End of scraped data
 

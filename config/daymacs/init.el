@@ -69,6 +69,7 @@
 (require 'dm-ui)
 (require 'dm-evil)
 (require 'dm-window)
+(require 'dm-completion)
 
 (defconst dm-git-commit-filename-regexp
   "/\\(?:\\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(?:BRANCH\\|EDIT\\)_DESCRIPTION\\)\\'"
@@ -357,137 +358,6 @@ NOTE: speculative."
   (which-key-mode 1)
   (setq which-key-idle-delay 0.15)
   (setq which-key-idle-secondary-delay 0.1))
-
-;;; ————————————————————————————
-;;; Vertico — minibuffer completion UI
-;;; ————————————————————————————
-
-(use-package vertico
-  ;; Replaces the default horizontal completion with a clean vertical list.
-  :custom
-  (vertico-cycle t)
-  :config
-  (vertico-mode 1))
-
-(use-package vertico-multiform
-  ;; Built-in Vertico extension for per-command/category display styles.
-  :straight nil
-  :after vertico
-  :custom
-  ;; M-B -> `vertico-multiform-buffer'
-  ;; M-F -> `vertico-multiform-flat'
-  ;; M-G -> `vertico-multiform-grid'
-  ;; M-R -> `vertico-multiform-reverse'
-  ;; M-U -> `vertico-multiform-unobtrusive'
-  ;; M-V -> `vertico-multiform-vertical'
-  (vertico-multiform-commands
-   '((consult-find buffer reverse)
-     (consult-git-grep buffer reverse)
-     (consult-grep buffer reverse)
-     (consult-imenu buffer reverse)
-     (consult-imenu-multi buffer reverse)
-     (consult-line unobtrusive)
-     (consult-outline buffer reverse)
-     (consult-org-heading buffer reverse)
-     (consult-ripgrep buffer reverse)
-     (project-find-file grid))
-   vertico-multiform-categories
-   '((file grid)))
-  :config
-  (vertico-mouse-mode 1)
-  (vertico-multiform-mode 1))
-
-;; Unstable:
-;; > Personally I am critical of using child frames for minibuffer completion. From my experience it introduces more problems than it solves. Most importantly child frames hide the content of the underlying buffer. Furthermore child frames do not play well together with changing windows and entering recursive minibuffer sessions. On top, child frames can feel slow and sometimes flicker.
-;; https://github.com/minad/vertico#child-frames-and-popups
-;;
-;; (use-package mini-frame
-;;   :config
-;;   (defun dm-mini-frame-clamped-dimensions ()
-;;     (let* ((parent (selected-frame))
-;;            (frame-cols (frame-parameter parent 'width)) ; in columns
-;;            (desired (* 0.9 frame-cols))
-;;            (max-cols 120)
-;;            (width (min desired max-cols)))
-;;       `((top . 0.15)
-;;         (left . 0.5)
-;;         (width . ,(truncate width))
-;;         (child-frame-border-width . 1)
-;;         (left-fringe . 25)
-;;         (right-fringe . 25)
-;;         (background-color . ,(face-attribute 'default :background)))))
-;;   (setq mini-frame-show-parameters #'dm-mini-frame-clamped-dimensions)
-;;   (set-face-attribute 'child-frame-border nil :background (face-attribute 'mode-line :foreground))
-;;   (mini-frame-mode 1))
-
-(use-package orderless
-  ;; Matching style: space-separated components match in any order.
-  ;; e.g. "foo bar" finds "bar-foo" and "foobar-baz".
-  ;; The override for 'file keeps basic prefix matching for path completion,
-  ;; where orderless can otherwise interfere with / separators.
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion))))
-  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
-
-(use-package consult
-  ;; Rich completion commands: consult-ripgrep, consult-find, consult-buffer,
-  ;; consult-line, consult-recent-file, etc. Integrates with vertico.
-  :config
-  ;; Avoid jumping through target buffers while scrolling search candidates.
-  ;; Press M-. on a candidate to preview it explicitly.
-  (consult-customize
-   consult-ripgrep
-   consult-grep
-   consult-git-grep
-   consult-recent-file
-   consult-bookmark
-   consult-source-recent-file
-   consult-source-project-recent-file
-   consult-source-project-recent-file-hidden
-   consult-source-bookmark
-   :preview-key "M-.")
-  (setq consult-narrow-key "?"))
-
-(defun dm-search-project-for-symbol-at-point ()
-  "Search the current project for the symbol at point."
-  (interactive)
-  (let ((symbol (thing-at-point 'symbol t)))
-    (consult-ripgrep
-     (project-root (project-current t))
-     symbol)))
-
-(with-eval-after-load 'evil
-  (evil-define-key 'normal 'global
-    (kbd "SPC *") #'dm-search-project-for-symbol-at-point))
-
-(use-package marginalia
-  ;; Adds annotations to completion candidates: file sizes, docstrings,
-  ;; command key bindings, etc. Works with any completing-read UI.
-  ;; Loaded with vertico so annotations are ready on the first
-  ;; minibuffer prompt; not needed before that.
-  :after vertico
-  :config
-  (marginalia-mode 1))
-
-(use-package embark-consult
-  ;; Register the integration package before Embark loads so Embark's
-  ;; startup check can `require' it without warning.
-  :after (embark consult)
-  :hook (embark-collect-mode . consult-preview-at-point-mode))
-
-(use-package embark
-  ;; "Act on this candidate" layer for any completing-read UI.
-  ;; C-, on any vertico candidate: open in other window, copy, delete, etc.
-  :after general)
-
-(use-package wgrep
-  ;; Edit consult-ripgrep results in-buffer, then apply across all files.
-  ;; In a grep results buffer: C-c C-p to enter edit mode, C-c C-c to apply.
-  :commands (wgrep-change-to-wgrep-mode wgrep-finish-edit)
-  :custom
-  (wgrep-auto-save-buffer t))
 
 ;;; ————————————————————————————
 ;;; Persistent scratch buffer
