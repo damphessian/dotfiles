@@ -60,7 +60,11 @@
                               sources)))))
   (when stale
     (require 'loaddefs-gen)
-    (loaddefs-generate config-dir loaddefs))
+    ;; `loaddefs-generate' reports each scrape pass with INFO messages. Keep
+    ;; startup quiet while preserving the automatic autoload refresh.
+    (let ((inhibit-message t)
+          (message-log-max nil))
+      (loaddefs-generate config-dir loaddefs)))
   (load loaddefs nil 'nomessage))
 
 ;; Eager, cross-cutting setup lives in cohesive modules; command-only helpers
