@@ -48,6 +48,9 @@ Eglot's connect call blocks redisplay until the LSP server returns its
          (elixir-mode        . dm-eglot-ensure-deferred)
          (elixir-ts-mode     . dm-eglot-ensure-deferred)
          (heex-ts-mode       . dm-eglot-ensure-deferred)
+         (LaTeX-mode         . dm-eglot-ensure-deferred)
+         (latex-mode         . dm-eglot-ensure-deferred)
+         (tex-mode           . dm-eglot-ensure-deferred)
          (sh-mode            . dm-eglot-ensure-deferred)
          (bash-ts-mode       . dm-eglot-ensure-deferred)
          (eglot-managed-mode . dm-disable-eldoc-echo-area))
@@ -70,6 +73,16 @@ Eglot's connect call blocks redisplay until the LSP server returns its
   (add-to-list 'eglot-server-programs
                '((python-mode python-ts-mode)
                  . ("basedpyright-langserver" "--stdio")))
+
+  (when-let* ((tex-ls-command
+               (cond
+                ((executable-find "digestif")
+                 (list (executable-find "digestif")))
+                ((executable-find "texlab")
+                 (list (executable-find "texlab"))))))
+    (add-to-list 'eglot-server-programs
+                 `((LaTeX-mode latex-mode tex-mode)
+                   . ,tex-ls-command)))
 
   (when-let* ((elixir-ls-command
                (cond
@@ -95,7 +108,7 @@ Eglot's connect call blocks redisplay until the LSP server returns its
 
   (with-eval-after-load 'evil
     (evil-define-key 'normal eglot-mode-map
-      (kbd "K") #'eldoc-doc-buffer)))
+      (kbd "K") #'eldoc-print-current-symbol-info)))
 
 (dolist (hook '(python-base-mode-hook
                 elixir-mode-hook
