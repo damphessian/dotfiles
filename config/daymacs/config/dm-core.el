@@ -81,6 +81,7 @@
           (lambda ()
             (editorconfig-mode 1)
             (global-auto-revert-mode 1)
+            (global-eldoc-mode -1)
             (let ((inhibit-message t)
                   (message-log-max nil))
               (recentf-mode 1))

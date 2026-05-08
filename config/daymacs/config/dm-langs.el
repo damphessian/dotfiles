@@ -10,6 +10,12 @@
 
 (require 'cl-lib)
 
+(defun dm-disable-eldoc-echo-area ()
+  "Keep Eldoc providers active, but stop echo-area documentation."
+  (setq-local eldoc-display-functions
+              (remq #'eldoc-display-in-echo-area
+                    eldoc-display-functions)))
+
 (defun dm-eglot-ensure-deferred ()
   "Defer `eglot-ensure' so the buffer becomes interactive immediately.
 Eglot's connect call blocks redisplay until the LSP server returns its
@@ -43,7 +49,8 @@ Eglot's connect call blocks redisplay until the LSP server returns its
          (elixir-ts-mode     . dm-eglot-ensure-deferred)
          (heex-ts-mode       . dm-eglot-ensure-deferred)
          (sh-mode            . dm-eglot-ensure-deferred)
-         (bash-ts-mode       . dm-eglot-ensure-deferred))
+         (bash-ts-mode       . dm-eglot-ensure-deferred)
+         (eglot-managed-mode . dm-disable-eldoc-echo-area))
   :custom
   (eglot-autoshutdown t)
   ;; Don't auto-reconnect on crash. The default creates an infinite restart

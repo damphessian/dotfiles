@@ -219,7 +219,7 @@ directory hierarchy.
 
 (autoload 'dm-treesit-install-all-languages "dm-langs"
 "Install all Tree-sitter grammars defined in `treesit-language-source-alist'." t)
-(register-definition-prefixes "dm-langs" '("dm-eglot-ensure-deferred"))
+(register-definition-prefixes "dm-langs" '("dm-"))
 
 
 ;;; Generated autoloads from dm-cli.el
