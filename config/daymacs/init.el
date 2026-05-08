@@ -193,9 +193,6 @@ back to a synchronous fd run on the first invocation after startup."
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 
-;; Enable editorconfig mode (assumes Emacs >= 30)
-(editorconfig-mode 1)
-
 ;; Redirect backups to a single directory instead of littering alongside files.
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       backup-by-copying t       ; don't clobber symlinks
@@ -211,19 +208,25 @@ back to a synchronous fd run on the first invocation after startup."
 
 ;; auto-revert files, avoid polling
 (setq auto-revert-avoid-polling t)
-(global-auto-revert-mode t)
 
 ;; Track recently visited files; used by consult-recent-file.
 (setq recentf-auto-cleanup "11:00pm")
-(let ((inhibit-message t)
-      (message-log-max nil))
-  (recentf-mode 1))
 (setq recentf-max-saved-items 200)
 
-;; Persist minibuffer history (commands, searches, consult inputs)
-;; across sessions.
-(savehist-mode 1)
+;; Persist minibuffer history (commands, searches, consult inputs) across sessions.
 (setq history-length 300)
+
+;; Activate cross-cutting global modes after the first frame is up. None of
+;; these need to run before the user can start typing, and recentf-mode in
+;; particular reads/writes its history file — push that off the boot path.
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (editorconfig-mode 1)
+            (global-auto-revert-mode 1)
+            (let ((inhibit-message t)
+                  (message-log-max nil))
+              (recentf-mode 1))
+            (savehist-mode 1)))
 
 ;; Relative line numbers match evil's jump-count workflow (e.g. 5j, 12k).
 (setq display-line-numbers-type 'relative)
@@ -348,11 +351,12 @@ back to a synchronous fd run on the first invocation after startup."
   (evil-commentary-mode))
 
 (use-package evil-numbers
-  :after evil
-  :config
-  (evil-define-key 'normal 'global
-    (kbd "g-") #'evil-numbers/dec-at-pt
-    (kbd "g=") #'evil-numbers/inc-at-pt))
+  :commands (evil-numbers/dec-at-pt evil-numbers/inc-at-pt)
+  :init
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal 'global
+      (kbd "g-") #'evil-numbers/dec-at-pt
+      (kbd "g=") #'evil-numbers/inc-at-pt)))
 
 (use-package evil-surround
   :after evil
@@ -373,21 +377,23 @@ back to a synchronous fd run on the first invocation after startup."
   (evil-embrace-enable-evil-surround-integration))
 
 (use-package evil-iedit-state
-  :after evil)
+  :commands (evil-iedit-state/iedit-mode evil-iedit-state))
 
 (use-package avy
-  :after evil
-  :hook
-  (org-mode . avy-setup-default)
+  :commands (avy-goto-char-2 avy-goto-char avy-goto-line avy-goto-word-1 avy-setup-default)
+  :hook (org-mode . avy-setup-default)
   :custom
   (avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   (avy-style 'at-full))
 
 (use-package evil-lion
-  :after evil
-  :config
+  ;; Defer until evil is settled; evil-lion-mode just registers keybindings,
+  ;; nothing breaks if it activates a tick after evil-mode does.
+  :defer 0.5
+  :init
   (setq evil-lion-left-align-key (kbd "g l"))
   (setq evil-lion-right-align-key (kbd "g L"))
+  :config
   (evil-lion-mode 1))
 
 (use-package evil-snipe
@@ -481,6 +487,7 @@ otherwise kill Emacs."
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns x))
+  :defer 0.1
   :custom
   (exec-path-from-shell-variables
    '("DOCKER_HOST"
@@ -718,6 +725,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 (use-package which-key
   ;; Displays available key completions in a popup after a short delay.
   ;; Essential while building muscle memory for the leader bindings above.
+  ;; Deferred: nothing depends on it being active before the first idle
+  ;; window after a partial key sequence.
+  :defer 0.5
   :config
   (which-key-mode 1)
   (setq which-key-idle-delay 0.15)
@@ -830,6 +840,9 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 (use-package marginalia
   ;; Adds annotations to completion candidates: file sizes, docstrings,
   ;; command key bindings, etc. Works with any completing-read UI.
+  ;; Loaded with vertico so annotations are ready on the first
+  ;; minibuffer prompt; not needed before that.
+  :after vertico
   :config
   (marginalia-mode 1))
 
@@ -847,6 +860,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 (use-package wgrep
   ;; Edit consult-ripgrep results in-buffer, then apply across all files.
   ;; In a grep results buffer: C-c C-p to enter edit mode, C-c C-c to apply.
+  :commands (wgrep-change-to-wgrep-mode wgrep-finish-edit)
   :custom
   (wgrep-auto-save-buffer t))
 
@@ -863,8 +877,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
 ;;; ————————————————————————————
 
 (use-package tabspaces
-  :config
-  (tabspaces-mode 1)
+  :hook (emacs-startup . tabspaces-mode)
   :custom
   (tabspaces-use-filtered-buffers-as-default t)
   (tabspaces-default-tab "main")
@@ -1098,16 +1111,22 @@ process buffers below the selected window."
       '("g" "Generate commit message" dm-magit-commit-generate))))
 
 (use-package git-timemachine
+  :commands git-timemachine
   :config
   (evil-make-overriding-map git-timemachine-mode-map 'normal)
   (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps))
 
-(use-package posframe)
+(use-package posframe
+  :defer t)
 
 (use-package diff-hl
   ;; Inline git diff indicators in the fringe (added/modified/removed lines).
+  ;; Activated per-buffer via hooks instead of `global-diff-hl-mode' so the
+  ;; package only loads when the first file-backed buffer is opened.
+  :hook ((find-file . diff-hl-mode)
+         (dired-mode . diff-hl-dired-mode)
+         (vc-dir-mode . diff-hl-dir-mode))
   :config
-  (global-diff-hl-mode 1)
   (setq diff-hl-show-hunk-function #'diff-hl-show-hunk-posframe)
   (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
   (with-eval-after-load 'evil
@@ -1210,7 +1229,8 @@ process buffers below the selected window."
 
 (use-package copilot
   :straight (:type git :host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  ;; :hook (prog-mode . copilot-mode) ; disabled by default
+  ;; :hook (prog-mode . copilot-mode) ; disabled by default; toggled via SPC t c
+  :commands copilot-mode
   :bind (:map copilot-completion-map
               ;; Fish-style bindings avoid stealing TAB from Corfu and indentation.
               ("<return>"   . copilot-accept-completion)
@@ -1244,6 +1264,13 @@ process buffers below the selected window."
 
 (use-package claude-code-ide
   :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
+  :commands (claude-code-ide
+             claude-code-ide-toggle
+             claude-code-ide-continue
+             claude-code-ide-resume
+             claude-code-ide-list-sessions
+             claude-code-ide-menu
+             claude-code-ide--get-buffer-name)
   :custom
   (claude-code-ide-terminal-backend 'eat)
   (claude-code-ide-window-side 'right)
@@ -1405,6 +1432,7 @@ Eglot's connect call blocks redisplay until the LSP server returns its
 ;;; ————————————————————————————
 
 (use-package apheleia
+  :commands (apheleia-format-buffer apheleia-mode apheleia-global-mode)
   :config
   ;; Prefer ecosystem-standard formatters for common editing modes.
   ;; These tools still need to be installed on PATH for Apheleia to run them.
@@ -1439,6 +1467,11 @@ Eglot's connect call blocks redisplay until the LSP server returns its
 
 (use-package corfu
   ;; Popup at point for in-buffer completions. Pairs with eglot and cape.
+  ;; Loaded on-demand when entering an editable buffer instead of via
+  ;; `global-corfu-mode' at startup.
+  :hook ((prog-mode . corfu-mode)
+         (text-mode . corfu-mode)
+         (conf-mode . corfu-mode))
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.1)
@@ -1452,11 +1485,11 @@ Eglot's connect call blocks redisplay until the LSP server returns its
   (keymap-set corfu-map "RET" #'corfu-insert)
   (keymap-set corfu-map "<return>" #'corfu-insert)
   (keymap-unset corfu-map "TAB")
-  (keymap-unset corfu-map "<tab>")
-  (global-corfu-mode 1))
+  (keymap-unset corfu-map "<tab>"))
 
 (use-package cape
   ;; Extra completion-at-point sources: dabbrev, file paths, etc.
+  :after corfu
   :config
   (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-file))
@@ -1524,6 +1557,11 @@ Eglot's connect call blocks redisplay until the LSP server returns its
 
 (use-package treesit-auto
   ;; Auto-installs tree-sitter grammars and remaps major modes to *-ts-mode.
+  ;; Deferred to idle: the first file opened within ~0.5s of startup may
+  ;; land in the non-ts major mode, which is acceptable. Memoization advice
+  ;; on `treesit-auto--build-major-mode-remap-alist' below cuts the
+  ;; once-per-find-file cost.
+  :defer 0.5
   :custom
   (treesit-auto-install t)
   :config
