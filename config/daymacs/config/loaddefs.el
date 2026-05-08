@@ -204,6 +204,11 @@ otherwise kill Emacs." t)
 ;;; Generated autoloads from dm-vcs.el
 
 (register-definition-prefixes "dm-vcs" '("dm-"))
+
+
+;;; Generated autoloads from dm-ai.el
+
+(register-definition-prefixes "dm-ai" '("dm-"))
 
 ;;; End of scraped data
 
