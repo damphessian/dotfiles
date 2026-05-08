@@ -116,6 +116,10 @@
     (evil-define-key 'normal lisp-interaction-mode-map
       (kbd "K") #'helpful-at-point))
   :config
+  (global-set-key (kbd "C-h f") #'helpful-callable)
+  (global-set-key (kbd "C-h v") #'helpful-variable)
+  (global-set-key (kbd "C-h k") #'helpful-key)
+  (global-set-key (kbd "C-h x") #'helpful-command)
   (with-eval-after-load 'evil
     (evil-define-key 'normal helpful-mode-map
       (kbd "K") #'helpful-at-point)))
