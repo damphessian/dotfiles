@@ -180,6 +180,7 @@ back to a synchronous fd run on the first invocation after startup."
 
 (setq dm-quit-or-close-popup-buffer-names
       '("*Backtrace*"
+        "*Compile-Log*"
         "*Help*"
         "*Messages*"
         "*Warnings*"
