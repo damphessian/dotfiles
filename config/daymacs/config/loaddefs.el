@@ -199,6 +199,11 @@ otherwise kill Emacs." t)
 (autoload 'dm-tab-dwim "dm-editing"
 "Smart TAB: advance Tempel field, expand snippet, or indent." t)
 (register-definition-prefixes "dm-editing" '("dm-"))
+
+
+;;; Generated autoloads from dm-vcs.el
+
+(register-definition-prefixes "dm-vcs" '("dm-"))
 
 ;;; End of scraped data
 
