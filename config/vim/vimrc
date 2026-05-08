@@ -88,7 +88,8 @@ function! SetBackgroundFromSystem() abort
   endif
 endfunction
 
-call SetBackgroundFromSystem()
+" call SetBackgroundFromSystem()
+set background=dark
 colorscheme spacemacs
 
 " Color scheme settings
