@@ -75,45 +75,8 @@
 (require 'dm-env)
 (require 'dm-ai)
 (require 'dm-terminal)
+(require 'dm-org)
 (require 'dm-keys)
-
-;;; ————————————————————————————
-;;; Org
-;;; ————————————————————————————
-
-(use-package org
-  ;; Use the ELPA version rather than the built-in one for up-to-date features.
-  :straight t
-  :hook ((org-mode . dm-disable-line-numbers-h))
-  :custom
-  ;; Skip the default `org-modules' cascade (ol-doi ol-w3m ol-bbdb ol-bibtex
-  ;; ol-docview ol-gnus ol-info ol-irc ol-mhe ol-rmail ol-eww). Loading them
-  ;; via `org-load-modules-maybe' on first org-mode activation accounted for
-  ;; ~50% of the open cost. Add specific modules back here if a link type
-  ;; needs them (e.g. `(ol-info ol-eww)' for info: and eww: links).
-  (org-modules nil)
-  ;; ORG_HOME is set in env/emacs.sh; fall back to ~/Org.
-  (org-directory (or (getenv "ORG_HOME") (expand-file-name "~/Org")))
-  (org-agenda-files (list org-directory))
-  ;; Visual preferences.
-  (org-startup-indented t)      ; indent content under headings
-  (org-hide-leading-stars t)    ; show only the last star per heading
-  (org-ellipsis " ▾")           ; collapsed subtree indicator
-  ;; Capture and logging.
-  (org-log-done 'time)          ; timestamp when a TODO is marked DONE
-  (org-log-into-drawer t))      ; keep log entries in a LOGBOOK drawer
-
-(use-package evil-org
-  ;; Evil keybindings for org: heading navigation, table editing, agenda.
-  ;; Adds motions like [[ ]] for headings and gh/gj/gk/gl for outline movement.
-  :after (evil org)
-  :hook (org-mode . evil-org-mode)
-  :config
-  ;; Agenda bindings only matter once `org-agenda' loads, which happens
-  ;; on first `M-x org-agenda'. Don't pull in evil-org-agenda before then.
-  (with-eval-after-load 'org-agenda
-    (require 'evil-org-agenda)
-    (evil-org-agenda-set-keys)))
 
 ;;; ————————————————————————————
 ;;; Eglot — language server protocol (built-in, Emacs 29+)
