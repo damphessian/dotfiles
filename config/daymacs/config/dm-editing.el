@@ -85,7 +85,10 @@
   (autoload 'dired-jump "dired-x" nil t)
   :hook ((prog-mode . dm-dired-jump-keybindings)
          (text-mode . dm-dired-jump-keybindings)
-         (sgml-mode . dm-dired-jump-keybindings)))
+         (sgml-mode . dm-dired-jump-keybindings)
+         (dired-mode . dired-hide-details-mode))
+  :custom
+  (dired-listing-switches "-Ah --group-directories-first"))
 
 (use-package visual-fill-column
   :hook ((markdown-mode . visual-line-mode)
