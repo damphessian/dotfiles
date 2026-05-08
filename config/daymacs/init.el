@@ -656,21 +656,22 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
     "w k" '(windmove-up                :which-key "go up"))
 
   (general-define-key
-   "s-["   #'previous-buffer
-   "s-]"   #'next-buffer
-   "s-{"   #'tab-bar-switch-to-prev-tab
-   "s-}"   #'tab-bar-switch-to-next-tab
-   "s-P"   #'execute-extended-command
-   "s-C-p" #'execute-extended-command-for-buffer
-   "s-f"   #'avy-goto-char-2
-   "s-g"   #'magit-status
-   "s-t"   #'tab-new
-   "s-W"   #'tab-close
-   "s-w"   #'dm-delete-window-dwim
-   "s-k"   #'kill-current-buffer
-   "s-'"   #'eat
-   "C-,"   #'embark-act
-   "C-;"   #'embark-dwim
+   "s-["     #'previous-buffer
+   "s-]"     #'next-buffer
+   "s-{"     #'tab-bar-switch-to-prev-tab
+   "s-}"     #'tab-bar-switch-to-next-tab
+   "s-P"     #'execute-extended-command
+   "s-C-p"   #'execute-extended-command-for-buffer
+   "s-f"     #'avy-goto-char-2
+   "s-g"     #'magit-status
+   "s-t"     #'tab-new
+   "s-W"     #'tab-close
+   "s-w"     #'dm-delete-window-dwim
+   "s-k"     #'kill-current-buffer
+   "s-'"     #'eat
+   "s-\""    #'eat-project
+   "C-,"     #'embark-act
+   "C-;"     #'embark-dwim
    "C-g"     #'dm-quit-or-close-popup
    "C-c C-'" #'claude-code-ide-menu))
 
