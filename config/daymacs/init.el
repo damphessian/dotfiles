@@ -63,116 +63,9 @@
     (loaddefs-generate config-dir loaddefs))
   (load loaddefs nil 'nomessage))
 
-
-;;; ————————————————————————————
-;;; Utility functions
-;;; ————————————————————————————
-
-(defun dm-disable-line-numbers-h ()
-  "Disable line numbers in the current buffer."
-  (display-line-numbers-mode -1))
-
-(defcustom dm-visual-fill-column-extra-width 5
-  "Extra visual columns used when enabling visual wrapping.
-
-`visual-fill-column-width' is specified in columns, but Emacs
-ultimately wraps displayed text according to rendered pixel width.
-Depending on font metrics, scaling, ligatures, and word-boundary
-wrapping, an 80-column visual fill area may wrap slightly before
-80 logical buffer columns.  This value adds a small cushion so
-visual wrapping more closely matches the intended `fill-column'."
-  :type 'integer)
-
-(defun dm-wrapping-enable ()
-  "Enable visual wrapping in the current buffer."
-  (interactive)
-  (setq-local visual-fill-column-width
-              (+ fill-column dm-visual-fill-column-extra-width))
-  (setq-local visual-fill-column-center-text nil)
-  (setq-local word-wrap t)
-  (setq-local truncate-lines nil)
-  (visual-line-mode 1)
-  (when (fboundp 'visual-fill-column-mode)
-    (visual-fill-column-mode 1)
-    (visual-fill-column-adjust))
-  (recenter))
-
-(defun dm-wrapping-disable ()
-  "Disable visual wrapping in the current buffer."
-  (interactive)
-  (visual-line-mode -1)
-  (when (fboundp 'visual-fill-column-mode)
-    (visual-fill-column-mode -1))
-  (setq-local word-wrap nil)
-  (setq-local truncate-lines t)
-  (recenter))
-
-(defun dm-wrapping-toggle ()
-  "Toggle visual line wrapping in the current buffer."
-  (interactive)
-  (if (bound-and-true-p visual-line-mode)
-      (dm-wrapping-disable)
-    (dm-wrapping-enable)))
-
-(with-eval-after-load 'evil
-  (evil-define-operator evil-unfill (beg end type)
-    "Unfill text in motion/selection."
-    :move-point nil
-    (let ((fill-column most-positive-fixnum))
-      (fill-region beg end)))
-  (define-key evil-normal-state-map "gQ" #'evil-unfill))
-
-(defvar dm-find-in-home--dir-cache nil
-  "List of directory paths under `$HOME', populated asynchronously.")
-
-(defvar dm-find-in-home--cache-process nil
-  "Live `make-process' handle for the in-flight cache refresh, if any.")
-
-(defun dm-find-in-home--refresh-cache ()
-  "Asynchronously refresh `dm-find-in-home--dir-cache'.
-Fires fd in a subprocess; stores results when it exits cleanly. Safe to
-call repeatedly — an in-flight refresh is cancelled before a new one starts."
-  (when (process-live-p dm-find-in-home--cache-process)
-    (delete-process dm-find-in-home--cache-process))
-  (let ((buf (generate-new-buffer " *dm-find-in-home-cache*"))
-        (default-directory (expand-file-name "~")))
-    (setq dm-find-in-home--cache-process
-          (make-process
-           :name "dm-find-in-home-cache"
-           :buffer buf
-           :noquery t
-           :command '("fd" "." "--max-depth" "10" "--color" "never"
-                      "--type" "directory" "--hidden")
-           :sentinel
-           (lambda (proc _event)
-             (when (memq (process-status proc) '(exit signal))
-               (when (and (eq (process-status proc) 'exit)
-                          (zerop (process-exit-status proc)))
-                 (with-current-buffer (process-buffer proc)
-                   (setq dm-find-in-home--dir-cache
-                         (split-string (buffer-string) "\n" t))))
-               (kill-buffer (process-buffer proc))))))))
-
-(defun dm-find-in-home ()
-  "Two-stage `fd' selection for directory and file within $HOME.
-Stage 1 reads from `dm-find-in-home--dir-cache' when populated, falling
-back to a synchronous fd run on the first invocation after startup."
-  (interactive)
-  (let* ((home (expand-file-name "~"))
-         (default-directory home)
-         (find-file-cmd "fd . --max-depth 3 --type file --type symlink --hidden")
-         (dirs (or dm-find-in-home--dir-cache
-                   (split-string
-                    (shell-command-to-string
-                     "fd . --max-depth 10 --type directory --hidden")
-                    "\n" t)))
-         (choice-dir (completing-read "Directory: " dirs nil t)))
-    (when (and choice-dir (not (string-empty-p choice-dir)))
-      (let* ((default-directory (expand-file-name (format "~/%s" choice-dir)))
-             (files (split-string (shell-command-to-string find-file-cmd) "\n" t))
-             (choice-file (completing-read "File: " files nil t)))
-        (when (and choice-file (not (string-empty-p choice-file)))
-          (find-file choice-file))))))
+;; Eager, cross-cutting setup lives in cohesive modules; command-only helpers
+;; keep using autoload cookies and stay out of the startup path.
+(require 'dm-ui)
 
 ;;; ————————————————————————————
 ;;; Popup window dismissals
@@ -256,20 +149,6 @@ back to a synchronous fd run on the first invocation after startup."
               (recentf-mode 1))
             (savehist-mode 1)))
 
-;; Relative line numbers match evil's jump-count workflow (e.g. 5j, 12k).
-(setq display-line-numbers-type 'relative)
-(global-display-line-numbers-mode 1)
-
-;; Highlight matching parens immediately.
-(setq show-paren-delay 0)
-(show-paren-mode 1)
-
-;; Single space after sentences — affects fill-paragraph.
-(setq sentence-end-double-space nil)
-
-;; Silence the audible bell entirely.
-(setq ring-bell-function #'ignore)
-
 ;; Follow symlinks to version-controlled files without prompting.
 (setq vc-follow-symlinks t)
 
@@ -288,9 +167,6 @@ back to a synchronous fd run on the first invocation after startup."
 (setq-default truncate-lines t)
 (setq-default fill-column 80)
 
-;; Display column number in the modeline
-(column-number-mode)
-
 ;; delete by moving to trash
 (setq delete-by-moving-to-trash t)
 
@@ -303,42 +179,6 @@ back to a synchronous fd run on the first invocation after startup."
   (let ((path (or file buffer-file-name)))
     (and path
          (string-match-p dm-git-commit-filename-regexp path))))
-
-;; Show project name in title bar, falling back to buffer name.
-(defun dm-frame-title-project-or-buffer ()
-  "Show project name in title bar, falling back to buffer name."
-  (if-let* ((proj (project-current)))
-      (project-name proj)
-    (buffer-name)))
-
-(setq frame-title-format
-      '((:eval
-         (dm-frame-title-project-or-buffer))))
-
-(defun dm-open-daymacs-init-in-new-tab ()
-  "Open the Daymacs init.el file in a new tab."
-  (interactive)
-  (tab-new)
-  (find-file (expand-file-name "init.el" user-emacs-directory)))
-
-;;; ————————————————————————————
-;;; Appearance
-;;; ————————————————————————————
-
-(set-face-attribute 'default nil :family "Source Code Pro" :height 180)
-
-(use-package doom-themes
-  :config
-  (load-theme 'doom-one t))
-
-(use-package doom-modeline
-  :init
-  (setq doom-modeline-major-mode-icon nil)
-  (setq doom-modeline-buffer-state-icon nil)
-  (setq doom-modeline-vcs-icon nil)
-  (setq doom-modeline-icon t)
-  :config
-  (doom-modeline-mode 1))
 
 ;;; ————————————————————————————
 ;;; Evil — vi keybindings

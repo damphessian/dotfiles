@@ -16,6 +16,16 @@
 
 ;;; Generated autoloads from dm-files.el
 
+(autoload 'dm-open-daymacs-init-in-new-tab "dm-files"
+"Open the Daymacs init.el file in a new tab." t)
+(autoload 'dm-find-in-home--refresh-cache "dm-files"
+"Asynchronously refresh `dm-find-in-home--dir-cache'.
+Fires fd in a subprocess; stores results when it exits cleanly. Safe to
+call repeatedly -- an in-flight refresh is cancelled before a new one starts.")
+(autoload 'dm-find-in-home "dm-files"
+"Two-stage `fd' selection for directory and file within $HOME.
+Stage 1 reads from `dm-find-in-home--dir-cache' when populated, falling
+back to a synchronous fd run on the first invocation after startup." t)
 (autoload 'dm-directory-open "dm-files"
 "Open the directory of the current buffer's file in Finder." t)
 (autoload 'dm-directory-open-project "dm-files"
@@ -156,6 +166,17 @@ process buffers below the selected window.
 "Install tight-loop local bindings and mode helpers in programming buffers.")
 (register-definition-prefixes "dm-repl" '("dm-"))
 
+
+
+;;; Generated autoloads from dm-ui.el
+
+(autoload 'dm-wrapping-enable "dm-ui"
+"Enable visual wrapping in the current buffer." t)
+(autoload 'dm-wrapping-disable "dm-ui"
+"Disable visual wrapping in the current buffer." t)
+(autoload 'dm-wrapping-toggle "dm-ui"
+"Toggle visual line wrapping in the current buffer." t)
+(register-definition-prefixes "dm-ui" '("dm-"))
 
 ;;; End of scraped data
 

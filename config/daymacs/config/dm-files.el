@@ -125,6 +125,67 @@ Returns nil if PATH is not inside the current project."
     (message "Opened: %s" file)))
 
 ;;;###autoload
+(defun dm-open-daymacs-init-in-new-tab ()
+  "Open the Daymacs init.el file in a new tab."
+  (interactive)
+  (tab-new)
+  (find-file (expand-file-name "init.el" user-emacs-directory)))
+
+(defvar dm-find-in-home--dir-cache nil
+  "List of directory paths under `$HOME', populated asynchronously.")
+
+(defvar dm-find-in-home--cache-process nil
+  "Live `make-process' handle for the in-flight cache refresh, if any.")
+
+;;;###autoload
+(defun dm-find-in-home--refresh-cache ()
+  "Asynchronously refresh `dm-find-in-home--dir-cache'.
+Fires fd in a subprocess; stores results when it exits cleanly. Safe to
+call repeatedly -- an in-flight refresh is cancelled before a new one starts."
+  (when (process-live-p dm-find-in-home--cache-process)
+    (delete-process dm-find-in-home--cache-process))
+  (let ((buf (generate-new-buffer " *dm-find-in-home-cache*"))
+        (default-directory (expand-file-name "~")))
+    (setq dm-find-in-home--cache-process
+          (make-process
+           :name "dm-find-in-home-cache"
+           :buffer buf
+           :noquery t
+           :command '("fd" "." "--max-depth" "10" "--color" "never"
+                      "--type" "directory" "--hidden")
+           :sentinel
+           (lambda (proc _event)
+             (when (memq (process-status proc) '(exit signal))
+               (when (and (eq (process-status proc) 'exit)
+                          (zerop (process-exit-status proc)))
+                 (with-current-buffer (process-buffer proc)
+                   (setq dm-find-in-home--dir-cache
+                         (split-string (buffer-string) "\n" t))))
+               (kill-buffer (process-buffer proc))))))))
+
+;;;###autoload
+(defun dm-find-in-home ()
+  "Two-stage `fd' selection for directory and file within $HOME.
+Stage 1 reads from `dm-find-in-home--dir-cache' when populated, falling
+back to a synchronous fd run on the first invocation after startup."
+  (interactive)
+  (let* ((home (expand-file-name "~"))
+         (default-directory home)
+         (find-file-cmd "fd . --max-depth 3 --type file --type symlink --hidden")
+         (dirs (or dm-find-in-home--dir-cache
+                   (split-string
+                    (shell-command-to-string
+                     "fd . --max-depth 10 --type directory --hidden")
+                    "\n" t)))
+         (choice-dir (completing-read "Directory: " dirs nil t)))
+    (when (and choice-dir (not (string-empty-p choice-dir)))
+      (let* ((default-directory (expand-file-name (format "~/%s" choice-dir)))
+             (files (split-string (shell-command-to-string find-file-cmd) "\n" t))
+             (choice-file (completing-read "File: " files nil t)))
+        (when (and choice-file (not (string-empty-p choice-file)))
+          (find-file choice-file))))))
+
+;;;###autoload
 (defun dm-directory-open ()
   "Open the directory of the current buffer's file in Finder."
   (interactive)
