@@ -182,7 +182,11 @@
   ;; Extra completion-at-point sources: dabbrev, file paths, etc.
   :after corfu
   :config
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (defun dm-cape-dabbrev ()
+    "Run `cape-dabbrev' as a quiet optional CAPF."
+    (cape-wrap-silent #'cape-dabbrev))
+
+  (add-hook 'completion-at-point-functions #'dm-cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-file))
 
 ;;;###autoload
