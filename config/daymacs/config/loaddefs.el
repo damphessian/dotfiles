@@ -177,6 +177,15 @@ process buffers below the selected window.
 (autoload 'dm-wrapping-toggle "dm-ui"
 "Toggle visual line wrapping in the current buffer." t)
 (register-definition-prefixes "dm-ui" '("dm-"))
+
+
+;;; Generated autoloads from dm-window.el
+
+(autoload 'dm-delete-window-dwim "dm-window"
+"Delete window, do what I mean.
+Close tab if sole window in tab, close frame if multiple frames exist,
+otherwise kill Emacs." t)
+(register-definition-prefixes "dm-window" '("dm-window-"))
 
 ;;; End of scraped data
 
