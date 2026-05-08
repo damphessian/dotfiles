@@ -106,6 +106,24 @@ With DISPLAYMODE-P, use display math delimiters.
 (autoload 'dm-text-make-strikethrough "dm-text"
 "Format selected text, or text around point, as strikethrough." t)
 (register-definition-prefixes "dm-text" '("dm-text-"))
+
+
+;;; Generated autoloads from dm-magit.el
+
+(autoload 'dm-git-commit-insert-pending-generated-message "dm-magit"
+"Insert pending generated commit message into the current commit buffer.")
+(autoload 'dm-magit-commit-generate "dm-magit"
+"Generate a commit message, then open Magit's commit buffer." t)
+(autoload 'dm-magit-display-buffer-fn "dm-magit"
+"Display Magit BUFFER with less window churn.
+This follows Doom's strategy closely enough for the status-to-commit
+transition: reuse the current window for most non-diff buffers and keep
+process buffers below the selected window.
+
+(fn BUFFER)")
+(autoload 'dm-git-commit-disable-completion "dm-magit"
+"Disable dabbrev in Git commit message buffers.")
+(register-definition-prefixes "dm-magit" '("dm-"))
 
 ;;; End of scraped data
 
