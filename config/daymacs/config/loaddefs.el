@@ -209,6 +209,13 @@ otherwise kill Emacs." t)
 ;;; Generated autoloads from dm-ai.el
 
 (register-definition-prefixes "dm-ai" '("dm-"))
+
+
+;;; Generated autoloads from dm-langs.el
+
+(autoload 'dm-treesit-install-all-languages "dm-langs"
+"Install all Tree-sitter grammars defined in `treesit-language-source-alist'." t)
+(register-definition-prefixes "dm-langs" '("dm-eglot-ensure-deferred"))
 
 ;;; End of scraped data
 
