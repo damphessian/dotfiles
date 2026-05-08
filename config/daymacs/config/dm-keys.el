@@ -83,6 +83,13 @@
     "t c" '(copilot-mode       :which-key "copilot")
     "t w" '(dm-wrapping-toggle :which-key "word wrap")
 
+    ;; Tabs
+    "T"     '(:ignore t  :which-key "tab")
+    "T RET" '(tab-new    :which-key "new")
+    "T W"   '(tab-close  :which-key "close")
+    "T n"   '(tab-bar-switch-to-next-tab  :which-key "next")
+    "T p"   '(tab-bar-switch-to-prev-tab  :which-key "prev")
+
     ;; Workspaces (tabspaces)
     "TAB"   '(:ignore t                    :which-key "workspace")
     "TAB TAB" '(tabspaces-switch-or-create-workspace :which-key "switch/create")
@@ -134,24 +141,29 @@
     "w k" '(windmove-up                :which-key "go up"))
 
   (general-define-key
-   "s-["     #'previous-buffer
-   "s-]"     #'next-buffer
-   "s-{"     #'tab-bar-switch-to-prev-tab
-   "s-}"     #'tab-bar-switch-to-next-tab
-   "s-P"     #'execute-extended-command
-   "s-C-p"   #'execute-extended-command-for-buffer
-   "s-f"     #'avy-goto-char-2
-   "s-g"     #'magit-status
-   "s-t"     #'tab-new
-   "s-W"     #'tab-close
-   "s-w"     #'dm-delete-window-dwim
-   "s-k"     #'kill-current-buffer
-   "s-'"     #'eat
-   "s-\""    #'eat-project
-   "C-,"     #'embark-act
-   "C-;"     #'embark-dwim
-   "C-g"     #'dm-quit-or-close-popup
-   "C-c C-'" #'claude-code-ide-menu))
+   ;; Global keybindings not under SPC. These are mostly for window and buffer
+   ;; management, since those are the most common commands and benefit most from
+   ;; being available everywhere without a prefix.
+     "C-,"     #'embark-act
+     "C-;"     #'embark-dwim
+     "C-g"     #'dm-quit-or-close-popup)
+
+  (when (display-graphic-p)
+    (general-define-key
+     "s-["     #'previous-buffer
+     "s-]"     #'next-buffer
+     "s-{"     #'tab-bar-switch-to-prev-tab
+     "s-}"     #'tab-bar-switch-to-next-tab
+     "s-P"     #'execute-extended-command
+     "s-C-p"   #'execute-extended-command-for-buffer
+     "s-f"     #'avy-goto-char-2
+     "s-g"     #'magit-status
+     "s-t"     #'tab-new
+     "s-W"     #'tab-close
+     "s-w"     #'dm-delete-window-dwim
+     "s-k"     #'kill-current-buffer
+     "s-'"     #'eat
+     "s-\""    #'eat-project)))
 
 (use-package which-key
   ;; Displays available key completions after a short delay. Deferred because

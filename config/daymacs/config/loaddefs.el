@@ -216,6 +216,12 @@ otherwise kill Emacs." t)
 (autoload 'dm-treesit-install-all-languages "dm-langs"
 "Install all Tree-sitter grammars defined in `treesit-language-source-alist'." t)
 (register-definition-prefixes "dm-langs" '("dm-eglot-ensure-deferred"))
+
+
+;;; Generated autoloads from dm-cli.el
+
+(register-definition-prefixes "dm-cli" '("dm-cli-commit-buffer-setup"))
+
 
 ;;; End of scraped data
 
