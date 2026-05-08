@@ -10,6 +10,7 @@
 (setq default-frame-alist
       '((tool-bar-lines . 0)
         (menu-bar-lines . 0)
+        (fullscreen . maximized)
         (vertical-scroll-bars . nil)
         (horizontal-scroll-bars . nil)
         (ns-transparent-titlebar . t)
