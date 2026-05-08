@@ -212,6 +212,9 @@ visual wrapping more closely matches the intended `fill-column'."
 ;; Empty scratch buffer on launch (inhibit-startup-screen is in early-init.el).
 (setq initial-scratch-message nil)
 
+;; Empty scratch buffer in fundamental-mode
+(setq initial-major-mode 'fundamental-mode)
+
 ;; Use spaces for alignment, truncate lines by default
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
