@@ -152,6 +152,7 @@
                   (lambda (a b)
                     (> (car a) (car b)))))))
 
+;;;###autoload
 (defun dm-toggle-test-implementation ()
   "Toggle between implementation and test file using project.el."
   (interactive)

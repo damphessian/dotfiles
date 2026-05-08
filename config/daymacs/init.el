@@ -41,13 +41,32 @@
 ;; Load config directory
 (add-to-list 'load-path (expand-file-name "config" user-emacs-directory))
 
+;; Lazy-load `dm-*' modules via a generated `loaddefs.el'. The generator picks
+;; up `;;;###autoload' cookies in `config/*.el' and writes one file with all
+;; the `(autoload ...)' forms. We rebuild it whenever any source file is newer
+;; than the cache, so adding a new module or cookie just works on next boot.
+(let* ((config-dir (expand-file-name "config" user-emacs-directory))
+       (loaddefs (expand-file-name "loaddefs.el" config-dir))
+       (sources (and (file-directory-p config-dir)
+                     (directory-files config-dir t "\\`dm-.*\\.el\\'")))
+       (stale (or (not (file-exists-p loaddefs))
+                  (let ((cached (file-attribute-modification-time
+                                 (file-attributes loaddefs))))
+                    (seq-some (lambda (f)
+                                (time-less-p
+                                 cached
+                                 (file-attribute-modification-time
+                                  (file-attributes f))))
+                              sources)))))
+  (when stale
+    (require 'loaddefs-gen)
+    (loaddefs-generate config-dir loaddefs))
+  (load loaddefs nil 'nomessage))
+
 
 ;;; ————————————————————————————
 ;;; Utility functions
 ;;; ————————————————————————————
-
-(require 'dm-text)
-(require 'dm-files)
 
 (defun dm-disable-line-numbers-h ()
   "Disable line numbers in the current buffer."
@@ -158,7 +177,6 @@ back to a synchronous fd run on the first invocation after startup."
 ;;; ————————————————————————————
 ;;; Popup window dismissals
 ;;; ————————————————————————————
-(require 'dm-popup-quit)
 
 (setq dm-quit-or-close-popup-buffer-names
       '("*Backtrace*"
@@ -176,7 +194,6 @@ back to a synchronous fd run on the first invocation after startup."
 ;;; ————————————————————————————
 ;;; Test/Implementation Toggle
 ;;; ————————————————————————————
-(require 'dm-test-toggle)
 (with-eval-after-load 'evil
   (evil-define-command dm-evil-toggle-test-implementation ()
     "Toggle between implementation and test file."
@@ -329,7 +346,6 @@ back to a synchronous fd run on the first invocation after startup."
   (setq evil-want-keybinding nil)    ; evil-collection provides these instead
   :config
   (evil-mode 1)
-  (require 'dm-evil-text)
   (dm-evil-text-setup)
   ;; Let the main readline-style keys fall through to the global map in insert state.
   ;; C-k is kept for `evil-insert-digraph' (`kill-line' in normal state)

@@ -60,6 +60,7 @@
     (kill-region (mark) (point))
     (insert (format "\\%s{%s}" cmd selected-text))))
 
+;;;###autoload
 (defun dm-text-latex-wrap-as-math (displaymode-p)
   "Wrap selected text, or text around point, in LaTeX math delimiters.
 With DISPLAYMODE-P, use display math delimiters."
@@ -83,11 +84,13 @@ With DISPLAYMODE-P, use display math delimiters."
       (kill-region (mark) (point))
       (insert wrapped-text))))
 
+;;;###autoload
 (defun dm-text-latex-wrap-as-math-display ()
   "Wrap selected text, or text around point, in LaTeX display math delimiters."
   (interactive)
   (dm-text-latex-wrap-as-math t))
 
+;;;###autoload
 (defun dm-text-latex-wrap-as-frac ()
   "Wrap selected text, or text around point, in a LaTeX fraction command."
   (interactive)
@@ -103,11 +106,13 @@ With DISPLAYMODE-P, use display math delimiters."
     (kill-region (mark) (point))
     (insert formatted-string)))
 
+;;;###autoload
 (defun dm-text-latex-wrap-as-boxed ()
   "Wrap selected text, or text around point, in a LaTeX boxed command."
   (interactive)
   (dm-text--latex-wrap-in-cmd "boxed"))
 
+;;;###autoload
 (defun dm-text-latex-wrap-as-si ()
   "Format the selected text as a LaTeX SI unit expression."
   (interactive)
@@ -122,6 +127,7 @@ With DISPLAYMODE-P, use display math delimiters."
     (delete-region (region-beginning) (region-end))
     (insert formatted-string)))
 
+;;;###autoload
 (defun dm-text-latex-evaluate-selection ()
   "Evaluate selected LaTeX-flavored math and replace it with the result."
   (interactive)
@@ -146,6 +152,7 @@ With DISPLAYMODE-P, use display math delimiters."
     (kill-region (mark) (point))
     (insert (format "%s" result))))
 
+;;;###autoload
 (defun dm-text-make-bold ()
   "Format selected text, or text around point, as bold."
   (interactive)
@@ -159,6 +166,7 @@ With DISPLAYMODE-P, use display math delimiters."
     (_
      (message "Unrecognized mode: %s" major-mode))))
 
+;;;###autoload
 (defun dm-text-make-italic ()
   "Format selected text, or text around point, as italic."
   (interactive)
@@ -172,6 +180,7 @@ With DISPLAYMODE-P, use display math delimiters."
     (_
      (message "Unrecognized mode: %s" major-mode))))
 
+;;;###autoload
 (defun dm-text-make-underlined ()
   "Format selected text, or text around point, as underlined."
   (interactive)
@@ -185,6 +194,7 @@ With DISPLAYMODE-P, use display math delimiters."
     (_
      (message "Unrecognized mode: %s" major-mode))))
 
+;;;###autoload
 (defun dm-text-make-strikethrough ()
   "Format selected text, or text around point, as strikethrough."
   (interactive)

@@ -64,6 +64,7 @@ With prefix argument DESC, sort in descending order."
   (interactive "P")
   (dm-evil-text-sort-inner 'bracket desc))
 
+;;;###autoload
 (defun dm-evil-text-setup ()
   "Install Daymacs Evil text objects and sort bindings."
   ;; text objects

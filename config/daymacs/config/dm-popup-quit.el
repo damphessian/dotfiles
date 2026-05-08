@@ -33,6 +33,7 @@ For example, a prefix of \"*Flycheck\" matches buffers such as
            (string-prefix-p prefix name))
          dm-quit-or-close-popup-buffer-prefixes))))
 
+;;;###autoload
 (defun dm-quit-or-close-popup ()
   "Close a visible popup window, or otherwise run `keyboard-quit'.
 A popup window is any non-selected visible window whose buffer name is listed
