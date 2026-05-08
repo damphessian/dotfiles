@@ -26,28 +26,6 @@ See [[https://github.com/hlissner/doom-emacs/blob/develop/modules/lang/emacs-lis
       +doom-dashboard-ascii-banner-fn nil)
 #+end_src
 
-Use the project name for the frame title, if available, otherwise the buffer name.
-#+begin_src elisp
-(setq frame-title-format
-      '((:eval
-         (if (projectile-project-p)
-             (format "%s" (projectile-project-name))
-           (buffer-name)))))
-#+end_src
-
-Hide the title bar.
-Disabled on mac: Rectangle Pro can't control it without the title bar.
-If using emacs-mac, use `--with-no-title-bars` flag instead
-#+begin_src elisp
-(unless (string= (getenv "MACHINE") "apple")
-  (add-to-list 'default-frame-alist '(undecorated . t)))
-#+end_src
-
-Start Emacs maximized.
-#+begin_src elisp
-(add-to-list 'initial-frame-alist '(fullscreen . maximized))
-#+end_src
-
 The first number is the transparency when the frame is focused, the second when
 unfocused. Values range from 0 (completely transparent) to 100 (opaque).
 #+begin_src elisp
@@ -118,94 +96,6 @@ https://github.com/d12frosted/homebrew-emacs-plus/blob/master/patches/emacs-28/s
         ('dark (load-theme 'doom-one t))))))
 
 (add-hook 'ns-system-appearance-change-functions #'do/config:set-preferred-theme-h)
-#+end_src
-
-** display: doom dashboard
-
-#+begin_src elisp
-(set-face-foreground 'doom-dashboard-footer-icon "#5B6268")
-(set-face-foreground 'doom-dashboard-footer "#5B6268")
-#+end_src
-
-Override the widget footer function to replace the icon.
-#+begin_src elisp
-(defun doom-dashboard-widget-footer ()
-  (insert
-   "\n"
-   (+doom-dashboard--center
-    (- +doom-dashboard--width 2)
-    (with-temp-buffer
-      (insert-text-button (nerd-icons-sucicon "nf-custom-emacs" 'doom-dashboard-footer-icon :height 4)
-                          'action (lambda (_) (browse-url "https://github.com/hlissner/doom-emacs"))
-                          'follow-link t
-                          'help-echo "Doom Emacs")
-      (buffer-string)))
-   "\n"))
-#+end_src
-
-Override the benchmark reporting to customize.
-#+begin_src elisp
-(defun doom-display-benchmark-h (&optional return-p)
-  "Display a benchmark including number of packages and modules loaded.
-
-If RETURN-P, return the message as a string instead of displaying it."
-  (funcall (if return-p #'format #'message)
-           "Emacs loaded %d packages across %d modules in %.03fs"
-           (- (length load-path) (length (get 'load-path 'initial-value)))
-           (if doom-modules (hash-table-count doom-modules) -1)
-           doom-init-time))
-#+end_src
-
-#+begin_src elisp
-(setq +doom-dashboard-menu-sections
-      '(
-        ("Open org-agenda"
-         :icon (nerd-icons-octicon "nf-oct-calendar" :face 'doom-dashboard-menu-title)
-         :when (fboundp 'org-agenda-today-by-priority)
-         :action org-agenda)
-        ("Open empty buffer"
-         :icon (nerd-icons-octicon "nf-oct-file" :face 'doom-dashboard-menu-title)
-         :action evil-buffer-new)
-        ("Switch to scratch buffer"
-         :icon (nerd-icons-octicon "nf-oct-pencil" :face 'doom-dashboard-menu-title)
-         :action doom/switch-to-scratch-buffer)
-        ("Open terminal emulator"
-         :icon (nerd-icons-octicon "nf-oct-terminal" :face 'doom-dashboard-menu-title)
-         :action +vterm/here)
-        ("Recently opened files"
-         :icon (nerd-icons-faicon "nf-fa-file_text" :face 'doom-dashboard-menu-title)
-         :action recentf-open-files)
-        ("Reload last session"
-         :icon (nerd-icons-octicon "nf-oct-history" :face 'doom-dashboard-menu-title)
-         :when (cond
-                ((modulep! :ui workspaces)
-                 (file-exists-p (expand-file-name persp-auto-save-fname persp-save-dir)))
-                ((require 'desktop nil t) (file-exists-p (desktop-full-file-name))))
-         :action doom/quickload-session)
-        ("Open project"
-         :icon (nerd-icons-octicon "nf-oct-briefcase" :face 'doom-dashboard-menu-title)
-         :action projectile-switch-project)
-        ("Jump to bookmark"
-         :icon (nerd-icons-octicon "nf-oct-bookmark" :face 'doom-dashboard-menu-title)
-         :action bookmark-jump)
-        ("Open private configuration"
-         :icon (nerd-icons-octicon "nf-oct-tools" :face 'doom-dashboard-menu-title)
-         :when (file-directory-p doom-user-dir)
-         :action doom/open-private-config)
-        ("Open documentation"
-         :icon (nerd-icons-octicon "nf-oct-book" :face 'doom-dashboard-menu-title)
-         :action doom/help)
-        ))
-#+end_src
-
-** display: hl-todo
-
-Enable hl-todo mode in certain text modes.
-
-#+begin_src elisp
-(after! hl-todo
-  (add-hook! markdown-mode #'hl-todo-mode)
-  (add-hook! org-mode #'hl-todo-mode))
 #+end_src
 
 ** super keys
@@ -303,44 +193,6 @@ Use =s-`= to cycle between frames.
 
 #+begin_src elisp
 (map! :ni "s-<return>" #'+make/run)
-#+end_src
-
-** indentation
-
-#+begin_src elisp
-(setq-default standard-indent 2)
-#+end_src
-
-** recent buffers toggling
-
-#+begin_src elisp
-(defun +buffer/other ()
-  "Switch to most recent buffer. Repeated calls toggle back and forth between the most recent two buffers."
-  (interactive)
-  (let ((current (current-buffer))
-        (buflist (buffer-list)))
-    ;; Remove current buffer from the list
-    (setq buflist (delq current buflist))
-    ;; Switch to the first buffer in the list (most recently used)
-    (switch-to-buffer (car buflist))))
-
-(global-set-key (kbd "s-`") '+buffer/other)
-#+end_src
-
-** word wrapping
-
-#+begin_src elisp
-(setq +word-wrap-fill-style 'soft)
-
-(dolist (mode '(dired-mode minibuffer-mode completion-list-mode vterm-mode))
-  (add-to-list '+word-wrap-disabled-modes mode))
-
-(+global-word-wrap-mode)
-
-(defun do/config:disable-word-wrap-h ()
-  (+word-wrap-mode -1))
-(add-hook! org-mode #'do/config:disable-word-wrap-h)
-(add-hook! org-agenda-mode #'do/config:disable-word-wrap-h)
 #+end_src
 
 * +utilities
