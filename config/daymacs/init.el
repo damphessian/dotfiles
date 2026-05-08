@@ -83,5 +83,6 @@
 (require 'dm-langs)
 (require 'dm-keys)
 
+(message (emacs-init-time "%.2fs"))
 (provide 'init)
 ;;; init.el ends here
