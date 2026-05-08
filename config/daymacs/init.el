@@ -1361,6 +1361,15 @@ Eglot's connect call blocks redisplay until the LSP server returns its
           (lambda ()
             (run-with-timer 1 nil #'dm-find-in-home--refresh-cache)))
 
+;; Pre-load org so the first `.org' file open doesn't pay the ~300 ms
+;; internal require cascade (org-element, ol, oc, …). Same fixed-timer
+;; pattern as eglot — `run-with-idle-timer' wouldn't fire if the user
+;; jumped straight into a file. Slightly later than eglot since org is
+;; heavier and there's no rush to have it ready.
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (run-with-timer 1.5 nil (lambda () (require 'org)))))
+
 ;;; ————————————————————————————
 ;;; Helpful — richer help buffers
 ;;; ————————————————————————————
