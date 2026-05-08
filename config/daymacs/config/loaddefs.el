@@ -124,6 +124,37 @@ process buffers below the selected window.
 (autoload 'dm-git-commit-disable-completion "dm-magit"
 "Disable dabbrev in Git commit message buffers.")
 (register-definition-prefixes "dm-magit" '("dm-"))
+
+
+;;; Generated autoloads from dm-repl.el
+
+(autoload 'dm-repl-start-or-pop "dm-repl"
+"Start or pop to the REPL appropriate for the current buffer." t)
+(autoload 'dm-repl-eval-region "dm-repl"
+"Evaluate region START END in the language-appropriate REPL.
+
+(fn START END)" t)
+(autoload 'dm-repl-eval-line "dm-repl"
+"Evaluate the current line in the language-appropriate REPL." t)
+(autoload 'dm-repl-eval-buffer "dm-repl"
+"Evaluate the current buffer in the language-appropriate REPL." t)
+(autoload 'dm-repl-eval-dwim "dm-repl"
+"Evaluate active region, current code cell, or current line." t)
+(autoload 'dm-repl-eval-cell "dm-repl"
+"Evaluate the current code cell." t)
+(autoload 'dm-repl-next-cell "dm-repl"
+"Move to the next code cell." t)
+(autoload 'dm-repl-previous-cell "dm-repl"
+"Move to the previous code cell." t)
+(autoload 'dm-repl-check-dwim "dm-repl"
+"Run the fastest project check for the current language." t)
+(autoload 'dm-repl-test-dwim "dm-repl"
+"Run the nearest or current-buffer test for the current language." t)
+(autoload 'dm-repl-test-all "dm-repl"
+"Run all tests for the current language." t)
+(autoload 'dm-repl-local-keybindings "dm-repl"
+"Install tight-loop local bindings and mode helpers in programming buffers.")
+(register-definition-prefixes "dm-repl" '("dm-"))
 
 ;;; End of scraped data
 
