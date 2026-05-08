@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# gem
+#
+# A little shim for friendlier output during mise installs
+#
+
 BLUE="\x1b[0;34m"
 BOLDBLK="\x1b[1;30m"
 CYAN="\x1b[0;36m"
