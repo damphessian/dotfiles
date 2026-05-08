@@ -766,7 +766,14 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
    consult-ripgrep
    consult-grep
    consult-git-grep
-   :preview-key "M-."))
+   consult-recent-file
+   consult-bookmark
+   consult-source-recent-file
+   consult-source-project-recent-file
+   consult-source-project-recent-file-hidden
+   consult-source-bookmark
+   :preview-key "M-.")
+  (setq consult-narrow-key "?"))
 
 (defun dm-search-project-for-symbol-at-point ()
   "Search the current project for the symbol at point."
@@ -824,13 +831,21 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
   (tabspaces-remove-to-default t)
   (tabspaces-include-buffers '("*scratch*")))
 
-;; Filter consult-buffer to show only current-workspace buffers.
+;; Filter `consult-buffer' to show only current-workspace buffers.
 ;; Nested with-eval-after-load ensures both packages are fully loaded
-;; before consult--source-buffer is customized.
+;; before `consult-source-buffer' is customized.
 (with-eval-after-load 'consult
   (with-eval-after-load 'tabspaces
     (consult-customize consult-source-buffer :hidden t :default nil)
-    (defvar consult--source-workspace
+    ;; Hide file-loading sources from default consult-buffer view; still
+    ;; accessible by narrowing (r recent, p project, m bookmarks).
+    (consult-customize
+     consult-source-recent-file
+     consult-source-project-recent-file
+     consult-source-project-recent-file-hidden
+     consult-source-bookmark
+     :hidden t)
+    (defvar consult-source-workspace
       (list :name     "Workspace buffers"
             :narrow   ?w
             :history  'buffer-name-history
@@ -842,7 +857,7 @@ Resize window: [_h_] narrower [_j_] shorter [_k_] taller [_l_] wider [_=_] balan
                          :predicate #'tabspaces--local-buffer-p
                          :sort 'visibility
                          :as #'buffer-name))))
-    (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
+    (add-to-list 'consult-buffer-sources 'consult-source-workspace)))
 
 ;;; ————————————————————————————
 ;;; Dired
