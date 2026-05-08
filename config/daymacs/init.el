@@ -1329,6 +1329,18 @@ Eglot's connect call blocks redisplay until the LSP server returns its
                '((python-mode python-ts-mode)
                  . ("basedpyright-langserver" "--stdio")))
 
+  (when-let* ((elixir-ls-command
+               (cond
+                ((executable-find "expert")
+                 (list (executable-find "expert") "--stdio"))
+                ((executable-find "elixir-ls")
+                 (list (executable-find "elixir-ls")))
+                ((executable-find "language_server.sh")
+                 (list (executable-find "language_server.sh"))))))
+    (add-to-list 'eglot-server-programs
+                 `((elixir-mode elixir-ts-mode heex-ts-mode)
+                   . ,elixir-ls-command)))
+
   ;; Keep basedpyright out of venvs and build dirs and restrict diagnostics
   ;; to open files, so the initial workspace scan stays cheap. Project-wide
   ;; warnings (unused imports across files) only appear once each is opened.
