@@ -909,7 +909,37 @@ FN and ARGS are the advised `treesit-auto--set-major-remap' arguments."
   ;; and the targeted tracer shows the hand-rolled config is spending most of
   ;; its extra time in the unwrapped portion of `git-commit-setup'.
   (advice-add #'treesit-auto--set-major-remap
-              :around #'dm-skip-treesit-auto-for-git-commit-file-a))
+              :around #'dm-skip-treesit-auto-for-git-commit-file-a)
+
+  ;; Memoize the remap-alist build. `treesit-auto--build-major-mode-remap-alist'
+  ;; is called on every file open (twice, via auto-mode + remap-alist passes)
+  ;; and dlopens every grammar in `treesit-language-source-alist' to check
+  ;; availability. ~2 s per find-file on a 16-grammar list. Grammars don't
+  ;; change within a session, so cache the first result.
+  (defvar dm-treesit-auto--remap-alist-cache nil
+    "Memoized result of `treesit-auto--build-major-mode-remap-alist'.")
+
+  (defun dm-treesit-auto--cached-remap-alist-a (fn &rest args)
+    "Return cached treesit-auto remap alist, building it once."
+    (or dm-treesit-auto--remap-alist-cache
+        (setq dm-treesit-auto--remap-alist-cache (apply fn args))))
+
+  (defun dm-treesit-auto-invalidate-cache ()
+    "Drop cached treesit-auto remap alist after grammar changes."
+    (interactive)
+    (setq dm-treesit-auto--remap-alist-cache nil))
+
+  (advice-add 'treesit-auto--build-major-mode-remap-alist
+              :around #'dm-treesit-auto--cached-remap-alist-a)
+  (advice-add 'treesit-install-language-grammar
+              :after (lambda (&rest _) (dm-treesit-auto-invalidate-cache)))
+
+  ;; Pre-warm at idle so the first find-file doesn't pay the build cost.
+  (run-with-idle-timer
+   1 nil
+   (lambda ()
+     (when (fboundp 'treesit-auto--build-major-mode-remap-alist)
+       (treesit-auto--build-major-mode-remap-alist)))))
 
 ;;; ————————————————————————————
 ;;; Magit (TODO: extract)
@@ -1218,25 +1248,36 @@ process buffers below the selected window."
 ;;; Eglot — language server protocol (built-in, Emacs 29+)
 ;;; ————————————————————————————
 
+(defun dm-eglot-ensure-deferred ()
+  "Defer `eglot-ensure' so the buffer becomes interactive immediately.
+Eglot's connect call blocks redisplay until the LSP server returns its
+`initialize' response. Push it past the find-file critical path."
+  (let ((buf (current-buffer)))
+    (run-with-idle-timer
+     0.5 nil
+     (lambda ()
+       (when (buffer-live-p buf)
+         (with-current-buffer buf (eglot-ensure)))))))
+
 (use-package eglot
   :straight nil
-  :hook ((python-mode        . eglot-ensure)
-         (python-ts-mode     . eglot-ensure)
-         (js-mode            . eglot-ensure)
-         (js-ts-mode         . eglot-ensure)
-         (jsx-ts-mode        . eglot-ensure)
-         (typescript-mode    . eglot-ensure)
-         (typescript-ts-mode . eglot-ensure)
-         (tsx-ts-mode        . eglot-ensure)
-         (go-mode            . eglot-ensure)
-         (go-ts-mode         . eglot-ensure)
-         (rust-mode          . eglot-ensure)
-         (rust-ts-mode       . eglot-ensure)
-         (elixir-mode        . eglot-ensure)
-         (elixir-ts-mode     . eglot-ensure)
-         (heex-ts-mode       . eglot-ensure)
-         (sh-mode            . eglot-ensure)
-         (bash-ts-mode       . eglot-ensure))
+  :hook ((python-mode        . dm-eglot-ensure-deferred)
+         (python-ts-mode     . dm-eglot-ensure-deferred)
+         (js-mode            . dm-eglot-ensure-deferred)
+         (js-ts-mode         . dm-eglot-ensure-deferred)
+         (jsx-ts-mode        . dm-eglot-ensure-deferred)
+         (typescript-mode    . dm-eglot-ensure-deferred)
+         (typescript-ts-mode . dm-eglot-ensure-deferred)
+         (tsx-ts-mode        . dm-eglot-ensure-deferred)
+         (go-mode            . dm-eglot-ensure-deferred)
+         (go-ts-mode         . dm-eglot-ensure-deferred)
+         (rust-mode          . dm-eglot-ensure-deferred)
+         (rust-ts-mode       . dm-eglot-ensure-deferred)
+         (elixir-mode        . dm-eglot-ensure-deferred)
+         (elixir-ts-mode     . dm-eglot-ensure-deferred)
+         (heex-ts-mode       . dm-eglot-ensure-deferred)
+         (sh-mode            . dm-eglot-ensure-deferred)
+         (bash-ts-mode       . dm-eglot-ensure-deferred))
   :custom
   (eglot-autoshutdown t)
   ;; Don't auto-reconnect on crash. The default (3s) creates an infinite
