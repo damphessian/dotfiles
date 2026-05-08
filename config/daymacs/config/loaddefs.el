@@ -192,6 +192,13 @@ otherwise kill Emacs." t)
 
 (autoload 'dm-search-project-for-symbol-at-point "dm-completion"
 "Search the current project for the symbol at point." t)
+
+
+;;; Generated autoloads from dm-editing.el
+
+(autoload 'dm-tab-dwim "dm-editing"
+"Smart TAB: advance Tempel field, expand snippet, or indent." t)
+(register-definition-prefixes "dm-editing" '("dm-"))
 
 ;;; End of scraped data
 
