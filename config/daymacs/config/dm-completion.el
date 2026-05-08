@@ -7,6 +7,8 @@
 
 ;;; Code:
 
+(require 'subr-x)
+
 (use-package vertico
   ;; Replaces the default horizontal completion with a clean vertical list.
   :custom
@@ -71,17 +73,29 @@
   (setq consult-narrow-key "?"))
 
 ;;;###autoload
-(defun dm-search-project-for-symbol-at-point ()
-  "Search the current project for the symbol at point."
-  (interactive)
-  (let ((symbol (thing-at-point 'symbol t)))
-    (consult-ripgrep
-     (project-root (project-current t))
-     symbol)))
+(defun dm-search-for-this-dwim (&optional beg end)
+  "Search the current visual selection, or symbol-at-point if no selection.
+Search in the current project if one is active, otherwise search the current
+directory hierarchy."
+  (interactive "r")
+  (let* ((selection (when (use-region-p)
+                      (string-trim
+                       (buffer-substring-no-properties beg end))))
+         (symbol (when-let* ((symbol (thing-at-point 'symbol t)))
+                   (string-trim symbol)))
+         (query (or (and selection (not (string-empty-p selection)) selection)
+                    (and symbol (not (string-empty-p symbol)) symbol)
+                    ""))
+         (dir (if-let* ((project (project-current nil)))
+                  (project-root project)
+                default-directory)))
+    (consult-ripgrep dir query)))
 
 (with-eval-after-load 'evil
   (evil-define-key 'normal 'global
-    (kbd "SPC *") #'dm-search-project-for-symbol-at-point))
+    (kbd "SPC *") #'dm-search-for-this-dwim)
+  (evil-define-key 'visual 'global
+    (kbd "SPC *") #'dm-search-for-this-dwim))
 
 (use-package marginalia
   ;; Adds annotations to completion candidates: file sizes, docstrings,

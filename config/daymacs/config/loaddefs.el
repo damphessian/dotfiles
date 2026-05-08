@@ -190,8 +190,12 @@ otherwise kill Emacs." t)
 
 ;;; Generated autoloads from dm-completion.el
 
-(autoload 'dm-search-project-for-symbol-at-point "dm-completion"
-"Search the current project for the symbol at point." t)
+(autoload 'dm-search-for-this-dwim "dm-completion"
+"Search the current visual selection, or symbol-at-point if no selection.
+Search in the current project if one is active, otherwise search the current
+directory hierarchy.
+
+(fn &optional BEG END)" t)
 
 
 ;;; Generated autoloads from dm-editing.el
