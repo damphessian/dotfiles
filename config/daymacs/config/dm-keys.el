@@ -58,11 +58,11 @@
     "f y h" '(dm-copy-file-path      :which-key "~ path")
 
     ;; Search
-    "s"   '(:ignore t                        :which-key "search")
-    "s e" '(evil-iedit-state/iedit-mode      :which-key "iedit")
-    "s i" '(consult-imenu-multi              :which-key "imenu")
-    "s p" '(consult-ripgrep                  :which-key "ripgrep")
-    "s s" '(consult-line                     :which-key "line in buffer")
+    "s"   '(:ignore t                   :which-key "search")
+    "s e" '(evil-iedit-state/iedit-mode :which-key "iedit")
+    "s i" '(consult-imenu-multi         :which-key "imenu")
+    "s p" '(consult-ripgrep             :which-key "ripgrep")
+    "s s" '(consult-line                :which-key "line in buffer")
 
     ;; Jump (avy)
     "j"   '(:ignore t           :which-key "jump")
@@ -87,20 +87,20 @@
     "t w" '(dm-wrapping-toggle :which-key "word wrap")
 
     ;; Tabs
-    "T"     '(:ignore t  :which-key "tab")
-    "T RET" '(tab-new    :which-key "new")
-    "T W"   '(tab-close  :which-key "close")
-    "T n"   '(tab-bar-switch-to-next-tab  :which-key "next")
-    "T p"   '(tab-bar-switch-to-prev-tab  :which-key "prev")
+    "T"     '(:ignore t                  :which-key "tab")
+    "T RET" '(tab-new                    :which-key "new")
+    "T W"   '(tab-close                  :which-key "close")
+    "T n"   '(tab-bar-switch-to-next-tab :which-key "next")
+    "T p"   '(tab-bar-switch-to-prev-tab :which-key "prev")
 
     ;; Workspaces (tabspaces)
-    "TAB"   '(:ignore t                    :which-key "workspace")
-    "TAB TAB" '(tabspaces-switch-or-create-workspace :which-key "switch/create")
-    "TAB n" '(tabspaces-open-or-create-project-and-workspace :which-key "new project")
-    "TAB d" '(tabspaces-close-workspace    :which-key "close")
-    "TAB r" '(tabspaces-rename-workspace   :which-key "rename")
-    "TAB b" '(tabspaces-switch-to-buffer   :which-key "workspace buffer")
-    "TAB B" '(tabspaces-move-buffer-to-tab :which-key "move buffer here")
+    "TAB"     '(:ignore t                                      :which-key "workspace")
+    "TAB TAB" '(tabspaces-switch-or-create-workspace           :which-key "switch/create")
+    "TAB n"   '(tabspaces-open-or-create-project-and-workspace :which-key "new project")
+    "TAB d"   '(tabspaces-close-workspace                      :which-key "close")
+    "TAB r"   '(tabspaces-rename-workspace                     :which-key "rename")
+    "TAB b"   '(tabspaces-switch-to-buffer                     :which-key "workspace buffer")
+    "TAB B"   '(tabspaces-move-buffer-to-tab                   :which-key "move buffer here")
 
     ;; Project (project.el, built-in)
     "p"   '(:ignore t                  :which-key "project")
@@ -112,11 +112,11 @@
     "p s" '(consult-ripgrep            :which-key "search")
 
     ;; LSP (eglot)
-    "l"   '(:ignore t                             :which-key "lsp")
-    "l r" '(eglot-rename                          :which-key "rename")
-    "l a" '(eglot-code-actions                    :which-key "actions")
-    "l e" '(consult-flymake                       :which-key "errors")
-    "l d" '(flymake-show-project-diagnostics      :which-key "diagnostics")
+    "l"   '(:ignore t                        :which-key "lsp")
+    "l r" '(eglot-rename                     :which-key "rename")
+    "l a" '(eglot-code-actions               :which-key "actions")
+    "l e" '(consult-flymake                  :which-key "errors")
+    "l d" '(flymake-show-project-diagnostics :which-key "diagnostics")
 
     ;; REPL / tight loop
     "r"   '(:ignore t                  :which-key "repl")
