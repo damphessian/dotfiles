@@ -192,7 +192,16 @@
   :config
   (which-key-mode 1)
   (setq which-key-idle-delay 0.15)
-  (setq which-key-idle-secondary-delay 0.1))
+  (setq which-key-idle-secondary-delay 0.1)
+  (setq which-key-replacement-alist
+        '(;; Hide the noisy package prefix
+          ((nil . "\\`evil-collection-unimpaired-") . (nil . ""))
+          ;; Optional: rewrite specific awful names
+          ((nil . "\\`evil-next-close-paren\\'")    . (nil . "next close paren"))
+          ((nil . "\\`evil-next-close-brace\\'")    . (nil . "next close brace"))
+          ((nil . "\\`evil-next-mark-line\\'")      . (nil . "next mark line"))
+          ((nil . "\\`diff-hl-show-hunk-next\\'")   . (nil . "next diff hunk"))
+          ((nil . "\\`find-file-at-point\\'")       . (nil . "find file at point")))))
 
 (provide 'dm-keys)
 ;;; dm-keys.el ends here
