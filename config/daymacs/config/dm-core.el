@@ -105,6 +105,9 @@
 (setq-default truncate-lines t)
 (setq-default fill-column 80)
 
+;; Show trailing whitespace
+(setq show-trailing-whitespace t)
+
 ;; Delete by moving to trash.
 (setq delete-by-moving-to-trash t)
 
