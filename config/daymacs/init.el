@@ -107,6 +107,7 @@
 (require 'dm-org)
 (require 'dm-langs)
 (require 'dm-keys)
+(require 'dm-tty)
 
 (message (emacs-init-time "%.2fs"))
 (provide 'init)

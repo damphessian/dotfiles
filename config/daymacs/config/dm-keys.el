@@ -150,12 +150,12 @@
      "C-,"     #'embark-dwim
      "C-g"     #'dm-quit-or-close-popup)
 
-  (defun dm-bind-super-keys (&optional frame)
-    "Set up keybindings specific to GUI/TTY Emacs.
+  (defun dm-bind-gui-keys (&optional frame)
+    "Set up keybindings specific to GUI Emacs.
     Set up in frame hooks to correctly distinguish between non/daemonized and
-    tty/gui Emacs. Should be kept minimal to militate against drift."
+    GUI Emacs. Should be kept minimal to militate against drift."
     (with-selected-frame (or frame (selected-frame))
-      (if (display-graphic-p)
+      (when (display-graphic-p)
           (progn ; GUI-only config
             (dm-log :debug "GUI setting up keybindings")
             (general-define-key
@@ -175,22 +175,11 @@
              "s-t"   #'tab-new
              "s-W"   #'tab-close
              "s-w"   #'dm-delete-window-dwim
-             "s-k"   #'kill-current-buffer
              "s-'"   #'eat
-             "s-\""  #'eat-project))
-        (when (dm-designated-tty-daemon-p) ; TTY-only config
-          (dm-log :debug "TTY setting up keybindings")
-          (general-define-key
-           "M-[" #'previous-buffer
-           "M-]" #'next-buffer
-           "M-{" #'tab-bar-switch-to-prev-tab
-           "M-}" #'tab-bar-switch-to-next-tab
-           "M-t" #'tab-new
-           "M-W" #'tab-close
-           "M-w" #'dm-delete-window-dwim)))))
+             "s-\""  #'eat-project)))))
   ;; Run on new frames, and for the initial frame in non-daemonized Emacs
-  (add-hook 'after-make-frame-functions #'dm-bind-super-keys)
-  (add-hook 'window-setup-hook #'dm-bind-super-keys))
+  (add-hook 'after-make-frame-functions #'dm-bind-gui-keys)
+  (add-hook 'window-setup-hook #'dm-bind-gui-keys))
 
 (use-package which-key
   ;; Displays available key completions after a short delay. Deferred because

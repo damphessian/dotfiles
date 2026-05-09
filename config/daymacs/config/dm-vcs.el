@@ -123,10 +123,5 @@ FN and ARGS are the advised `treesit-auto--set-major-remap' arguments."
 ;; GNUPGHOME is set by the XDG LaunchAgent.
 (setq epg-pinentry-mode 'loopback)
 
-;; git commit daemon: load magit eagerly
-(when (dm-designated-tty-daemon-p)
-  (dm-log :debug "Eager-loading Magit...")
-  (require 'magit))
-
 (provide 'dm-vcs)
 ;;; dm-vcs.el ends here
