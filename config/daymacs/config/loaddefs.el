@@ -226,6 +226,11 @@ directory hierarchy.
 
 (register-definition-prefixes "dm-log" '("dm-log"))
 
+
+
+;;; Generated autoloads from dm-env.el
+
+(register-definition-prefixes "dm-env" '("dm-designated-tty-daemon-p"))
 
 ;;; End of scraped data
 

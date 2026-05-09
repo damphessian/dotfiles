@@ -38,5 +38,11 @@
   :config
   (exec-path-from-shell-initialize))
 
+(defun dm-designated-tty-daemon-p ()
+  "Return non-nil when this Emacs daemon name contains \"tty\"."
+  (let ((daemon-name (daemonp)))
+    (and (stringp daemon-name)
+         (string-match-p "tty" daemon-name))))
+
 (provide 'dm-env)
 ;;; dm-env.el ends here

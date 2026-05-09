@@ -154,12 +154,13 @@
     (with-selected-frame (or frame (selected-frame))
       (if (display-graphic-p)
           (progn ; GUI-only config
-            (dm-log :debug "GUI Emacs setting up a frame")
+            (dm-log :debug "GUI setting up keybindings")
             (general-define-key
              "s-["   #'previous-buffer
              "s-]"   #'next-buffer
              "s-{"   #'tab-bar-switch-to-prev-tab
              "s-}"   #'tab-bar-switch-to-next-tab
+             "s-p"   nil
              "s-P"   #'execute-extended-command
              "s-C-p" #'execute-extended-command-for-buffer
              "s-f"   #'avy-goto-char-2
@@ -170,8 +171,8 @@
              "s-k"   #'kill-current-buffer
              "s-'"   #'eat
              "s-\""  #'eat-project))
-        (progn ;; TTY-only config
-          (dm-log :debug "TTY Emacs setting up a frame")
+        (when (dm-designated-tty-daemon-p) ; TTY-only config
+          (dm-log :debug "TTY setting up keybindings")
           (general-define-key
            "M-[" #'previous-buffer
            "M-]" #'next-buffer
@@ -180,7 +181,6 @@
            "M-t" #'tab-new
            "M-W" #'tab-close
            "M-w" #'dm-delete-window-dwim)))))
-
   ;; Run on new frames, and for the initial frame in non-daemonized Emacs
   (add-hook 'after-make-frame-functions #'dm-bind-super-keys)
   (add-hook 'window-setup-hook #'dm-bind-super-keys))
