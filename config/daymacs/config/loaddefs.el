@@ -202,7 +202,7 @@ directory hierarchy.
 
 (autoload 'dm-tab-dwim "dm-editing"
 "Smart TAB: advance Tempel field, expand snippet, or indent." t)
-(register-definition-prefixes "dm-editing" '("dm-"))
+(register-definition-prefixes "dm-editing" '("dm-text-"))
 
 
 ;;; Generated autoloads from dm-vcs.el

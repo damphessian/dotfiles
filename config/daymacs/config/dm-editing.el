@@ -8,10 +8,6 @@
 
 ;;; Code:
 
-(defun dm-dired-jump-keybindings ()
-  "Bind - to `dired-jump' in Evil normal state."
-  (evil-local-set-key 'normal (kbd "-") #'dired-jump))
-
 (defun dm-text-formatting-keybindings ()
   "Bind Super text-formatting commands in the current buffer."
   (dolist (state '(normal visual insert))
@@ -82,13 +78,11 @@
   :straight nil
   :after evil
   :init
-  (autoload 'dired-jump "dired-x" nil t)
-  :hook ((prog-mode . dm-dired-jump-keybindings)
-         (text-mode . dm-dired-jump-keybindings)
-         (sgml-mode . dm-dired-jump-keybindings)
-         (dired-mode . dired-hide-details-mode))
+  :hook ((dired-mode . dired-hide-details-mode))
   :custom
-  (dired-listing-switches "-Ah --group-directories-first"))
+  (dired-listing-switches "-Ah --group-directories-first")
+  :config
+  (evil-define-key 'normal 'global (kbd "-") #'dired-jump))
 
 (use-package visual-fill-column
   :hook ((markdown-mode . visual-line-mode)
