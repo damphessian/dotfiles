@@ -28,15 +28,15 @@
   ;; M-U -> `vertico-multiform-unobtrusive'
   ;; M-V -> `vertico-multiform-vertical'
   (vertico-multiform-commands
-   '((consult-find buffer reverse)
-     (consult-git-grep buffer reverse)
-     (consult-grep buffer reverse)
-     (consult-imenu buffer reverse)
-     (consult-imenu-multi buffer reverse)
+   '((consult-find buffer)
+     (consult-git-grep buffer)
+     (consult-grep buffer)
+     (consult-imenu buffer)
+     (consult-imenu-multi buffer)
      (consult-line unobtrusive)
-     (consult-outline buffer reverse)
-     (consult-org-heading buffer reverse)
-     (consult-ripgrep buffer reverse)
+     (consult-outline buffer)
+     (consult-org-heading buffer)
+     (consult-ripgrep buffer)
      (project-find-file grid))
    vertico-multiform-categories
    '((file grid)))
