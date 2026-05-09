@@ -32,10 +32,12 @@
 
     ;; Buffers
     "b"   '(:ignore t                   :which-key "buffer")
-    "b b" '(consult-buffer              :which-key "switch buffer")
+    "b b" '(consult-buffer              :which-key "select")
+    "b d" '(bury-buffer                 :which-key "bury")
+    "b D" '(kill-current-buffer         :which-key "kill")
     "b f" '(apheleia-format-buffer      :which-key "format")
     "b i" '(ibuffer                     :which-key "ibuffer")
-    "b d" '(kill-current-buffer         :which-key "kill buffer")
+    "b n" '(evil-buffer-new             :which-key "new")
 
     ;; Directory
     "d"   '(:ignore t                  :which-key "directory")
@@ -166,6 +168,10 @@
              "s-C-p" #'execute-extended-command-for-buffer
              "s-f"   #'avy-goto-char-2
              "s-g"   #'magit-status
+             "s-k"   #'bury-buffer
+             "s-K"   #'kill-current-buffer
+             "s-n"   #'evil-buffer-new
+             "s-N"   #'make-frame
              "s-t"   #'tab-new
              "s-W"   #'tab-close
              "s-w"   #'dm-delete-window-dwim
