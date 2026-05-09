@@ -222,9 +222,9 @@ directory hierarchy.
 (register-definition-prefixes "dm-langs" '("dm-"))
 
 
-;;; Generated autoloads from dm-cli.el
+;;; Generated autoloads from dm-log.el
 
-(register-definition-prefixes "dm-cli" '("dm-cli-commit-buffer-setup"))
+(register-definition-prefixes "dm-log" '("dm-log"))
 
 
 ;;; End of scraped data

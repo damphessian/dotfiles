@@ -7,6 +7,13 @@
 
 ;;; Code:
 
+;; Load config directory
+(add-to-list 'load-path (expand-file-name "config" user-emacs-directory))
+
+;; Enable logging
+(require 'dm-log)
+(dm-log-initialize)
+
 ;;; ————————————————————————————
 ;;; straight.el bootstrap
 ;;; ————————————————————————————
@@ -37,9 +44,6 @@
 
 ;; Use built-in project.el
 (straight-use-package '(project :type built-in))
-
-;; Load config directory
-(add-to-list 'load-path (expand-file-name "config" user-emacs-directory))
 
 ;; Lazy-load `dm-*' modules via a generated `loaddefs.el'. The generator picks
 ;; up `;;;###autoload' cookies in `config/*.el' and writes one file with all
