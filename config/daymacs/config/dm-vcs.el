@@ -106,16 +106,23 @@ FN and ARGS are the advised `treesit-auto--set-major-remap' arguments."
 (use-package diff-hl
   ;; Inline git diff indicators in the fringe. Activated per buffer instead of
   ;; globally so the package loads on the first file-backed buffer.
-  :hook ((find-file . diff-hl-mode)
+  :hook ((find-file . dm-diff-hl-maybe-enable)
          (dired-mode . diff-hl-dired-mode)
          (vc-dir-mode . diff-hl-dir-mode))
   :config
+  (defun dm-diff-hl-maybe-enable ()
+    (diff-hl-mode 1)
+    ;; Perform initial diff computation after Emacs is idle.
+    ;; File opening stays responsive.
+    (defun dm-diff-hl--update-with-delay (buf)
+      (when (buffer-live-p buf)
+        (with-current-buffer buf (when diff-hl-mode (diff-hl-update-once)))))
+    ;; Update once with delay
+    (run-with-idle-timer
+     0.5 nil
+     #'dm-diff-hl--update-with-delay (current-buffer)))
   (setq diff-hl-show-hunk-function #'diff-hl-show-hunk-posframe)
-  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
-  (with-eval-after-load 'evil
-    (evil-define-key 'normal 'global
-      (kbd "[h") #'diff-hl-show-hunk-previous
-      (kbd "]h") #'diff-hl-show-hunk-next)))
+  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
 
 ;; Route GPG passphrase prompts through the Emacs minibuffer instead of a TTY
 ;; pinentry. Required for GPG commit signing to work in Magit's subprocess.

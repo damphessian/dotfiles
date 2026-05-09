@@ -117,6 +117,8 @@ Then enter Evil insert state."
     (kbd "]b") #'evil-next-buffer
     (kbd "[e") #'flymake-goto-prev-error
     (kbd "]e") #'flymake-goto-next-error
+    (kbd "[h") #'diff-hl-show-hunk-previous
+    (kbd "]h") #'diff-hl-show-hunk-next
     (kbd "[t") #'tab-bar-switch-to-prev-tab
     (kbd "]t") #'tab-bar-switch-to-next-tab)
 
