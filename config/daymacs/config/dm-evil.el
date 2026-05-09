@@ -65,7 +65,8 @@
   (evil-embrace-enable-evil-surround-integration))
 
 (use-package evil-iedit-state
-  :commands (evil-iedit-state/iedit-mode evil-iedit-state))
+  :commands (evil-iedit-state/iedit-mode evil-iedit-state)
+  :custom (iedit-toggle-key-default nil))
 
 (use-package avy
   :commands (avy-goto-char-2 avy-goto-char avy-goto-line avy-goto-word-1

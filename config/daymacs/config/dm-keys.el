@@ -144,8 +144,7 @@
    ;; Global keybindings not under SPC. These are mostly for window and buffer
    ;; management, since those are the most common commands and benefit most from
    ;; being available everywhere without a prefix.
-     "C-,"     #'embark-act
-     "C-;"     #'embark-dwim
+     "C-,"     #'embark-dwim
      "C-g"     #'dm-quit-or-close-popup)
 
   (defun dm-bind-super-keys (&optional frame)
