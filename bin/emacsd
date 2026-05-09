@@ -4,7 +4,7 @@
 #
 # Intended macOS LaunchAgent invocation:
 #
-#   /bin/zsh -lc "emacsd git-tty"
+#   /bin/zsh -lc "emacsd tty"
 #
 # In plist ProgramArguments form:
 #
@@ -12,7 +12,7 @@
 #   <array>
 #     <string>/bin/zsh</string>
 #     <string>-lc</string>
-#     <string>emacsd git-tty</string>
+#     <string>emacsd tty</string>
 #   </array>
 #
 # Rationale:
@@ -25,7 +25,7 @@
 #   emacsd DAEMON_NAME
 #
 # Examples:
-#   emacsd git-tty
+#   emacsd tty
 #   emacsd git-gui
 
 set -eu

@@ -5,7 +5,7 @@
 	<key>KeepAlive</key>
 	<false/>
 	<key>Label</key>
-	<string>com.dmarksys.emacsd.git-tty</string>
+	<string>com.dmarksys.emacsd.tty</string>
 	<key>Nice</key>
 	<integer>1</integer>
 	<key>Program</key>
@@ -14,13 +14,13 @@
 	<array>
 		<string>/bin/zsh</string>
 		<string>-lc</string>
-		<string>emacsd git-tty</string>
+		<string>emacsd tty</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>StandardErrorPath</key>
-	<string>/tmp/com.dmarksys.emacsd.git-tty.err</string>
+	<string>/tmp/com.dmarksys.emacsd.tty.err</string>
 	<key>StandardOutPath</key>
-	<string>/tmp/com.dmarksys.emacsd.git-tty.out</string>
+	<string>/tmp/com.dmarksys.emacsd.tty.out</string>
 </dict>
 </plist>
