@@ -132,16 +132,23 @@
     "r a" '(dm-repl-test-all           :which-key "test all")
 
     ;; Windows
-    "w"   '(:ignore t                  :which-key "window")
-    "w v" '(evil-window-vsplit         :which-key "vertical split")
-    "w s" '(evil-window-split          :which-key "horizontal split")
-    "w d" '(dm-delete-window-dwim      :which-key "close")
-    "w m" '(delete-other-windows       :which-key "maximize")
+    "w"   '(:ignore t                   :which-key "window")
+    "w v" '(evil-window-vsplit          :which-key "vertical split")
+    "w s" '(evil-window-split           :which-key "horizontal split")
+    "w d" '(dm-delete-window-dwim       :which-key "close")
+    "w m" '(delete-other-windows        :which-key "maximize")
     "w r" '(dm-window-resize-hydra/body :which-key "resize hydra")
-    "w h" '(windmove-left              :which-key "go left")
-    "w l" '(windmove-right             :which-key "go right")
-    "w j" '(windmove-down              :which-key "go down")
-    "w k" '(windmove-up                :which-key "go up"))
+    "w h" '(windmove-left               :which-key "go left")
+    "w l" '(windmove-right              :which-key "go right")
+    "w j" '(windmove-down               :which-key "go down")
+    "w k" '(windmove-up                 :which-key "go up")
+
+    ;; quit
+    "q"   '(:ignore t                    :which-key "quit")
+    "q q" '(save-buffers-kill-terminal   :which-key "save and kill client")
+    "q Q" '(save-buffers-kill-emacs      :which-key "save and kill Emacs")
+    "q r" '(dm-restart-and-restore-emacs :which-key "restart (with restore)")
+    "q R" '(restart-emacs                :which-key "restart (no restore)"))
 
   (general-define-key
    ;; Global keybindings not under SPC. These are mostly for window and buffer
@@ -164,6 +171,8 @@
              "s-{"   #'tab-bar-switch-to-prev-tab
              "s-}"   #'tab-bar-switch-to-next-tab
              "s-p"   nil
+             "s-r"   nil
+             "s-R"   #'dm-restart-and-restore-emacs
              "s-P"   #'execute-extended-command
              "s-C-p" #'execute-extended-command-for-buffer
              "s-f"   #'avy-goto-char-2

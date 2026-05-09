@@ -96,6 +96,8 @@ state
 /config/daymacs/straight/
 /config/daymacs/tabsession.el
 /config/daymacs/transient
+/config/daymacs/.emacs.desktop
+/config/daymacs/.emacs.desktop.lock
 /config/daymacs/tree-sitter/
 /config/dconf/
 /config/docker/*

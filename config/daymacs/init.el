@@ -94,6 +94,7 @@
 
 ;; Eager, cross-cutting setup lives in cohesive modules; command-only helpers
 ;; keep using autoload cookies and stay out of the startup path.
+(require 'dm-session)
 (require 'dm-core)
 (require 'dm-ui)
 (require 'dm-evil)
