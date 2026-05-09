@@ -198,15 +198,64 @@
   (which-key-mode 1)
   (setq which-key-idle-delay 0.15)
   (setq which-key-idle-secondary-delay 0.1)
-  (setq which-key-replacement-alist
-        '(;; Hide the noisy package prefix
-          ((nil . "\\`evil-collection-unimpaired-") . (nil . ""))
-          ;; Optional: rewrite specific awful names
-          ((nil . "\\`evil-next-close-paren\\'")    . (nil . "next close paren"))
-          ((nil . "\\`evil-next-close-brace\\'")    . (nil . "next close brace"))
-          ((nil . "\\`evil-next-mark-line\\'")      . (nil . "next mark line"))
-          ((nil . "\\`diff-hl-show-hunk-next\\'")   . (nil . "next diff hunk"))
-          ((nil . "\\`find-file-at-point\\'")       . (nil . "find file at point")))))
+
+  (defvar dm-which-key-replacement-rules
+    '(
+      ;; prefix names
+      (("\\`C-x w\\'"     . nil) .  (nil . "window"))
+      (("\\`C-x RET\\'"   . nil) .  (nil . "coding system"))
+      (("\\`C-h 4\\'"     . nil) .  (nil . "help/info"))
+      (("\\`C-x 4\\'"     . nil) .  (nil . "window/buffer"))
+      (("\\`C-x 5\\'"     . nil) .  (nil . "frames"))
+      (("\\`C-x 8\\'"     . nil) .  (nil . "special chars/emoji"))
+      (("\\`C-x 8 e\\'"   . nil) .  (nil . "emoji"))
+      (("\\`C-x a\\'"     . nil) .  (nil . "abbrev"))
+      (("\\`C-x a i\\'"   . nil) .  (nil . "inverse"))
+      (("\\`C-x n\\'"     . nil) .  (nil . "[deprecated]"))
+      (("\\`C-x p\\'"     . nil) .  (nil . "project"))
+      (("\\`C-x p C-x\\'" . nil) .  (nil . "save"))
+      (("\\`C-x r\\'"     . nil) .  (nil . "registers"))
+      (("\\`C-x X\\'"     . nil) .  (nil . "edebug"))
+      (("\\`C-x C-a\\'"   . nil) .  (nil . "edebug"))
+      (("\\`C-x t\\'"     . nil) .  (nil . "tab"))
+      (("\\`C-x t ^\\'"   . nil) .  (nil . "detach"))
+      (("\\`C-x x\\'"     . nil) .  (nil . "revert/rename"))
+      (("\\`C-c @\\'"     . nil) .  (nil . "hideshow"))
+      (("\\`g\\'"         . nil) .  (nil . "custom motions"))
+      (("\\`g s\\'"       . nil) .  (nil . "sort"))
+      (("\\`g s i\\'"     . nil) .  (nil . "inside"))
+      ;; name substitutions (roughly in descending order of width savings)
+      ((nil . "\\`evil-collection-unimpaired-") . (nil . ""))
+      ((nil . "\\`evil-collection-")            . (nil . ""))
+      ((nil . "\\`dm-evil-text-sort-inner-")    . (nil . ""))
+      ((nil . "find-file-at-point")             . (nil . "ffap"))
+
+      ((nil . "\\`evil-\\(.*\\)previous\\(.*\\)\\'")           . (nil . "\\1prev\\2"))
+      ((nil . "\\`evil-\\(.*\\)-visual-line\\'")               . (nil . "\\1-vl"))
+      ((nil . "\\`evil-\\(.*\\)find-file-at-point\\(.*\\)\\'") . (nil . "\\1ffap\\2"))
+      ((nil . "\\`evil-\\(.*\\)forward\\(.*\\)\\'")            . (nil . "\\1fwd\\2"))
+      ((nil . "\\`evil-\\(.*\\)backward\\(.*\\)\\'")           . (nil . "\\1bwd\\2"))
+      ((nil . "\\`diff-hl-\\(.*\\)previous\\(.*\\)\\'")        . (nil . "\\1prev\\2"))
+
+      ((nil . "\\`diff-hl-") . (nil . ""))
+      ((nil . "\\`dm-evil-") . (nil . ""))
+      ((nil . "\\`dm-")      . (nil . ""))
+      ((nil . "\\`edebug-")  . (nil . ""))
+      ((nil . "\\`evil-")    . (nil . ""))
+      ((nil . "\\`flymake-") . (nil . ""))
+      ((nil . "\\`project-") . (nil . ""))
+      ((nil . "\\`tab-")     . (nil . ""))
+      ((nil . "\\`tab-bar-") . (nil . ""))
+
+      ((nil . "previous")           . (nil . "prev"))
+      ((nil . "forward")            . (nil . "fwd"))
+      ((nil . "backward")           . (nil . "bwd"))
+      ((nil . "-")                  . (nil . " "))
+      ))
+  ;; append to the list: these must come after :which_key customizations
+  ;; (only the first match applies)
+  (dolist (rule dm-which-key-replacement-rules)
+    (add-to-list 'which-key-replacement-alist rule t)))
 
 (provide 'dm-keys)
 ;;; dm-keys.el ends here
