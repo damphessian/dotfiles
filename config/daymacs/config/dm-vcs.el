@@ -86,7 +86,6 @@ FN and ARGS are the advised `treesit-auto--set-major-remap' arguments."
   (remove-hook 'magit-status-sections-hook #'magit-insert-unpulled-from-upstream)
   (remove-hook 'magit-status-sections-hook #'magit-insert-unpushed-to-pushremote)
   (remove-hook 'magit-status-sections-hook #'magit-insert-unpushed-to-upstream-or-recent)
-  (remove-hook 'magit-status-sections-hook #'magit-insert-untracked-files)
   (with-eval-after-load 'git-commit
     (add-hook 'git-commit-mode-hook #'dm-git-commit-disable-completion 90)
     (add-hook 'git-commit-setup-hook #'dm-git-commit-insert-pending-generated-message))
