@@ -7,6 +7,33 @@
 
 
 
+;;; Generated autoloads from dm-ai.el
+
+(register-definition-prefixes "dm-ai" '("dm-"))
+
+
+;;; Generated autoloads from dm-completion.el
+
+(autoload 'dm-search-for-this-dwim "dm-completion"
+"Search the current visual selection, or symbol-at-point if no selection.
+Search in the current project if one is active, otherwise search the current
+directory hierarchy.
+
+(fn &optional BEG END)" t)
+
+
+;;; Generated autoloads from dm-editing.el
+
+(autoload 'dm-tab-dwim "dm-editing"
+"Smart TAB: advance Tempel field, expand snippet, or indent." t)
+(register-definition-prefixes "dm-editing" '("dm-text-"))
+
+
+;;; Generated autoloads from dm-env.el
+
+(register-definition-prefixes "dm-env" '("dm-designated-tty-daemon-p"))
+
+
 ;;; Generated autoloads from dm-evil-text.el
 
 (autoload 'dm-evil-text-setup "dm-evil-text"
@@ -68,9 +95,39 @@ DIRECTORY defaults to the user's home directory.
 (register-definition-prefixes "dm-files" '("dm-"))
 
 
+;;; Generated autoloads from dm-langs.el
+
+(autoload 'dm-treesit-install-all-languages "dm-langs"
+"Install all Tree-sitter grammars defined in `treesit-language-source-alist'." t)
+(register-definition-prefixes "dm-langs" '("dm-"))
+
+
 ;;; Generated autoloads from dm-lisp.el
 
 (register-definition-prefixes "dm-lisp" '("dm-e"))
+
+
+;;; Generated autoloads from dm-log.el
+
+(register-definition-prefixes "dm-log" '("dm-log"))
+
+
+;;; Generated autoloads from dm-magit.el
+
+(autoload 'dm-git-commit-insert-pending-generated-message "dm-magit"
+"Insert pending generated commit message into the current commit buffer.")
+(autoload 'dm-magit-commit-generate "dm-magit"
+"Generate a commit message, then open Magit's commit buffer." t)
+(autoload 'dm-magit-display-buffer-fn "dm-magit"
+"Display Magit BUFFER with less window churn.
+This follows Doom's strategy closely enough for the status-to-commit
+transition: reuse the current window for most non-diff buffers and keep
+process buffers below the selected window.
+
+(fn BUFFER)")
+(autoload 'dm-git-commit-disable-completion "dm-magit"
+"Disable dabbrev in Git commit message buffers.")
+(register-definition-prefixes "dm-magit" '("dm-"))
 
 
 ;;; Generated autoloads from dm-popup-quit.el
@@ -81,6 +138,37 @@ A popup window is any non-selected visible window whose buffer name is listed
 in `dm-quit-or-close-popup-buffer-names' or starts with one of
 `dm-quit-or-close-popup-buffer-prefixes'." t)
 (register-definition-prefixes "dm-popup-quit" '("dm-quit-or-close-popup-"))
+
+
+;;; Generated autoloads from dm-repl.el
+
+(autoload 'dm-repl-start-or-pop "dm-repl"
+"Start or pop to the REPL appropriate for the current buffer." t)
+(autoload 'dm-repl-eval-region "dm-repl"
+"Evaluate region START END in the language-appropriate REPL.
+
+(fn START END)" t)
+(autoload 'dm-repl-eval-line "dm-repl"
+"Evaluate the current line in the language-appropriate REPL." t)
+(autoload 'dm-repl-eval-buffer "dm-repl"
+"Evaluate the current buffer in the language-appropriate REPL." t)
+(autoload 'dm-repl-eval-dwim "dm-repl"
+"Evaluate active region, current code cell, or current line." t)
+(autoload 'dm-repl-eval-cell "dm-repl"
+"Evaluate the current code cell." t)
+(autoload 'dm-repl-next-cell "dm-repl"
+"Move to the next code cell." t)
+(autoload 'dm-repl-previous-cell "dm-repl"
+"Move to the previous code cell." t)
+(autoload 'dm-repl-check-dwim "dm-repl"
+"Run the fastest project check for the current language." t)
+(autoload 'dm-repl-test-dwim "dm-repl"
+"Run the nearest or current-buffer test for the current language." t)
+(autoload 'dm-repl-test-all "dm-repl"
+"Run all tests for the current language." t)
+(autoload 'dm-repl-local-keybindings "dm-repl"
+"Install tight-loop local bindings and mode helpers in programming buffers.")
+(register-definition-prefixes "dm-repl" '("dm-"))
 
 
 ;;; Generated autoloads from dm-test-toggle.el
@@ -118,54 +206,9 @@ With DISPLAYMODE-P, use display math delimiters.
 (register-definition-prefixes "dm-text" '("dm-text-"))
 
 
-;;; Generated autoloads from dm-magit.el
+;;; Generated autoloads from dm-tty.el
 
-(autoload 'dm-git-commit-insert-pending-generated-message "dm-magit"
-"Insert pending generated commit message into the current commit buffer.")
-(autoload 'dm-magit-commit-generate "dm-magit"
-"Generate a commit message, then open Magit's commit buffer." t)
-(autoload 'dm-magit-display-buffer-fn "dm-magit"
-"Display Magit BUFFER with less window churn.
-This follows Doom's strategy closely enough for the status-to-commit
-transition: reuse the current window for most non-diff buffers and keep
-process buffers below the selected window.
-
-(fn BUFFER)")
-(autoload 'dm-git-commit-disable-completion "dm-magit"
-"Disable dabbrev in Git commit message buffers.")
-(register-definition-prefixes "dm-magit" '("dm-"))
-
-
-;;; Generated autoloads from dm-repl.el
-
-(autoload 'dm-repl-start-or-pop "dm-repl"
-"Start or pop to the REPL appropriate for the current buffer." t)
-(autoload 'dm-repl-eval-region "dm-repl"
-"Evaluate region START END in the language-appropriate REPL.
-
-(fn START END)" t)
-(autoload 'dm-repl-eval-line "dm-repl"
-"Evaluate the current line in the language-appropriate REPL." t)
-(autoload 'dm-repl-eval-buffer "dm-repl"
-"Evaluate the current buffer in the language-appropriate REPL." t)
-(autoload 'dm-repl-eval-dwim "dm-repl"
-"Evaluate active region, current code cell, or current line." t)
-(autoload 'dm-repl-eval-cell "dm-repl"
-"Evaluate the current code cell." t)
-(autoload 'dm-repl-next-cell "dm-repl"
-"Move to the next code cell." t)
-(autoload 'dm-repl-previous-cell "dm-repl"
-"Move to the previous code cell." t)
-(autoload 'dm-repl-check-dwim "dm-repl"
-"Run the fastest project check for the current language." t)
-(autoload 'dm-repl-test-dwim "dm-repl"
-"Run the nearest or current-buffer test for the current language." t)
-(autoload 'dm-repl-test-all "dm-repl"
-"Run all tests for the current language." t)
-(autoload 'dm-repl-local-keybindings "dm-repl"
-"Install tight-loop local bindings and mode helpers in programming buffers.")
-(register-definition-prefixes "dm-repl" '("dm-"))
-
+(register-definition-prefixes "dm-tty" '("dm-pb"))
 
 
 ;;; Generated autoloads from dm-ui.el
@@ -179,6 +222,11 @@ process buffers below the selected window.
 (register-definition-prefixes "dm-ui" '("dm-"))
 
 
+;;; Generated autoloads from dm-vcs.el
+
+(register-definition-prefixes "dm-vcs" '("dm-"))
+
+
 ;;; Generated autoloads from dm-window.el
 
 (autoload 'dm-delete-window-dwim "dm-window"
@@ -186,51 +234,6 @@ process buffers below the selected window.
 Close tab if sole window in tab, close frame if multiple frames exist,
 otherwise kill Emacs." t)
 (register-definition-prefixes "dm-window" '("dm-window-"))
-
-
-;;; Generated autoloads from dm-completion.el
-
-(autoload 'dm-search-for-this-dwim "dm-completion"
-"Search the current visual selection, or symbol-at-point if no selection.
-Search in the current project if one is active, otherwise search the current
-directory hierarchy.
-
-(fn &optional BEG END)" t)
-
-
-;;; Generated autoloads from dm-editing.el
-
-(autoload 'dm-tab-dwim "dm-editing"
-"Smart TAB: advance Tempel field, expand snippet, or indent." t)
-(register-definition-prefixes "dm-editing" '("dm-text-"))
-
-
-;;; Generated autoloads from dm-vcs.el
-
-(register-definition-prefixes "dm-vcs" '("dm-"))
-
-
-;;; Generated autoloads from dm-ai.el
-
-(register-definition-prefixes "dm-ai" '("dm-"))
-
-
-;;; Generated autoloads from dm-langs.el
-
-(autoload 'dm-treesit-install-all-languages "dm-langs"
-"Install all Tree-sitter grammars defined in `treesit-language-source-alist'." t)
-(register-definition-prefixes "dm-langs" '("dm-"))
-
-
-;;; Generated autoloads from dm-log.el
-
-(register-definition-prefixes "dm-log" '("dm-log"))
-
-
-
-;;; Generated autoloads from dm-env.el
-
-(register-definition-prefixes "dm-env" '("dm-designated-tty-daemon-p"))
 
 ;;; End of scraped data
 
