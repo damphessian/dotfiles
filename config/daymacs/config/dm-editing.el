@@ -193,8 +193,8 @@
    (t (indent-for-tab-command))))
 
 (use-package tempel
-  :bind (("C-l" . tempel-insert)
-         :map tempel-map
+  :after evil
+  :bind (:map tempel-map
          ("C-j" . tempel-next)
          ("C-k" . tempel-previous))
   :init
@@ -212,6 +212,7 @@
   (add-hook 'conf-mode-hook #'dm-tab-dwim-setup)
   (add-hook 'prog-mode-hook #'dm-tab-dwim-setup)
   (add-hook 'text-mode-hook #'dm-tab-dwim-setup))
+
 
 (use-package tempel-collection
   :after tempel)

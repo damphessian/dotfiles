@@ -125,6 +125,10 @@ Then enter Evil insert state."
     (kbd "S")   #'dm-evil-text-change-back-to-indentation
     (kbd "C-k") #'dm-evil-text-change-to-end-of-line)
 
+  ;; bind this here instead of in tempel so it's not overwritten
+  (evil-define-key 'insert 'global
+    (kbd "C-.") #'tempel-insert)
+
   ;; emacs lisp
   (evil-define-key '(normal visual) emacs-lisp-mode-map
     (kbd "g e") #'dm-evil-eval-sexp-dwim)
