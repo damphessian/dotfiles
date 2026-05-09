@@ -1,0 +1,45 @@
+#!/bin/zsh
+
+# Start a named Emacs daemon
+#
+# Intended macOS LaunchAgent invocation:
+#
+#   /bin/zsh -lc "emacsd git-tty"
+#
+# In plist ProgramArguments form:
+#
+#   <key>ProgramArguments</key>
+#   <array>
+#     <string>/bin/zsh</string>
+#     <string>-lc</string>
+#     <string>emacsd git-tty</string>
+#   </array>
+#
+# Rationale:
+#   LaunchAgents do not inherit the same environment as an interactive shell.
+#   Running through `zsh -lc` gives zsh a chance to load the login-shell
+#   environment, while this script pins the terminal/color/locale variables
+#   needed by TTY emacsclient frames.
+#
+# Usage:
+#   emacsd DAEMON_NAME
+#
+# Examples:
+#   emacsd git-tty
+#   emacsd git-gui
+
+set -eu
+
+daemon_name="${1:?usage: emacs-daemon-launchagent DAEMON_NAME}"
+
+# Ensure an existing daemon with this name is not left around.
+emacsclient -s "$daemon_name" --eval '(kill-emacs)' >/dev/null 2>&1 || true
+
+# Environment expected by the daemon and later TTY client frames.
+export DM_LOG_LEVEL="${DM_LOG_LEVEL:-debug}"
+export TERM="${TERM:-xterm-256color}"
+export COLORTERM="${COLORTERM:-truecolor}"
+export LANG="${LANG:-en_US.UTF-8}"
+export LC_CTYPE="${LC_CTYPE:-en_US.UTF-8}"
+
+exec emacs --daemon="$daemon_name"
