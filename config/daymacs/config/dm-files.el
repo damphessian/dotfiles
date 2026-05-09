@@ -125,8 +125,8 @@ Returns nil if PATH is not inside the current project."
     (message "Opened: %s" file)))
 
 ;;;###autoload
-(defun dm-open-daymacs-init-in-new-tab ()
-  "Open the Daymacs init.el file in a new tab."
+(defun dm-open-config-new-tab ()
+  "Open the Emacs init.el file in a new tab."
   (interactive)
   (tab-new)
   (find-file (expand-file-name "init.el" user-emacs-directory)))

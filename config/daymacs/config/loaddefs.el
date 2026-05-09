@@ -43,8 +43,8 @@ directory hierarchy.
 
 ;;; Generated autoloads from dm-files.el
 
-(autoload 'dm-open-daymacs-init-in-new-tab "dm-files"
-"Open the Daymacs init.el file in a new tab." t)
+(autoload 'dm-open-config-new-tab "dm-files"
+"Open the Emacs init.el file in a new tab." t)
 (autoload 'dm-find-in-home--refresh-cache "dm-files"
 "Asynchronously refresh `dm-find-in-home--dir-cache'.
 Fires fd in a subprocess; stores results when it exits cleanly. Safe to
