@@ -1,18 +1,94 @@
 [tools]
-elixir = "1.19.5-otp-28"
-erlang = "28.5"
-go = "1.25.5"
-hugo = "0.152.2"
-java = "17.0.0"
-maven = "3.9.0"
-node = "24.15.0"
-perl = "5.42"
-postgres = "18.1"
-python = "3.14.3"
-ruby = "3.4.7"
-rust = "1.91.1"
+elixir   = "latest"
+erlang   = "latest"
+go       = "latest"
+hugo     = "0.152.2"
+node     = "latest"
+perl     = "latest"
+postgres = "latest"
+python   = "latest"
+ruby     = "latest"
+rust     = "latest"
+
+"cargo:evcxr_repl"                    = "latest"
+"gem:amazing_print"                   = "latest"
+"gem:andyw8-seeing_is_believing"      = "latest"
+"gem:benchmark-ips"                   = "latest"
+"gem:colorize"                        = "latest"
+"gem:debug"                           = "latest"
+"gem:hirb"                            = "latest"
+"gem:interactive_editor"              = "latest"
+"gem:jazz_fingers"                    = "latest"
+"gem:rspec"                           = "latest"
+"gem:rubocop"                         = "latest"
+"gem:specific_install"                = "latest"
+"gem:spicy-proton"                    = "latest"
+"github:expert-lsp/expert"            = "latest"
+"go:golang.org/x/tools/cmd/godoc"     = "latest"
+"go:golang.org/x/tools/cmd/goimports" = "latest"
+"go:golang.org/x/tools/gopls"         = "latest"
+"npm:@github/copilot-language-server" = "latest"
+"npm:prettier"                        = "latest"
+"npm:tsx"                             = "latest"
+"npm:typescript"                      = "latest"
+"pipx:basedpyright"                   = "latest"
+"pipx:ipdb"                           = "latest"
+"pipx:ipython"                        = "latest"
+"pipx:mypy"                           = "latest"
+"pipx:pytest"                         = "latest"
+"pipx:ruff"                           = "latest"
 
 [settings]
 
 [settings.ruby]
 compile = false
+
+[tasks.bootstrap-elixir]
+description = "Install cross-cutting Elixir dependencies"
+run = """
+mix local.hex --force
+mix local.rebar --force
+mix archive.install hex phx_new --force
+mise reshim elixir
+"""
+
+[tasks.bootstrap-go]
+description = "Install cross-cutting Go dependencies"
+run = """
+go install github.com/cweill/gotests/...@latest
+go install github.com/davidrjenni/reftools/cmd/fillstruct@latest
+go install github.com/fatih/gomodifytags@latest
+go install github.com/josharian/impl@latest
+go install github.com/x-motemen/gore/cmd/gore@latest
+go install golang.org/x/tools/cmd/gorename@latest
+mise reshim go
+"""
+
+[tasks.bootstrap-perl]
+description = "Install cross-cutting Perl dependencies"
+run = """
+cpanm File::HomeDir YAML::Tiny
+mise reshim perl
+"""
+
+[tasks.bootstrap-python]
+description = "Install cross-cutting Python dependencies"
+run = """
+pip install -U pip pyxdg pyyaml openai
+mise reshim python
+"""
+
+[tasks.bootstrap-ruby]
+description = "Install cross-cutting Ruby dependencies"
+run = """
+ln -sf "${MISE_DIR}/shims/andyw8_seeing_is_believing" \
+     "${XDG_SECURE_DIR}/bin/seeing_is_believing"
+"""
+
+
+[tasks.bootstrap-rust]
+description = "Install cross-cutting Rust dependencies"
+run = """
+rustup component add rust-analyzer
+mise reshim rust
+"""

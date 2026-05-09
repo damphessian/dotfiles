@@ -1,9 +1,0 @@
-github.com/cweill/gotests/...@latest
-github.com/davidrjenni/reftools/cmd/fillstruct@latest
-github.com/fatih/gomodifytags@latest
-github.com/josharian/impl@latest
-github.com/x-motemen/gore/cmd/gore@latest
-golang.org/x/tools/cmd/godoc@latest
-golang.org/x/tools/cmd/goimports@latest
-golang.org/x/tools/cmd/gorename@latest
-golang.org/x/tools/gopls@latest
