@@ -101,6 +101,10 @@ edit() {
   emacsclient -s gui -c -n -a "" "$@"
 }
 
+ed() {
+  git-edit "$@"
+}
+
 # 4. Functions
 # ------------
 # Custom functions for common tasks, git status parsing, and prompt building.
