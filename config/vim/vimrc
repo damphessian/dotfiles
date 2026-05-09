@@ -355,16 +355,14 @@ nnoremap <C-c><C-k> :q!<CR>
 nnoremap <leader>bd :bdelete<CR>
 nnoremap <leader>bD :bdelete!<CR>
 
-" c: copy visual selection to system clipboard
-vnoremap <leader>c "+y
+" y: yank visual selection to system clipboard
+vnoremap <C-c>y "+y
 
-" x: cut visual selection to system clipboard
-vnoremap <leader>x "+d
+" d: kill visual selection to system clipboard
+vnoremap <C-c>d "+d
 
-" v: paste from system clipboard
-nnoremap <leader>v :set paste<CR>i<ESC>"+p:set nopaste<CR>
-vnoremap <leader>v d:set paste<CR>i<ESC>"+p:set nopaste<CR>
-
+" p: paste from system clipboard
+nnoremap <C-c>p :set paste<CR>i<ESC>"+p:set nopaste<CR>
 
 "--------------------------------------------------------------
 " Buffer-select utility commands
