@@ -1,12 +1,11 @@
-[submodule "share/zsh/zsh-syntax-highlighting"]
-	path = share/zsh/zsh-syntax-highlighting
-	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
+[submodule "codespaces"]
+	path = codespaces
 	branch = master
-	update = rebase
-[submodule "share/zsh/zsh-vim-mode"]
-	path = share/zsh/zsh-vim-mode
-	url = https://github.com/softmoth/zsh-vim-mode.git
-	branch = main
+	url = https://github.com/h35514n/codespaces.git
+[submodule "share/pd"]
+	path = share/pd
+	url = https://github.com/h35514n/pd.git
+	branch = master
 	update = rebase
 [submodule "share/fzf"]
 	path = share/fzf
@@ -18,10 +17,15 @@
 	url = https://github.com/junegunn/vim-plug.git
 	branch = master
 	update = rebase
-[submodule "share/pd"]
-	path = share/pd
-	url = https://github.com/h35514n/pd.git
+[submodule "share/zsh/zsh-syntax-highlighting"]
+	path = share/zsh/zsh-syntax-highlighting
+	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
 	branch = master
+	update = rebase
+[submodule "share/zsh/zsh-vim-mode"]
+	path = share/zsh/zsh-vim-mode
+	url = https://github.com/softmoth/zsh-vim-mode.git
+	branch = main
 	update = rebase
 [submodule "share/tmux/tpm"]
 	path = share/tmux/tpm
@@ -38,15 +42,6 @@
 	url = https://github.com/tmux-plugins/tmux-open.git
 	branch = master
 	update = rebase
-[submodule "config/emacs"]
-	path = config/emacs
-	url = https://github.com/plexus/chemacs2.git
-	branch = main
-	update = rebase
-[submodule "codespaces"]
-	path = codespaces
-	branch = master
-	url = https://github.com/h35514n/codespaces.git
 [submodule "share/tmux/tmux-urlview"]
 	path = share/tmux/tmux-urlview
 	branch = master
