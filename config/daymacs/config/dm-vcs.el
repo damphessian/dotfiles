@@ -127,6 +127,7 @@ FN and ARGS are the advised `treesit-auto--set-major-remap' arguments."
 (when-let* ((is-daemon (daemonp)))
   (when (or (string= is-daemon "git-tty")
             (string= is-daemon "git-gui"))
+    (dm-log :debug "Git daemon setup: %s" is-daemon)
     (require 'magit)))
 
 (provide 'dm-vcs)

@@ -155,6 +155,7 @@
     (with-selected-frame (or frame (selected-frame))
       (if (display-graphic-p)
           (progn ; GUI-only config
+            (dm-log :debug "GUI Emacs setting up a frame")
             (general-define-key
              "s-["   #'previous-buffer
              "s-]"   #'next-buffer
@@ -171,6 +172,7 @@
              "s-'"   #'eat
              "s-\""  #'eat-project))
         (progn ;; TTY-only config
+          (dm-log :debug "TTY Emacs setting up a frame")
           (general-define-key
            "M-[" #'previous-buffer
            "M-]" #'next-buffer
