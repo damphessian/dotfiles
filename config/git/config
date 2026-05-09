@@ -12,7 +12,7 @@
 
 [core]
 	autocrlf = input
-	editor   = emacsclient -s tty -t -a ''
+	editor   = git-edit
 	excludesfile = ~/.dotfiles/config/git/ignore
 
 [color "diff"]
