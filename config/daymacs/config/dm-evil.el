@@ -30,6 +30,18 @@
   ;; Provides sensible evil keybindings for magit, dired, help, ibuffer, etc.
   ;; Must load after evil.
   :after evil
+  :init
+    (setq evil-collection-calendar-want-org-bindings  nil)
+    (setq evil-collection-outline-bind-tab-p            t)
+    (setq evil-collection-setup-debugger-keys           t)
+    (setq evil-collection-setup-minibuffer              t)
+    (setq evil-collection-term-sync-state-and-mode-p    t)
+    (setq evil-collection-want-find-usages-bindings     t)
+    (setq evil-collection-want-unimpaired-p           nil)
+    (setq evil-collection-state-denylist              nil)
+    (setq evil-collection-state-passlist              nil)
+    (setq evil-collection-key-blacklist               nil)
+    (setq evil-collection-key-whitelist               nil)
   :config
   (evil-collection-init))
 
