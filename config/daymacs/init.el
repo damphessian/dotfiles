@@ -31,9 +31,14 @@
 ;; pins exact commits, and integrates with use-package via :straight t.
 ;; Setting straight-use-package-by-default means every use-package form
 ;; automatically installs via straight unless told otherwise.
+(defvar bootstrap-version)
+(defvar straight-use-package-by-default)
+(declare-function straight-use-package "straight")
+
+;; Treat bare `use-package' declarations as straight-managed packages.
+;; Use `:straight nil' for built-in packages or packages managed elsewhere.
 (setq straight-use-package-by-default t)
 
-(defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
         "straight/repos/straight.el/bootstrap.el"

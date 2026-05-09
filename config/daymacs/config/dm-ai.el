@@ -8,13 +8,13 @@
 ;;; Code:
 
 ;; Local Codex bridge lives outside config/ because it is a standalone package.
-(load (expand-file-name "codex-ide" user-emacs-directory) nil 'nomessage)
+(load (expand-file-name "codex-ide" dm-config-root) nil 'nomessage)
 
 (defvar dm-active-agent 'claude
   "Currently active AI agent: `claude' or `codex'.")
 
 (defun dm-toggle-agent ()
-  "Switch active agent between 'claude-code-ide' and 'codex-ide'."
+  "Switch active agent between `claude-code-ide' and `codex-ide'."
   (interactive)
   (setq dm-active-agent
         (if (eq dm-active-agent 'claude) 'codex 'claude))
