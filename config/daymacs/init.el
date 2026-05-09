@@ -7,18 +7,24 @@
 
 ;;; Code:
 
-(eval-and-compile
-  (defconst dm-config-root (file-name-as-directory (file-truename "~/.config/daymacs")))
-  ;; Trust config directory
-  (add-to-list 'trusted-content (abbreviate-file-name dm-config-root))
-  ;; Add submodule directory to load path
-  (add-to-list 'load-path (expand-file-name "config/" dm-config-root))
-  ;; For Flymake: Add straight.el build directories to load path at compile time
-  (let ((build-dir (expand-file-name "straight/build/" dm-config-root)))
-    (when (file-directory-p build-dir)
-      (dolist (dir (directory-files build-dir t "\\`[^.]"))
-        (when (file-directory-p dir)
-          (add-to-list 'load-path dir))))))
+;; For enabling flymake checking:
+;; (eval-and-compile
+;;   (defconst dm-config-root (file-name-as-directory (file-truename "~/.config/daymacs")))
+;;   ;; Trust config directory
+;;   (add-to-list 'trusted-content (abbreviate-file-name dm-config-root))
+;;   ;; Add submodule directory to load path
+;;   (add-to-list 'load-path (expand-file-name "config/" dm-config-root))
+;;   ;; For Flymake: Add straight.el build directories to load path at compile time
+;;   (let ((build-dir (expand-file-name "straight/build/" dm-config-root)))
+;;     (when (file-directory-p build-dir)
+;;       (dolist (dir (directory-files build-dir t "\\`[^.]"))
+;;         (when (file-directory-p dir)
+;;           (add-to-list 'load-path dir))))))
+
+;; Trust config directory, add submodule directory to load path
+(defconst dm-config-root (file-name-as-directory (file-truename "~/.config/daymacs")))
+(add-to-list 'trusted-content (abbreviate-file-name dm-config-root))
+(add-to-list 'load-path (expand-file-name "config/" dm-config-root))
 
 ;; Enable logging
 (require 'dm-log)
