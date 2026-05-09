@@ -91,9 +91,7 @@ With prefix argument DESC, sort in descending order."
     (kbd "g s i )") #'dm-evil-text-sort-inner-paren)
 
   ;; emacs lisp
-  (evil-define-key 'normal emacs-lisp-mode-map
-    (kbd "g e") #'dm-evil-eval-sexp-dwim)
-  (evil-define-key 'visual emacs-lisp-mode-map
+  (evil-define-key '(normal visual) emacs-lisp-mode-map
     (kbd "g e") #'dm-evil-eval-sexp-dwim)
   nil)
 
