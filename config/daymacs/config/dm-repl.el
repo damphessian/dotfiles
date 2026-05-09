@@ -189,28 +189,48 @@ MODE is an optional major mode for the REPL buffer."
   "Send region START END to the project Rust REPL."
   (dm-repl--send-region-to-comint start end #'dm-rust-repl))
 
+(defun dm-pop-to-window-right ()
+  "Select a right-side window, creating one if necessary."
+  (let ((win (or (window-in-direction 'right)
+                 (split-window-right))))
+    (select-window win)))
+
+(defun dm-repl-command-for-current-buffer ()
+  "Return a REPL command appropriate for the current buffer."
+  (cond
+   ((dm-repl--mode-p 'python-base-mode 'python-mode 'python-ts-mode)
+    (lambda ()
+      (if (dm-drepl-buffer-live-p)
+          (drepl-pop-to-repl nil)
+        (dm-python-repl))))
+
+   ((dm-repl--mode-p 'elixir-mode 'elixir-ts-mode)
+    (lambda ()
+      (require 'inf-elixir)
+      (inf-elixir-project)))
+
+   ((dm-repl--mode-p 'rust-mode 'rust-ts-mode)
+    #'dm-rust-repl)
+
+   ((dm-repl--mode-p 'typescript-mode 'typescript-ts-mode 'tsx-ts-mode)
+    #'dm-typescript-repl)
+
+   ((dm-repl--mode-p 'js-mode 'js-ts-mode 'jsx-ts-mode)
+    (lambda ()
+      (if (dm-drepl-buffer-live-p)
+          (drepl-pop-to-repl nil)
+        (dm-node-repl))))
+
+   (t
+    (user-error "No REPL configured for %s" major-mode))))
+
 ;;;###autoload
 (defun dm-repl-start-or-pop ()
   "Start or pop to the REPL appropriate for the current buffer."
   (interactive)
-  (cond
-   ((dm-repl--mode-p 'python-base-mode 'python-mode 'python-ts-mode)
-    (if (dm-drepl-buffer-live-p)
-        (drepl-pop-to-repl nil)
-      (dm-python-repl)))
-   ((dm-repl--mode-p 'elixir-mode 'elixir-ts-mode)
-    (require 'inf-elixir)
-    (inf-elixir-project))
-   ((dm-repl--mode-p 'rust-mode 'rust-ts-mode)
-    (dm-rust-repl))
-   ((dm-repl--mode-p 'typescript-mode 'typescript-ts-mode 'tsx-ts-mode)
-    (dm-typescript-repl))
-   ((dm-repl--mode-p 'js-mode 'js-ts-mode 'jsx-ts-mode)
-    (if (dm-drepl-buffer-live-p)
-        (drepl-pop-to-repl nil)
-      (dm-node-repl)))
-   (t
-    (user-error "No REPL configured for %s" major-mode))))
+  (let ((command (dm-repl-command-for-current-buffer)))
+    (dm-pop-to-window-right)
+    (funcall command)))
 
 ;;;###autoload
 (defun dm-repl-eval-region (start end)
