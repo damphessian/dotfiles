@@ -64,6 +64,28 @@ With prefix argument DESC, sort in descending order."
   (interactive "P")
   (dm-evil-text-sort-inner 'bracket desc))
 
+(defun dm-evil-text-change-back-to-indentation ()
+  "Delete current line contents from the current position back to indentation
+  and enter Evil insert state.
+
+This preserves leading indentation and removes everything from the first
+non-whitespace character through the end of the line."
+  (interactive)
+  (let ((indent-pos (save-excursion
+                      (back-to-indentation)
+                      (point)))
+        (curr-pos (point)))
+    (kill-region indent-pos curr-pos)
+    (goto-char indent-pos)
+    (evil-insert-state)))
+
+(defun dm-evil-text-change-to-end-of-line ()
+  "Delete from the current position to the end of the current line.
+Then enter Evil insert state."
+  (interactive)
+  (kill-line)
+  (evil-insert-state))
+
 ;;;###autoload
 (defun dm-evil-text-setup ()
   "Install Daymacs Evil text objects and sort bindings."
@@ -89,6 +111,12 @@ With prefix argument DESC, sort in descending order."
     (kbd "g s i ]") #'dm-evil-text-sort-inner-bracket
     (kbd "g s i (") #'dm-evil-text-sort-inner-paren
     (kbd "g s i )") #'dm-evil-text-sort-inner-paren)
+
+  ;; line change motions
+  (evil-define-key 'normal 'global (kbd "S")
+    #'dm-evil-text-change-back-to-indentation)
+  (evil-define-key 'normal 'global (kbd "C-k")
+    #'dm-evil-text-change-to-end-of-line)
 
   ;; emacs lisp
   (evil-define-key '(normal visual) emacs-lisp-mode-map
