@@ -85,16 +85,6 @@
   :config
   (evil-lion-mode 1))
 
-(use-package evil-snipe
-  ;; Extends s/S to 2-char sneak motions (like vim-sneak/leap).
-  ;; Disabled in modes where evil-collection claims s/S.
-  :after evil
-  :config
-  (evil-snipe-mode 1)
-  (evil-snipe-override-mode 1)
-  (add-to-list 'evil-snipe-disabled-modes 'magit-mode)
-  (add-to-list 'evil-snipe-disabled-modes 'Info-mode))
-
 (use-package evil-visualstar
   :after evil
   :config
