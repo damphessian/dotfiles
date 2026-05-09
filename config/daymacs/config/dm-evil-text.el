@@ -65,8 +65,7 @@ With prefix argument DESC, sort in descending order."
   (dm-evil-text-sort-inner 'bracket desc))
 
 (defun dm-evil-text-change-back-to-indentation ()
-  "Delete current line contents from the current position back to indentation
-  and enter Evil insert state.
+  "Delete current line contents back to indentation and enter Evil insert state.
 
 This preserves leading indentation and removes everything from the first
 non-whitespace character through the end of the line."
@@ -112,11 +111,19 @@ Then enter Evil insert state."
     (kbd "g s i (") #'dm-evil-text-sort-inner-paren
     (kbd "g s i )") #'dm-evil-text-sort-inner-paren)
 
-  ;; line change motions
-  (evil-define-key 'normal 'global (kbd "S")
-    #'dm-evil-text-change-back-to-indentation)
-  (evil-define-key 'normal 'global (kbd "C-k")
-    #'dm-evil-text-change-to-end-of-line)
+  ;; unimpaired-style
+  (evil-define-key* 'normal 'global
+    (kbd "[b") #'evil-prev-buffer
+    (kbd "]b") #'evil-next-buffer
+    (kbd "[e") #'flymake-goto-prev-error
+    (kbd "]e") #'flymake-goto-next-error
+    (kbd "[t") #'tab-bar-switch-to-prev-tab
+    (kbd "]t") #'tab-bar-switch-to-next-tab)
+
+  ;; line changes
+  (evil-define-key* 'normal 'global
+    (kbd "S")   #'dm-evil-text-change-back-to-indentation
+    (kbd "C-k") #'dm-evil-text-change-to-end-of-line)
 
   ;; emacs lisp
   (evil-define-key '(normal visual) emacs-lisp-mode-map
