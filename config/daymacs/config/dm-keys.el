@@ -34,6 +34,7 @@
     "b"   '(:ignore t                   :which-key "buffer")
     "b b" '(consult-buffer              :which-key "switch buffer")
     "b f" '(apheleia-format-buffer      :which-key "format")
+    "b i" '(ibuffer                     :which-key "ibuffer")
     "b d" '(kill-current-buffer         :which-key "kill buffer")
 
     ;; Directory
