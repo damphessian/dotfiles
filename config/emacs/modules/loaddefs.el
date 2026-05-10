@@ -259,7 +259,8 @@ otherwise kill Emacs." t)
 
 ;;; Generated autoloads from dm-core.el
 
-(register-definition-prefixes "dm-core" '("dm-core-global-minor-modes"))
+(register-definition-prefixes "dm-core" '("dm-core-"))
+
 
 ;;; End of scraped data
 

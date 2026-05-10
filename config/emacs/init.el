@@ -29,7 +29,8 @@
 (require 'dm-org)
 (require 'dm-langs)
 (require 'dm-keys)
-(when (dm-designated-tty-daemon-p)
+
+(when (dm-core-daemon-is-tty-p)
   (require 'dm-tty))
 
 (message (emacs-init-time "%.2fs"))

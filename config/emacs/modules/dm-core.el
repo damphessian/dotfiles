@@ -81,6 +81,12 @@
   (savehist-mode 1))
 (add-hook 'emacs-startup-hook #'dm-core-global-minor-modes)
 
+(defun dm-core-daemon-is-tty-p ()
+  "Return non-nil when this Emacs daemon name contains \"tty\"."
+  (let ((daemon-name (daemonp)))
+    (and (stringp daemon-name)
+         (string-match-p "tty" daemon-name))))
+
 ;; Persist minibuffer history (commands, searches, consult inputs) across
 ;; sessions.
 (setq history-length 300)
