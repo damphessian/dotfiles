@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-
 <plist version="1.0">
-  <dict>
-    <key>Label</key>
-    <string>com.dmarksys.xdg</string>
-
-    <key>Program</key>
-    <string>/bin/zsh</string>
-
-    <key>ProgramArguments</key>
-    <array>
-      <string>/bin/zsh</string>
-      <string>-c</string>
-      <string>
+<dict>
+	<key>Label</key>
+	<string>com.dmarksys.xdg</string>
+	<key>Program</key>
+	<string>/bin/zsh</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/zsh</string>
+		<string>-c</string>
+		<string>
+        launchctl setenv XDG_CACHE_HOME "${HOME}/.dotfiles/cache";
         launchctl setenv XDG_CONFIG_HOME "${HOME}/.dotfiles/config";
+        launchctl setenv XDG_DATA_HOME "${HOME}/.dotfiles/share";
+        launchctl setenv XDG_STATE_HOME "${HOME}/.dotfiles/state";
+        launchctl setenv XDG_LOCALS_DIR "${HOME}/.dotfiles/locals";
+        launchctl setenv XDG_SECURE_DIR "${HOME}/.dotfiles/secure";
         launchctl setenv ZDOTDIR "${HOME}/.dotfiles/config/zsh";
         launchctl setenv GNUPGHOME "${HOME}/Dropbox/gnupg";
       </string>
-    </array>
-
-    <key>RunAtLoad</key>
-    <true />
-
-    <key>StandardOutPath</key>
-    <string>/tmp/com.dmarksys.xdg.out</string>
-
-    <key>StandardErrorPath</key>
-    <string>/tmp/com.dmarksys.xdg.err</string>
-  </dict>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/tmp/com.dmarksys.xdg.err</string>
+	<key>StandardOutPath</key>
+	<string>/tmp/com.dmarksys.xdg.out</string>
+</dict>
 </plist>
