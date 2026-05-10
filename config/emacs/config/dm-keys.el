@@ -147,8 +147,8 @@
     "q"   '(:ignore t                    :which-key "quit")
     "q q" '(save-buffers-kill-terminal   :which-key "save and kill client")
     "q Q" '(save-buffers-kill-emacs      :which-key "save and kill Emacs")
-    "q r" '(dm-restart-and-restore-emacs :which-key "restart (with restore)")
-    "q R" '(restart-emacs                :which-key "restart (no restore)"))
+    "q r" '(dm-restart-emacs-and-restore :which-key "restart (with restore)")
+    "q R" '(dm-restart-emacs-no-restore  :which-key "restart (no restore)"))
 
   (general-define-key
    ;; Global keybindings not under SPC. These are mostly for window and buffer
