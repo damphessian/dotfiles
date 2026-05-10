@@ -161,7 +161,7 @@ Eglot's connect call blocks redisplay until the LSP server returns its
   :custom
   (treesit-auto-install t)
   :config
-  (setq treesit-language-source-alist
+  (setq dm-treesit-language-source-alist
         '((bash "https://github.com/tree-sitter/tree-sitter-bash")
           (cmake "https://github.com/uyha/tree-sitter-cmake")
           (css "https://github.com/tree-sitter/tree-sitter-css")
@@ -184,14 +184,27 @@ Eglot's connect call blocks redisplay until the LSP server returns its
   (global-treesit-auto-mode 1))
 
 ;;;###autoload
-(defun dm-treesit-install-all-languages ()
-  "Install all Tree-sitter grammars known to `treesit-auto'."
-  (interactive)
-  (require 'treesit-auto)
-  (let ((treesit-language-source-alist (treesit-auto--build-treesit-source-alist)))
-    (dolist (lang treesit-auto-langs)
-      (unless (treesit-language-available-p lang)
-        (treesit-install-language-grammar lang)))))
+(defun dm-treesit-install-all-languages (&optional use-treesit-auto)
+  "Install missing Tree-sitter grammars.
+
+Normally install grammars from `dm-treesit-language-source-alist'.
+
+With prefix argument USE-TREESIT-AUTO, install grammars known to
+`treesit-auto' using `treesit-auto--build-treesit-source-alist'
+and `treesit-auto-langs'."
+  (interactive "P")
+  (if use-treesit-auto
+      (progn
+        (require 'treesit-auto)
+        (let ((dm-treesit-language-source-alist
+               (treesit-auto--build-treesit-source-alist)))
+          (dolist (lang treesit-auto-langs)
+            (unless (treesit-language-available-p lang)
+              (treesit-install-language-grammar lang)))))
+    (dolist (entry dm-treesit-language-source-alist)
+      (let ((lang (car entry)))
+        (unless (treesit-language-available-p lang)
+          (treesit-install-language-grammar lang))))))
 
 (use-package treesit-fold
   ;; Structural folding for tree-sitter modes; integrates with Evil's z* folds

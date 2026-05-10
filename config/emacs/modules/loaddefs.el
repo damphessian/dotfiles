@@ -98,7 +98,15 @@ DIRECTORY defaults to the user's home directory.
 ;;; Generated autoloads from dm-langs.el
 
 (autoload 'dm-treesit-install-all-languages "dm-langs"
-"Install all Tree-sitter grammars defined in `treesit-language-source-alist'." t)
+"Install missing Tree-sitter grammars.
+
+Normally install grammars from `dm-treesit-language-source-alist'.
+
+With prefix argument USE-TREESIT-AUTO, install grammars known to
+`treesit-auto' using `treesit-auto--build-treesit-source-alist'
+and `treesit-auto-langs'.
+
+(fn &optional USE-TREESIT-AUTO)" t)
 (register-definition-prefixes "dm-langs" '("dm-"))
 
 
