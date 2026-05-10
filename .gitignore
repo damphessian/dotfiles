@@ -1,29 +1,4 @@
-### Emacs ###
-
 # -*- mode: gitignore; -*-
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-.org-id-locations
-*_archive
-*_flymake.*
-/eshell/history
-/eshell/lastdir
-/elpa/
-*.rel
-/auto/
-.cask/
-dist/
-flycheck_*.el
-/server/
-/network-security.data
 
 # Vim
 
@@ -86,19 +61,6 @@ state
 /config/configstore/update-notifier-npm.json
 /config/cups/
 /config/cursor/
-/config/emacs/.persistent-scratch
-/config/emacs/backups/
-/config/emacs/bookmarks
-/config/emacs/eln-cache/
-/config/emacs/history
-/config/emacs/projects
-/config/emacs/recentf*
-/config/emacs/straight/
-/config/emacs/tabsession.el
-/config/emacs/transient
-/config/emacs/.emacs.desktop
-/config/emacs/.emacs.desktop.lock
-/config/emacs/tree-sitter/
 /config/dconf/
 /config/docker/*
 /config/doom/config.el
