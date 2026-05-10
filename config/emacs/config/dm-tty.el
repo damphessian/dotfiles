@@ -14,7 +14,7 @@
 (require 'magit)
 
 (defun dm-pbcut (beg end)
-  "Cut region to the system clipboard."
+  "Cut region from BEG to END to the system clipboard."
   (interactive "r")
   (unless (use-region-p)
     (user-error "No active region"))
@@ -22,7 +22,7 @@
   (delete-region beg end))
 
 (defun dm-pbcopy (beg end)
-  "Copy region to the system clipboard."
+  "Copy region from BEG to END to the system clipboard."
   (interactive "r")
   (let ((text (buffer-substring-no-properties beg end)))
     (with-temp-buffer
