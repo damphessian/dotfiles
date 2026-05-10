@@ -18,7 +18,8 @@
 
   (leader!
     ;; Top-level
-    "SPC" '(consult-buffer      :which-key "buffers")
+    "SPC" '(consult-buffer          :which-key "buffers")
+    "*"   '(dm-search-for-this-dwim :which-key "search this")
 
     ;; Agent (claude-code-ide / codex-ide, toggled at runtime via SPC a A)
     "a"   '(:ignore t                       :which-key "agent")

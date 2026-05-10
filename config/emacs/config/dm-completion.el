@@ -91,12 +91,6 @@ directory hierarchy."
                 default-directory)))
     (consult-ripgrep dir query)))
 
-(with-eval-after-load 'evil
-  (evil-define-key 'normal 'global
-    (kbd "SPC *") #'dm-search-for-this-dwim)
-  (evil-define-key 'visual 'global
-    (kbd "SPC *") #'dm-search-for-this-dwim))
-
 (use-package marginalia
   ;; Adds annotations to completion candidates: file sizes, docstrings,
   ;; command key bindings, etc. Works with any completing-read UI.
