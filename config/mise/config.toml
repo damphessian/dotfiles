@@ -11,31 +11,9 @@ ruby     = "latest"
 rust     = "latest"
 
 "cargo:evcxr_repl"                    = "latest"
-"gem:amazing_print"                   = "latest"
-"gem:andyw8-seeing_is_believing"      = "latest"
-"gem:benchmark-ips"                   = "latest"
-"gem:colorize"                        = "latest"
-"gem:debug"                           = "latest"
-"gem:hirb"                            = "latest"
-"gem:interactive_editor"              = "latest"
-"gem:jazz_fingers"                    = "latest"
-"gem:rspec"                           = "latest"
-"gem:rubocop"                         = "latest"
-"gem:specific_install"                = "latest"
-"gem:spicy-proton"                    = "latest"
 "github:expert-lsp/expert"            = "latest"
-"go:golang.org/x/tools/cmd/godoc"     = "latest"
-"go:golang.org/x/tools/cmd/goimports" = "latest"
-"go:golang.org/x/tools/gopls"         = "latest"
 "npm:@github/copilot-language-server" = "latest"
-"npm:prettier"                        = "latest"
-"npm:tsx"                             = "latest"
-"npm:typescript"                      = "latest"
 "pipx:basedpyright"                   = "latest"
-"pipx:ipdb"                           = "latest"
-"pipx:ipython"                        = "latest"
-"pipx:mypy"                           = "latest"
-"pipx:pytest"                         = "latest"
 "pipx:ruff"                           = "latest"
 
 [settings]
@@ -60,8 +38,21 @@ go install github.com/davidrjenni/reftools/cmd/fillstruct@latest
 go install github.com/fatih/gomodifytags@latest
 go install github.com/josharian/impl@latest
 go install github.com/x-motemen/gore/cmd/gore@latest
+go install golang.org/x/tools/cmd/godoc
 go install golang.org/x/tools/cmd/gorename@latest
+go:install golang.org/x/tools/cmd/goimports
+go:install golang.org/x/tools/gopls
 mise reshim go
+"""
+
+[tasks.bootstrap-node]
+description = "Install cross-cutting Node dependencies"
+run = """
+npm install -g \
+      prettier \
+      tsx \
+      typescript \
+      typescript-language-server
 """
 
 [tasks.bootstrap-perl]
@@ -74,13 +65,35 @@ mise reshim perl
 [tasks.bootstrap-python]
 description = "Install cross-cutting Python dependencies"
 run = """
-pip install -U pip pyxdg pyyaml openai
+pip install -U pip
+pip install -U \
+      ipdb \
+      ipython \
+      mypy \
+      openai \
+      pytest \
+      pyxdg \
+      pyyaml
 mise reshim python
 """
 
 [tasks.bootstrap-ruby]
 description = "Install cross-cutting Ruby dependencies"
 run = """
+gem install \
+      amazing_print \
+      andyw8-seeing_is_believing \
+      benchmark-ips \
+      colorize \
+      debug \
+      hirb \
+      interactive_editor \
+      jazz_fingers \
+      rspec \
+      rubocop \
+      specific_install \
+      spicy-proton
+
 ln -sf "${MISE_DIR}/shims/andyw8_seeing_is_believing" \
      "${XDG_SECURE_DIR}/bin/seeing_is_believing"
 """
