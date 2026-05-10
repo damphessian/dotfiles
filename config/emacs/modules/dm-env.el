@@ -12,7 +12,9 @@
   :defer 0.1
   :custom
   (exec-path-from-shell-variables
-   '("DOCKER_HOST"
+   '(
+     "CARGO_HOME"
+     "DOCKER_HOST"
      "GIT_CG_PROVIDER"
      "GOPATH"
      "HEX_HOME"
