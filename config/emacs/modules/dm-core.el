@@ -40,14 +40,9 @@
 (set-default-coding-systems 'utf-8)
 
 ;; Redirect backups to a single directory instead of littering alongside files.
-(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      backup-by-copying t
-      version-control t
-      delete-old-versions t)
-
-;; Auto-save files also go to a dedicated directory.
-(setq auto-save-file-name-transforms
-      `((".*" ,(concat user-emacs-directory "auto-save/") t)))
+(setq backup-by-copying t)
+(setq version-control t)
+(setq delete-old-versions t)
 
 ;; Lock files (.#foo) are only useful for multi-user editing; skip them.
 (setq create-lockfiles nil)
@@ -55,36 +50,40 @@
 ;; Auto-revert files, avoid polling.
 (setq auto-revert-avoid-polling t)
 
-;; Track recently visited files; used by consult-recent-file.
-(setq recentf-auto-cleanup "11:00pm")
-(setq recentf-max-saved-items 200)
+(use-package recentf
+  :ensure nil
+  :straight (:type built-in)
+  :init
+  :custom
+  (recentf-save-file dm-file-recentf)
+  (recentf-auto-cleanup "11:00pm")
+  (recentf-max-saved-items 200)
+  :config
+  (defun dm-log-quietly-recentf-mode ()
+    (let ((inhibit-message t)
+          (message-log-max nil))
+      (recentf-mode 1)))
+  ;; Run recentf cleanup quietly. With `recentf-auto-cleanup' set to a time
+  ;; string, cleanup runs via `run-at-time' -- an async timer dispatch that
+  ;; loses any `inhibit-message' let-binding from the surrounding call site.
+  (advice-add 'recentf-cleanup :around #'dm-log-quietly))
 
-;; Run recentf cleanup quietly. With `recentf-auto-cleanup' set to a time
-;; string, cleanup runs via `run-at-time' -- an async timer dispatch that
-;; loses any `inhibit-message' let-binding from the surrounding call site.
-(with-eval-after-load 'recentf
-  (advice-add 'recentf-cleanup :around
-              (lambda (fn &rest args)
-                (let ((inhibit-message t)
-                      (message-log-max nil))
-                  (apply fn args)))))
+;; Delay global mode activation
+;; ----------------------------
+;; Activate cross-cutting global modes after the first frame is up. None of
+;; these need to run before the user can start typing, and recentf-mode in
+;; particular reads/writes its history file, so it stays off the boot path.
+(defun dm-core-global-minor-modes ()
+  (editorconfig-mode 1)
+  (global-auto-revert-mode -1) ;; disabled for safety
+  (global-eldoc-mode -1) ;; disabled because noisy
+  (dm-log-quietly-recentf-mode)
+  (savehist-mode 1))
+(add-hook 'emacs-startup-hook #'dm-core-global-minor-modes)
 
 ;; Persist minibuffer history (commands, searches, consult inputs) across
 ;; sessions.
 (setq history-length 300)
-
-;; Activate cross-cutting global modes after the first frame is up. None of
-;; these need to run before the user can start typing, and recentf-mode in
-;; particular reads/writes its history file, so it stays off the boot path.
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (editorconfig-mode 1)
-            (global-auto-revert-mode 1)
-            (global-eldoc-mode -1)
-            (let ((inhibit-message t)
-                  (message-log-max nil))
-              (recentf-mode 1))
-            (savehist-mode 1)))
 
 ;; Follow symlinks to version-controlled files without prompting.
 (setq vc-follow-symlinks t)

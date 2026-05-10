@@ -16,6 +16,10 @@
               (remq #'eldoc-display-in-echo-area
                     eldoc-display-functions)))
 
+;;; ————————————————————————————
+;;; eglot
+;;; ————————————————————————————
+
 (defun dm-eglot-ensure-deferred ()
   "Defer `eglot-ensure' so the buffer becomes interactive immediately.
 Eglot's connect call blocks redisplay until the LSP server returns its
@@ -126,6 +130,7 @@ Eglot's connect call blocks redisplay until the LSP server returns its
 ;; Fixed-delay timers fire even if the user starts working immediately, unlike
 ;; idle timers. Use them to pay predictable cold-load costs after the frame is
 ;; up but before the first likely file open.
+;; TODO: Add others? named functions
 (add-hook 'emacs-startup-hook
           (lambda ()
             (run-with-timer 0.5 nil (lambda () (require 'eglot)))))
@@ -138,6 +143,17 @@ Eglot's connect call blocks redisplay until the LSP server returns its
           (lambda ()
             (run-with-timer 1.5 nil (lambda () (require 'org)))))
 
+;;; ————————————————————————————
+;;; Tree-sitter
+;;; ————————————————————————————
+
+(use-package treesit
+  :ensure nil
+  :straight (:type built-in)
+  :when (treesit-available-p)
+  :custom
+  (treesit-extra-load-path (list dm-dir-tree-sitter-libs)))
+
 (use-package treesit-auto
   ;; Auto-installs tree-sitter grammars and remaps major modes to *-ts-mode.
   ;; Deferred to idle; the first very early file may land in non-ts mode.
@@ -145,8 +161,6 @@ Eglot's connect call blocks redisplay until the LSP server returns its
   :custom
   (treesit-auto-install t)
   :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode 1)
   (setq treesit-language-source-alist
         '((bash "https://github.com/tree-sitter/tree-sitter-bash")
           (cmake "https://github.com/uyha/tree-sitter-cmake")
@@ -165,16 +179,19 @@ Eglot's connect call blocks redisplay until the LSP server returns its
           (toml "https://github.com/tree-sitter/tree-sitter-toml")
           (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
           (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-          (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode 1))
 
 ;;;###autoload
 (defun dm-treesit-install-all-languages ()
-  "Install all Tree-sitter grammars defined in `treesit-language-source-alist'."
+  "Install all Tree-sitter grammars known to `treesit-auto'."
   (interactive)
-  (dolist (lang treesit-language-source-alist)
-    (let ((lang-symbol (car lang)))
-      (unless (treesit-language-available-p lang-symbol)
-        (treesit-install-language-grammar lang-symbol)))))
+  (require 'treesit-auto)
+  (let ((treesit-language-source-alist (treesit-auto--build-treesit-source-alist)))
+    (dolist (lang treesit-auto-langs)
+      (unless (treesit-language-available-p lang)
+        (treesit-install-language-grammar lang)))))
 
 (use-package treesit-fold
   ;; Structural folding for tree-sitter modes; integrates with Evil's z* folds

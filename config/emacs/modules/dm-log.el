@@ -82,5 +82,11 @@ If LEVEL is nil, read from DM_LOG_LEVEL. Fall back to :error."
            (concat "[dm:" (substring (symbol-name level) 1) "] " fmt)
            args)))
 
+(defun dm-log-quietly (fn &rest args)
+  "Run function FN with ARGS, suppressing any messages it emits."
+  (let ((inhibit-message t)
+        (message-log-max nil))
+    (apply fn args)))
+
 (provide 'dm-log)
 ;;; dm-log.el ends here

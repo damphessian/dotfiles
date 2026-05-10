@@ -9,7 +9,10 @@
 (use-package desktop
   :ensure nil
   :custom
-  (desktop-dirname dm-state-root)
+  (desktop-dirname dm-dir-desktop)
+  (desktop-base-file-name "emacs.desktop")
+  (desktop-base-lock-name "emacs.desktop.lock")
+
   (desktop-save nil) ;; Do not save automatically on exit.
   (desktop-load-locked-desktop 'check-pid) ;; Do not ask about stale locks.
   ;; Workaround for frame size being broken on restore.
@@ -19,14 +22,14 @@
   :config
   (defun dm-desktop-file ()
     "Return the full path to the configured desktop file."
-    (expand-file-name desktop-base-file-name dm-state-root))
+    (expand-file-name desktop-base-file-name dm-dir-desktop))
 
   (defun dm-desktop-restore-if-present ()
     "Restore desktop only when a desktop file exists."
     (when (file-exists-p (dm-desktop-file))
       (let ((inhibit-message t)
             (message-log-max nil))
-        (desktop-read dm-state-root))))
+        (desktop-read dm-dir-desktop))))
 
   (defun dm-desktop-delete-file ()
     "Delete the saved desktop file, if it exists."
@@ -42,7 +45,6 @@
 (defun dm-restart-emacs-no-restore ()
   "Restart Emacs without restoring the desktop."
   (interactive)
-  (message "dm-restart-emacs-no-restore")
   (dm-desktop-delete-file)
   (restart-emacs))
 
@@ -50,8 +52,7 @@
 (defun dm-restart-emacs-and-restore ()
   "Save desktop and restart Emacs."
   (interactive)
-  (message "dm-restart-emacs-and-restore")
-  (desktop-save dm-state-root)
+  (desktop-save dm-dir-desktop)
   (restart-emacs))
 
 (provide 'dm-session)

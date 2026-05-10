@@ -8,7 +8,7 @@
 ;;; Code:
 
 ;; Local Codex bridge lives outside config/ because it is a standalone package.
-(load (expand-file-name "codex-ide" dm-config-root) nil 'nomessage)
+(load (expand-file-name "codex-ide" dm-config-home) nil 'nomessage)
 
 (defvar dm-active-agent 'claude
   "Currently active AI agent: `claude' or `codex'.")

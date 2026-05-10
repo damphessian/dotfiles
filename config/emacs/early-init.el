@@ -49,3 +49,40 @@
 
 ;; Prevent package.el from activating packages — straight.el owns that.
 (setq package-enable-at-startup nil)
+
+(defconst dm-cache-home              "~/.dotfiles/cache/emacs")
+(defconst dm-config-home             "~/.dotfiles/config/emacs")
+(defconst dm-data-home               "~/.dotfiles/share/emacs")
+(defconst dm-state-home              "~/.dotfiles/state/emacs")
+
+(defconst dm-dir-eln-cache           "~/.dotfiles/cache/emacs/eln-cache/")
+(defconst dm-dir-url-cache           "~/.dotfiles/cache/emacs/url/")
+
+(defconst dm-dir-elpa                "~/.dotfiles/share/emacs/elpa/")
+(defconst dm-dir-eshell              "~/.dotfiles/share/emacs/eshell/")
+(defconst dm-dir-tree-sitter-libs    "~/.dotfiles/share/emacs/tree-sitter/lib/")
+(defconst dm-dir-tree-sitter-repos   "~/.dotfiles/share/emacs/tree-sitter/repos/")
+
+(defconst dm-dir-auto-save           "~/.dotfiles/state/emacs/auto-save/")
+(defconst dm-dir-backups             "~/.dotfiles/state/emacs/backups/")
+(defconst dm-dir-desktop             "~/.dotfiles/state/emacs/desktop/")
+(defconst dm-file-abbrev-defs        "~/.dotfiles/state/emacs/abbrev_defs")
+(defconst dm-file-auto-save-prefix   "~/.dotfiles/state/emacs/auto-save/saves-")
+(defconst dm-file-bookmarks          "~/.dotfiles/state/emacs/bookmarks")
+(defconst dm-file-customizations     "~/.dotfiles/state/emacs/custom.el")
+(defconst dm-file-project-list       "~/.dotfiles/state/emacs/project-list")
+(defconst dm-file-recentf            "~/.dotfiles/state/emacs/recentf")
+(defconst dm-file-savehist           "~/.dotfiles/state/emacs/savehist")
+(defconst dm-file-saveplace          "~/.dotfiles/state/emacs/saveplaces")
+(defconst dm-file-scratch            "~/.dotfiles/state/emacs/scratch")
+(defconst dm-file-tabspaces          "~/.dotfiles/state/emacs/tabsession.el")
+(defconst dm-file-tramp              "~/.dotfiles/state/emacs/tramp")
+(defconst dm-file-transient-history  "~/.dotfiles/state/emacs/transient/history.el")
+(defconst dm-file-transient-levels   "~/.dotfiles/state/emacs/transient/levels.el")
+(defconst dm-file-transient-values   "~/.dotfiles/state/emacs/transient/values.el")
+
+(when (fboundp 'startup-redirect-eln-cache)
+  (startup-redirect-eln-cache dm-dir-eln-cache))
+
+(defconst dm-modules-dir (expand-file-name "modules/" dm-config-home))
+(add-to-list 'trusted-content (abbreviate-file-name dm-config-home))

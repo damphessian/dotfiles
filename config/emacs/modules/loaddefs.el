@@ -242,6 +242,16 @@ With DISPLAYMODE-P, use display math delimiters.
 Close tab if sole window in tab, close frame if multiple frames exist,
 otherwise kill Emacs." t)
 (register-definition-prefixes "dm-window" '("dm-window-"))
+
+
+;;; Generated autoloads from dm-xdg.el
+
+(register-definition-prefixes "dm-xdg" '("dm-xdg-"))
+
+
+;;; Generated autoloads from dm-core.el
+
+(register-definition-prefixes "dm-core" '("dm-core-global-minor-modes"))
 
 ;;; End of scraped data
 
