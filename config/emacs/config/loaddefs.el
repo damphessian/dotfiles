@@ -171,6 +171,14 @@ in `dm-quit-or-close-popup-buffer-names' or starts with one of
 (register-definition-prefixes "dm-repl" '("dm-"))
 
 
+;;; Generated autoloads from dm-session.el
+
+(autoload 'dm-restart-emacs-no-restore "dm-session"
+"Restart Emacs without restoring the desktop." t)
+(autoload 'dm-restart-emacs-and-restore "dm-session"
+"Save desktop and restart Emacs." t)
+
+
 ;;; Generated autoloads from dm-test-toggle.el
 
 (autoload 'dm-toggle-test-implementation "dm-test-toggle"
