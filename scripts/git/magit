@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+
+mode="${1:-gui}"
+case "$mode" in
+  gui|--gui|-g)
+    socket_name="gui"
+    client_args=(--create-frame --no-wait)
+    ;;
+  tty|--tty|-t)
+    socket_name="tty"
+    client_args=(--tty)
+    ;;
+  *)
+    echo "usage: magit [gui|tty]" >&2
+    exit 2
+    ;;
+esac
+
+
+# Environment expected by the daemon and later TTY client frames.
+export DM_LOG_LEVEL="${DM_LOG_LEVEL:-debug}"
+export TERM="${TERM:-xterm-256color}"
+export COLORTERM="${COLORTERM:-truecolor}"
+export LANG="${LANG:-en_US.UTF-8}"
+export LC_CTYPE="${LC_CTYPE:-en_US.UTF-8}"
+
+export MAGIT_WRAPPER_DIR="${PWD}"
+
+# magit should already have been required: see emacs/config/dm-tty.el
+eval_form='(progn
+            (select-frame-set-input-focus (selected-frame))
+            (let ((default-directory (file-name-as-directory (getenv "MAGIT_WRAPPER_DIR"))))
+              (magit-status default-directory)))'
+
+exec emacsclient \
+  --socket-name "${socket_name}" \
+  "${client_args[@]}" \
+  --alternate-editor "" \
+  --eval "${eval_form}"
