@@ -81,8 +81,10 @@
 (defconst dm-file-transient-levels   "~/.dotfiles/state/emacs/transient/levels.el")
 (defconst dm-file-transient-values   "~/.dotfiles/state/emacs/transient/values.el")
 
+;; Save compiled lisp to xdg state dir
 (when (fboundp 'startup-redirect-eln-cache)
   (startup-redirect-eln-cache dm-dir-eln-cache))
 
 (defconst dm-modules-dir (expand-file-name "modules/" dm-config-home))
+(add-to-list 'load-path dm-modules-dir)
 (add-to-list 'trusted-content (abbreviate-file-name dm-config-home))

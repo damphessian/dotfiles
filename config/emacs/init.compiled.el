@@ -2,6 +2,8 @@
 ;;; Preamble for compiling (for debugging)
 ;;; ————————————————————————————
 ;; For enabling flymake checking:
+;; Note: a more compiler-friendly but slower to execute preamble.
+;; TODO: Experiment with this some more.
 
 (eval-and-compile
   (defconst dm-config-home (file-name-as-directory (file-truename "~/.config/emacs")))
