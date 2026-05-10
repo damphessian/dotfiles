@@ -31,8 +31,7 @@
     "Toggle between implementation and test file."
     :repeat nil
     (dm-toggle-test-implementation))
-  (evil-ex-define-cmd "A" #'dm-evil-toggle-test-implementation)
-  (global-set-key (kbd "C-c t") #'dm-toggle-test-implementation))
+  (evil-ex-define-cmd "A" #'dm-evil-toggle-test-implementation))
 
 ;;; Core Emacs settings.
 
