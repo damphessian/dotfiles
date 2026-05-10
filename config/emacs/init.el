@@ -13,6 +13,7 @@
 ;; Note: See init.compiled.el for a more compiler-friendly but slower to execute
 ;; preamble.
 (add-to-list 'load-path (expand-file-name "modules/" user-emacs-directory))
+(require 'dm-paths)
 (require 'dm-log)
 (dm-log-initialize)
 
@@ -33,7 +34,6 @@
 ;; Use `:straight nil' for built-in packages or packages managed elsewhere.
 (setq bootstrap-file-path "straight/repos/straight.el/bootstrap.el")
 (setq bootstrap-version 7)
-(setq straight-base-dir dm-data-home)
 (setq straight-install-url "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el")
 (setq straight-use-package-by-default t)
 
@@ -58,10 +58,9 @@
 ;; up `;;;###autoload' cookies in `config/*.el' and writes one file with all
 ;; the `(autoload ...)' forms. We rebuild it whenever any source file is newer
 ;; than the cache, so adding a new module or cookie just works on next boot.
-(let* ((config-dir dm-modules-dir)
-       (loaddefs (expand-file-name "loaddefs.el" config-dir))
-       (sources (and (file-directory-p config-dir)
-                     (directory-files config-dir t "\\`dm-.*\\.el\\'")))
+(let* ((loaddefs (expand-file-name "loaddefs.el" dm-modules-dir))
+       (sources (and (file-directory-p dm-modules-dir)
+                     (directory-files dm-modules-dir t "\\`dm-.*\\.el\\'")))
        (stale (or (not (file-exists-p loaddefs))
                   (let ((cached (file-attribute-modification-time
                                  (file-attributes loaddefs))))
@@ -77,10 +76,8 @@
     ;; startup quiet while preserving the automatic autoload refresh.
     (let ((inhibit-message t)
           (message-log-max nil))
-      (loaddefs-generate config-dir loaddefs)))
+      (loaddefs-generate dm-modules-dir loaddefs)))
   (load loaddefs nil 'nomessage))
-
-(require 'dm-xdg)
 
 ;; Eager, cross-cutting setup lives in cohesive modules; command-only helpers
 ;; keep using autoload cookies and stay out of the startup path.
