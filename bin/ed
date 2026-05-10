@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# ed (not actually ed)
+#
+# Start a TTY Emacs client
+#
+
+# Environment expected by the daemon and later TTY client frames.
+export DM_LOG_LEVEL="${DM_LOG_LEVEL:-debug}"
+export TERM="${TERM:-xterm-256color}"
+export COLORTERM="${COLORTERM:-truecolor}"
+export LANG="${LANG:-en_US.UTF-8}"
+export LC_CTYPE="${LC_CTYPE:-en_US.UTF-8}"
+
+emacsclient \
+  --socket-name=tty \
+  --tty \
+  --alternate-editor="" \
+  "$@"

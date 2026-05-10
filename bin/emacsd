@@ -26,11 +26,11 @@
 #
 # Examples:
 #   emacsd tty
-#   emacsd git-gui
+#   emacsd gui
 
 set -eu
 
-daemon_name="${1:?usage: emacs-daemon-launchagent DAEMON_NAME}"
+daemon_name="${1:?usage: emacsd DAEMON_NAME}"
 
 # Ensure an existing daemon with this name is not left around.
 emacsclient -s "$daemon_name" --eval '(kill-emacs)' >/dev/null 2>&1 || true

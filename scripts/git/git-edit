@@ -2,7 +2,7 @@
 
 # git-edit
 
-emacsclient -s tty -t -a '' "$@"
+ed "$@"
 status=$?
 
 [ "$status" -eq 0 ] && exit 0

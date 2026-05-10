@@ -92,18 +92,10 @@ alias vin='vim -u NONE'      # Vim with no config
 # Set defaults for editor, pager, and less behavior.
 
 # 3.1 Editor and Pager
-export EDITOR="emacsclient -t -s tty"
+export EDITOR="ed"
 export PAGER="less"
 export LESSOPEN="| src-hilite-lesspipe.sh %s"  # Syntax highlighting for less
 export LESS=' --no-init --RAW-CONTROL-CHARS --quit-if-one-screen '  # Less options: no init, raw chars, quit if one screen
-
-edit() {
-  emacsclient -s gui -c -n -a "" "$@"
-}
-
-ed() {
-  git-edit "$@"
-}
 
 # 4. Functions
 # ------------
