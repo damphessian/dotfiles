@@ -73,7 +73,6 @@ FN and ARGS are the advised `treesit-auto--set-major-remap' arguments."
   (magit-commit-show-diff t)
   :config
   ;; Remove sections to speed up load.
-  (remove-hook 'magit-status-sections-hook #'magit-insert-status-headers)
   (remove-hook 'magit-status-sections-hook #'magit-insert-am-sequence)
   (remove-hook 'magit-status-sections-hook #'magit-insert-bisect-log)
   (remove-hook 'magit-status-sections-hook #'magit-insert-bisect-output)
