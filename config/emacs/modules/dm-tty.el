@@ -10,7 +10,6 @@
 ;;; Code:
 
 ;; git commit daemon: load magit eagerly
-(dm-log :debug "Eager-loading Magit...")
 (require 'magit)
 
 (defun dm-pbcut (beg end)
@@ -38,7 +37,6 @@
   :config
   (defun dm-bind-tty-keys (&optional frame)
     "Set up keybindings specific to TTY Emacs."
-    (dm-log :debug "Setting up TTY keybindings: %s" server-name)
     (with-selected-frame (or frame (selected-frame))
       (general-define-key
        "M-["   #'previous-buffer

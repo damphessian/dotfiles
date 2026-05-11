@@ -59,7 +59,7 @@
   (recentf-auto-cleanup "11:00pm")
   (recentf-max-saved-items 200)
   :config
-  (defun dm-log-quietly-recentf-mode ()
+  (defun dm-quietly-recentf-mode ()
     (let ((inhibit-message t)
           (message-log-max nil))
       (recentf-mode 1)))
@@ -77,7 +77,7 @@
   (editorconfig-mode 1)
   (global-auto-revert-mode -1) ;; disabled for safety
   (global-eldoc-mode -1) ;; disabled because noisy
-  (dm-log-quietly-recentf-mode)
+  (dm-quietly-recentf-mode)
   (savehist-mode 1))
 (add-hook 'emacs-startup-hook #'dm-core-global-minor-modes)
 

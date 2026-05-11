@@ -165,7 +165,6 @@
     (with-selected-frame (or frame (selected-frame))
       (when (display-graphic-p)
           (progn ; GUI-only config
-            (dm-log :debug "GUI setting up keybindings")
             (general-define-key
              "s-["   #'previous-buffer
              "s-]"   #'next-buffer

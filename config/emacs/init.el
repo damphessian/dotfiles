@@ -8,14 +8,12 @@
 
 (require 'dm-paths)
 (require 'dm-util)
-(require 'dm-log)
-(dm-log-initialize)
 
 (require 'dm-straight)
 (require 'dm-autoload)
 
-;; Eager, cross-cutting setup lives in cohesive modules; command-only helpers
-;; keep using autoload cookies and stay out of the startup path.
+;; Eager, cross-cutting setup lives in cohesive modules;
+;; Command-only helpers use autoload cookies and stay out of the startup path.
 (require 'dm-session)
 (require 'dm-core)
 (require 'dm-ui)

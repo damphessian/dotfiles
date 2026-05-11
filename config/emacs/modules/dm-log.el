@@ -34,6 +34,20 @@ it from env DM_LOG_LEVEL,falling back to :error.")
     (:error . 3))
   "Numeric severity ordering for DM logging levels.")
 
+(defun dm-log-set-level (&optional level)
+  "Set `dm-log-level`.
+
+If LEVEL is nil, read from DM_LOG_LEVEL. Fall back to :error."
+  (setq dm-log-level
+        (or (dm-log--coerce-level level)
+            (dm-log--coerce-level (getenv "DM_LOG_LEVEL"))
+            :error)))
+
+(defun dm-log-initialize ()
+  "Initialize `dm-log-level' if it hasn't already been set."
+  (unless dm-log-level
+    (dm-log-set-level)))
+
 (defun dm-log--valid-level-p (level)
   "Return non-nil if LEVEL is a valid DM log level."
   (assq level dm-log--levels))
@@ -50,20 +64,6 @@ VALUE may be a keyword like :info or a string like \"info\"."
       (when (dm-log--valid-level-p level)
         level)))
    (t nil)))
-
-(defun dm-log-set-level (&optional level)
-  "Set `dm-log-level`.
-
-If LEVEL is nil, read from DM_LOG_LEVEL. Fall back to :error."
-  (setq dm-log-level
-        (or (dm-log--coerce-level level)
-            (dm-log--coerce-level (getenv "DM_LOG_LEVEL"))
-            :error)))
-
-(defun dm-log-initialize ()
-  "Initialize `dm-log-level' if it hasn't already been set."
-  (unless dm-log-level
-    (dm-log-set-level)))
 
 (defun dm-log--level-value (level)
   "Return numeric severity for LEVEL."
