@@ -66,7 +66,7 @@
   ;; Run recentf cleanup quietly. With `recentf-auto-cleanup' set to a time
   ;; string, cleanup runs via `run-at-time' -- an async timer dispatch that
   ;; loses any `inhibit-message' let-binding from the surrounding call site.
-  (advice-add 'recentf-cleanup :around #'dm-log-quietly))
+  (advice-add 'recentf-cleanup :around #'dm-util-quietly))
 
 ;; Delay global mode activation
 ;; ----------------------------

@@ -20,6 +20,12 @@ known project, return that project's root.  Otherwise return DIRECTORY."
     (and (stringp daemon-name)
          (string-match-p "tty" daemon-name))))
 
+(defun dm-util-quietly (fn &rest args)
+  "Run function FN with ARGS, suppressing any messages it emits."
+  (let ((inhibit-message t)
+        (message-log-max nil))
+    (apply fn args)))
+
 
 (provide 'dm-util)
 ;;; dm-util.el ends here

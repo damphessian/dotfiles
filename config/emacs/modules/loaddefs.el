@@ -287,6 +287,7 @@ otherwise kill Emacs." t)
 ;;; Generated autoloads from dm-util.el
 
 (register-definition-prefixes "dm-util" '("dm-util-"))
+
 
 ;;; End of scraped data
 
