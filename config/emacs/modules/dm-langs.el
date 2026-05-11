@@ -139,10 +139,6 @@ Eglot's connect call blocks redisplay until the LSP server returns its
           (lambda ()
             (run-with-timer 1 nil #'dm-find-in-home--refresh-cache)))
 
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (run-with-timer 1.5 nil (lambda () (require 'org)))))
-
 ;;; ————————————————————————————
 ;;; Tree-sitter
 ;;; ————————————————————————————
