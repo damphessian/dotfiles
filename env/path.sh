@@ -11,6 +11,7 @@ PATH+=":${DOTFILES_DIR}/bin"
 PATH+=":${XDG_SECURE_DIR}/bin"
 PATH+=":${DOTFILES_DIR}/shell/git"
 PATH+=":${DOTFILES_DIR}/shell/tmux"
+PATH+=":${DOTFILES_DIR}/shell/utils"
 
 PATH+=":${XDG_DATA_HOME}/mise/shims"
 PATH+=":${XDG_DATA_HOME}/fzf/bin"
