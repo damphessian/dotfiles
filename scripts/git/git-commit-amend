@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# Amend the last commit, updating the date
-
-git commit --amend -v --date="$(date +%Y-%m-%dT%H:%M:%S)"
