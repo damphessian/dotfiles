@@ -38,10 +38,10 @@ go install github.com/davidrjenni/reftools/cmd/fillstruct@latest
 go install github.com/fatih/gomodifytags@latest
 go install github.com/josharian/impl@latest
 go install github.com/x-motemen/gore/cmd/gore@latest
-go install golang.org/x/tools/cmd/godoc
+go install golang.org/x/tools/cmd/godoc@latest
+go install golang.org/x/tools/cmd/goimports@latest
 go install golang.org/x/tools/cmd/gorename@latest
-go:install golang.org/x/tools/cmd/goimports
-go:install golang.org/x/tools/gopls
+go install golang.org/x/tools/gopls@latest
 mise reshim go
 """
 
