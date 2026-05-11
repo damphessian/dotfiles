@@ -99,10 +99,12 @@ visual wrapping more closely matches the intended `fill-column'."
 (set-face-attribute 'default nil :family "Source Code Pro Ligaturized" :height 180)
 
 (use-package doom-themes
+  :defer 0.3
   :config
   (load-theme 'doom-one t))
 
 (use-package mood-line
+  :defer 0.1
   :config
   (setq mood-line-glyph-alist mood-line-glyphs-fira-code)
   (setq mood-line-segment-modal-evil-state-alist

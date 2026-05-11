@@ -32,7 +32,7 @@
 (when (dm-util-daemon-is-tty-p)
   (require 'dm-tty))
 
-(message (emacs-init-time "%.2fs"))
+(message (emacs-init-time "%.3fs"))
 
 (provide 'init)
 ;;; init.el ends here
