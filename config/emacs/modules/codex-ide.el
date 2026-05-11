@@ -1,6 +1,13 @@
 ;;; codex-ide.el --- Codex CLI integration via eat -*- lexical-binding: t; -*-
 
-(require 'project)
+;;; Commentary:
+
+;; Local Codex bridge lives
+;;
+;; Note: Lately less stable, in the latest versions flickers consistently in Eat
+;; terminals. Consider abandoning.
+
+;;; Code:
 
 (declare-function eat-mode "eat")
 (declare-function eat-exec "eat")
@@ -66,6 +73,7 @@
     (eat-exec buf name codex-ide-cli-path nil codex-ide-cli-args)
     (eat-semi-char-mode)))
 
+;;;###autoload
 (defun codex-ide ()
   "Start or switch to a Codex session for the current project."
   (interactive)
@@ -88,6 +96,7 @@
              (kill-buffer buf))
            (signal (car err) (cdr err)))))))))
 
+;;;###autoload
 (defun codex-ide-toggle ()
   "Toggle visibility of the Codex window for the current project."
   (interactive)
@@ -98,6 +107,7 @@
         (delete-window win)
       (codex-ide))))
 
+;;;###autoload
 (defun codex-ide-stop ()
   "Kill the Codex session for the current project."
   (interactive)

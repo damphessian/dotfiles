@@ -261,6 +261,17 @@ otherwise kill Emacs." t)
 
 (register-definition-prefixes "dm-core" '("dm-core-"))
 
+
+
+;;; Generated autoloads from codex-ide.el
+
+(autoload 'codex-ide "codex-ide"
+"Start or switch to a Codex session for the current project." t)
+(autoload 'codex-ide-toggle "codex-ide"
+"Toggle visibility of the Codex window for the current project." t)
+(autoload 'codex-ide-stop "codex-ide"
+"Kill the Codex session for the current project." t)
+(register-definition-prefixes "codex-ide" '("codex-ide-"))
 
 ;;; End of scraped data
 
