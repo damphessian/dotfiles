@@ -172,7 +172,7 @@
              "s-}"   #'tab-bar-switch-to-next-tab
              "s-p"   #'dm-find-in-home
              "s-r"   nil
-             "s-R"   #'dm-restart-and-restore-emacs
+             "s-R"   #'dm-restart-emacs-and-restore
              "s-P"   #'execute-extended-command
              "s-C-p" #'execute-extended-command-for-buffer
              "s-f"   #'avy-goto-char-2
