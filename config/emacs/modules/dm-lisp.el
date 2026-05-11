@@ -47,15 +47,13 @@
          (t
           "top-level form"))))))
 
+;;;###autoload
 (defun dm-evil-eval-sexp-dwim ()
   "Evaluate Elisp DWIM.
 
 If Evil is in visual state, evaluate the selection.
-
 Otherwise, if point is inside a same-line list form, evaluate that list.
-
 Otherwise, evaluate the current top-level form.
-
 If there is no top-level form, evaluate the buffer."
   (interactive)
   (cond

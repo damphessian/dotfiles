@@ -112,7 +112,14 @@ and `treesit-auto-langs'.
 
 ;;; Generated autoloads from dm-lisp.el
 
-(register-definition-prefixes "dm-lisp" '("dm-e"))
+(autoload 'dm-evil-eval-sexp-dwim "dm-lisp"
+"Evaluate Elisp DWIM.
+
+If Evil is in visual state, evaluate the selection.
+Otherwise, if point is inside a same-line list form, evaluate that list.
+Otherwise, evaluate the current top-level form.
+If there is no top-level form, evaluate the buffer." t)
+(register-definition-prefixes "dm-lisp" '("dm-elisp--"))
 
 
 ;;; Generated autoloads from dm-log.el

@@ -5,7 +5,6 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'dm-lisp)
 (require 'evil)
 
 (defmacro dm-evil-text--define-and-bind-text-object (name key start-regex end-regex)
