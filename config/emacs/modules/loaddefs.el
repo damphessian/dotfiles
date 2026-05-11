@@ -265,6 +265,10 @@ otherwise kill Emacs." t)
 
 ;;; Generated autoloads from codex-ide.el
 
+(autoload 'codex-ide--buffer-name "codex-ide"
+"
+
+(fn DIR)")
 (autoload 'codex-ide "codex-ide"
 "Start or switch to a Codex session for the current project." t)
 (autoload 'codex-ide-toggle "codex-ide"
@@ -272,6 +276,7 @@ otherwise kill Emacs." t)
 (autoload 'codex-ide-stop "codex-ide"
 "Kill the Codex session for the current project." t)
 (register-definition-prefixes "codex-ide" '("codex-ide-"))
+
 
 ;;; End of scraped data
 

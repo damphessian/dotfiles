@@ -37,6 +37,7 @@
   "Whether to focus the Codex window when it opens."
   :type 'boolean :group 'codex-ide)
 
+;;;###autoload
 (defun codex-ide--buffer-name (dir)
   (format "*codex[%s]*" (file-name-nondirectory (directory-file-name dir))))
 

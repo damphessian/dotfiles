@@ -7,8 +7,6 @@
 
 ;;; Code:
 
-(require 'codex-ide)
-
 (defvar dm-active-agent 'claude
   "Currently active AI agent: `claude' or `codex'.")
 
