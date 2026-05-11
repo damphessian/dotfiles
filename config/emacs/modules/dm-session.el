@@ -18,7 +18,8 @@
   ;; Workaround for frame size being broken on restore.
   ;; Avoid reusing the initial frame during desktop restore, which can override
   ;; the frame size/maximization established during early init.
-  (desktop-restore-reuses-frames nil)
+  (desktop-restore-reuses-frames t)
+  (desktop-restore-frames t)
   :config
   (defun dm-desktop-file ()
     "Return the full path to the configured desktop file."
