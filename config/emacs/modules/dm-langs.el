@@ -212,5 +212,15 @@ and `treesit-auto-langs'."
   :config
   (global-treesit-fold-mode 1))
 
+;;; ————————————————————————————
+;;; vimrc
+;;; ————————————————————————————
+
+(use-package vimrc-mode
+  :straight
+  (vimrc-mode :type git :host github :repo "mcandre/vimrc-mode")
+  :config
+  (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode)))
+
 (provide 'dm-langs)
 ;;; dm-langs.el ends here
