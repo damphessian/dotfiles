@@ -96,10 +96,9 @@ visual wrapping more closely matches the intended `fill-column'."
 
 ;;; Package-backed appearance.
 
-(set-face-attribute 'default nil :family "Source Code Pro" :height 180)
+(set-face-attribute 'default nil :family "Source Code Pro Ligaturized" :height 180)
 
 (use-package doom-themes
-  :defer 0.1
   :config
   (load-theme 'doom-one t))
 
