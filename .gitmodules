@@ -1,3 +1,12 @@
+[submodule "config/vim"]
+	path = config/vim
+	url = git@github.com:h35514n/vim.git
+[submodule "config/emacs"]
+	path = config/emacs
+	url = https://github.com/h35514n/emacs.git
+[submodule "shell"]
+	path = shell
+	url = https://github.com/h35514n/shell.git
 [submodule "codespaces"]
 	path = codespaces
 	branch = master
@@ -17,6 +26,10 @@
 	url = https://github.com/junegunn/vim-plug.git
 	branch = master
 	update = rebase
+[submodule "share/zsh/zsh-autosuggestions"]
+	path = share/zsh/zsh-autosuggestions
+	branch = master
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
 [submodule "share/zsh/zsh-syntax-highlighting"]
 	path = share/zsh/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
@@ -32,27 +45,17 @@
 	url = https://github.com/tmux-plugins/tpm
 	branch = master
 	update = rebase
-[submodule "share/tmux/tmux-prefix-highlight"]
-	path = share/tmux/tmux-prefix-highlight
-	url = https://github.com/tmux-plugins/tmux-prefix-highlight.git
-	branch = master
-	update = rebase
 [submodule "share/tmux/tmux-open"]
 	path = share/tmux/tmux-open
 	url = https://github.com/tmux-plugins/tmux-open.git
+	branch = master
+	update = rebase
+[submodule "share/tmux/tmux-prefix-highlight"]
+	path = share/tmux/tmux-prefix-highlight
+	url = https://github.com/tmux-plugins/tmux-prefix-highlight.git
 	branch = master
 	update = rebase
 [submodule "share/tmux/tmux-urlview"]
 	path = share/tmux/tmux-urlview
 	branch = master
 	url = https://github.com/tmux-plugins/tmux-urlview
-[submodule "share/zsh/zsh-autosuggestions"]
-	path = share/zsh/zsh-autosuggestions
-	branch = master
-	url = https://github.com/zsh-users/zsh-autosuggestions.git
-[submodule "config/vim"]
-	path = config/vim
-	url = git@github.com:h35514n/vim.git
-[submodule "config/emacs"]
-	path = config/emacs
-	url = https://github.com/h35514n/emacs.git
