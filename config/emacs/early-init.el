@@ -87,4 +87,4 @@
 
 (defconst dm-modules-dir (expand-file-name "modules/" dm-config-home))
 (add-to-list 'load-path dm-modules-dir)
-(add-to-list 'trusted-content (abbreviate-file-name dm-config-home))
+(add-to-list 'trusted-content (file-name-as-directory (abbreviate-file-name dm-config-home)))
