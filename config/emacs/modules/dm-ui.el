@@ -102,14 +102,45 @@ visual wrapping more closely matches the intended `fill-column'."
   :config
   (load-theme 'doom-one t))
 
-(use-package doom-modeline
-  :init
-  (setq doom-modeline-major-mode-icon nil)
-  (setq doom-modeline-buffer-state-icon nil)
-  (setq doom-modeline-vcs-icon nil)
-  (setq doom-modeline-icon t)
+(use-package mood-line
   :config
-  (doom-modeline-mode 1))
+  (setq mood-line-glyph-alist mood-line-glyphs-fira-code)
+  (setq mood-line-segment-modal-evil-state-alist
+        '((normal   "N")
+          (insert   "I" . font-lock-string-face)
+          (visual   "V" . font-lock-keyword-face)
+          (replace  "R" . font-lock-type-face)
+          (motion   "M" . font-lock-constant-face)
+          (operator "O" . font-lock-function-name-face)
+          (emacs    "E" . font-lock-builtin-face)))
+  ;; Segments:
+  ;;   * init.el  4:32 Top                                         ELisp  ! Issues: 2
+  ;; (setq mood-line-format mood-line-format-default)
+  ;;   * init.el  4:32:52 Top                    SPCx2  LF  UTF-8  ELisp  ! Issues: 2
+  ;; (setq mood-line-format mood-line-format-default-extended)
+  ;;   * init.el : ELisp                                         4:32    ! Issues: 2
+  (setq mood-line-format
+        (mood-line-defformat
+         :left (
+                ((mood-line-segment-modal)            . " ")
+                ((or (mood-line-segment-buffer-status)
+                     (mood-line-segment-client)
+                     " ")                             . " ")
+                ((mood-line-segment-project)          . "/")
+                ((mood-line-segment-buffer-name)      . "  ")
+                (mood-line-segment-cursor-position)
+                (when (mood-line-segment-region)
+                  #(" " 0 1 (face mood-line-unimportant)))
+                ((mood-line-segment-region)           . " ")
+                )
+         :right (
+                 ((mood-line-segment-vc)          . "  ")
+                 ((mood-line-segment-major-mode)  . "  ")
+                 ((mood-line-segment-misc-info)   . "  ")
+                 ((mood-line-segment-checker)     . "  ")
+                 ((mood-line-segment-process)     . "  ")
+                 )))
+  (mood-line-mode))
 
-(provide 'dm-ui)
+  (provide 'dm-ui)
 ;;; dm-ui.el ends here
