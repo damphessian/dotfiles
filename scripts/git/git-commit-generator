@@ -196,7 +196,7 @@ def edit_message(initial_msg: str):
         tmp.flush()
         path = tmp.name
 
-    editor = os.environ.get("EDITOR", "vi")
+    editor = "vim" # os.environ.get("EDITOR", "vi")
     os.system(f"{editor} {path}")
 
     with open(path, "r") as f:
