@@ -25,7 +25,7 @@ NOTE: speculative."
      (when-let* ((buf (get-buffer (claude-code-ide--get-buffer-name))))
        (get-buffer-window buf t)))
     ('codex
-     (when-let* ((dir (dm-working-directory))
+     (when-let* ((dir (dm-util-working-dir))
                  (buf (get-buffer (codex-ide--buffer-name dir))))
        (get-buffer-window buf t)))))
 

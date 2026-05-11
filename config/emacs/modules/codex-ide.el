@@ -73,7 +73,7 @@
 (defun codex-ide ()
   "Start or switch to a Codex session for the current project."
   (interactive)
-  (let* ((dir (dm-working-directory))
+  (let* ((dir (dm-util-working-dir))
          (name (codex-ide--buffer-name dir))
          (buf (get-buffer name)))
     (cond
@@ -96,7 +96,7 @@
 (defun codex-ide-toggle ()
   "Toggle visibility of the Codex window for the current project."
   (interactive)
-  (let* ((dir (dm-working-directory))
+  (let* ((dir (dm-util-working-dir))
          (name (codex-ide--buffer-name dir))
          (win (get-buffer-window name)))
     (if win
@@ -107,7 +107,7 @@
 (defun codex-ide-stop ()
   "Kill the Codex session for the current project."
   (interactive)
-  (let* ((dir (dm-working-directory))
+  (let* ((dir (dm-util-working-dir))
          (name (codex-ide--buffer-name dir)))
     (when-let* ((buf (get-buffer name)))
       (kill-buffer buf))))
