@@ -3,17 +3,24 @@
 # pretty-print the command search path
 
 if [[ "$1" == "path" ]]; then
-  paths="$PATH"
+  paths="${PATH}"
 elif [[ "$1" == "manpath" ]]; then
-  paths="$MANPATH"
+  paths="${MANPATH}"
 elif [[ "$1" == "cdpath" ]]; then
-  paths="$CDPATH"
+  paths="${CDPATH}"
 fi
 
-[[ -z "$paths" ]] && exit
+[[ -z "${paths}" ]] && exit
+
+paths="$(echo "${paths}" | ruby -pe '$_.gsub!(/:+/, "\n").strip!')"
+
+if [[ "$2" == "--no-select" ]] || [[ "$2" == "-n" ]]; then
+  echo "${paths}"
+  exit 0
+fi
 
 path="$(
-  echo "$paths" | ruby -pe '$_.gsub!(/:+/, "\n").strip!' | nl -ba | fzf \
+  echo "${paths}" | nl -ba | fzf \
       --ansi \
       --no-sort \
       --reverse \
@@ -24,14 +31,14 @@ path="$(
     awk '{ print $2 }'
 )"
 
-[[ -z "$path" ]] && exit
+[[ -z "${path}" ]] && exit
 
-if [[ ! -d "$path" ]]; then
-  echo "$path" && exit
+if [[ ! -d "${path}" ]]; then
+  echo "${path}" && exit
 fi
 
 selection="$(
-  eza -a1 --color=always "$path" |
+  eza -a1 --color=always "${path}" |
   eval "fzf \
   --ansi \
   --no-sort \
@@ -41,12 +48,12 @@ selection="$(
   --bind 'ctrl-b:preview-up'"
 )"
 
-if [[ -z "$selection" ]]; then
+if [[ -z "${selection}" ]]; then
   pretty-print-path "$1"
 else
-  if [[ ! "$selection" =~ ^/ ]]; then
-    echo "$path/$selection"
+  if [[ ! "${selection}" =~ ^/ ]]; then
+    echo "${path}/${selection}"
   else
-    echo "$selection"
+    echo "${selection}"
   fi
 fi
