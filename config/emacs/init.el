@@ -13,6 +13,18 @@
 (require 'dm-straight)
 (require 'dm-autoload)
 
+;; Utilities
+
+(defun dm-working-directory (&optional directory)
+  "Return the project root for DIRECTORY, or DIRECTORY/default-directory.
+
+If DIRECTORY is nil, use `default-directory'.  If DIRECTORY is inside a
+known project, return that project's root.  Otherwise return DIRECTORY."
+  (let ((default-directory (or directory default-directory)))
+    (if-let ((project (project-current nil)))
+        (project-root project)
+      default-directory)))
+
 ;; Eager, cross-cutting setup lives in cohesive modules; command-only helpers
 ;; keep using autoload cookies and stay out of the startup path.
 (require 'dm-session)
