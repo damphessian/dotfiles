@@ -171,7 +171,7 @@
              "s-]"   #'next-buffer
              "s-{"   #'tab-bar-switch-to-prev-tab
              "s-}"   #'tab-bar-switch-to-next-tab
-             "s-p"   nil
+             "s-p"   #'dm-find-in-home
              "s-r"   nil
              "s-R"   #'dm-restart-and-restore-emacs
              "s-P"   #'execute-extended-command
