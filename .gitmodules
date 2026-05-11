@@ -50,3 +50,6 @@
 	path = share/zsh/zsh-autosuggestions
 	branch = master
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
+[submodule "config/vim"]
+	path = config/vim
+	url = git@github.com:h35514n/vim.git
