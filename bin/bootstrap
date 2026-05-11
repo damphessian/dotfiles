@@ -105,15 +105,14 @@ end
 
 setup :text_editing_cli_tools do
 
+  brew_install :basedpyright
+  brew_install :bash_language_server
   brew_install :editorconfig
+  brew_install :elixir_ls
   brew_install :ghostscript
-  brew_install :grip
-  brew_install :hunspell
-  brew_install :libvterm
+  brew_install :gopls
   brew_install :pandoc
-  brew_install :pygments
-  brew_install :shellcheck
-  brew_install :tectonic
+  brew_install :tectonic # https://tectonic-typesetting.github.io
   brew_install :tidy_html5
   brew_install :wordnet
 
