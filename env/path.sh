@@ -9,8 +9,8 @@ fi
 PATH="${XDG_LOCALS_DIR}/bin"
 PATH+=":${DOTFILES_DIR}/bin"
 PATH+=":${XDG_SECURE_DIR}/bin"
-PATH+=":${DOTFILES_DIR}/scripts/git"
-PATH+=":${DOTFILES_DIR}/scripts/tmux"
+PATH+=":${DOTFILES_DIR}/shell/git"
+PATH+=":${DOTFILES_DIR}/shell/tmux"
 
 PATH+=":${XDG_DATA_HOME}/mise/shims"
 PATH+=":${XDG_DATA_HOME}/fzf/bin"

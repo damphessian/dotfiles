@@ -1,1 +1,1 @@
-zshrc
+../../shell/zshrc
