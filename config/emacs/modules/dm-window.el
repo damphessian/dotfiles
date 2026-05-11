@@ -52,6 +52,7 @@ otherwise kill Emacs."
 
 (use-package hydra
   ;; Repeatable keymaps for commands you want to apply several times in a row.
+  :defer 0.3
   :config
   (defhydra dm-window-resize-hydra (:hint nil)
     "

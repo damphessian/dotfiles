@@ -11,6 +11,7 @@
 
 (use-package vertico
   ;; Replaces the default horizontal completion with a clean vertical list.
+  :defer 0.1
   :custom
   (vertico-cycle t)
   :config
@@ -48,6 +49,7 @@
   ;; Space-separated components match in any order, while file completion keeps
   ;; path-aware prefix matching so "/" keeps its normal meaning.
   :ensure t
+  :defer 0.1
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion))))
@@ -56,6 +58,7 @@
 (use-package consult
   ;; Rich completion commands: consult-ripgrep, consult-find, consult-buffer,
   ;; consult-line, consult-recent-file, etc. Integrates with vertico.
+  :defer 0.2
   :config
   ;; Avoid jumping through target buffers while scrolling search candidates.
   ;; Press M-. on a candidate to preview it explicitly.

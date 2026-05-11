@@ -30,6 +30,7 @@
   ;; Provides sensible evil keybindings for magit, dired, help, ibuffer, etc.
   ;; Must load after evil.
   :after evil
+  :defer 0.3
   :init
     (setq evil-collection-calendar-want-org-bindings  nil)
     (setq evil-collection-outline-bind-tab-p            t)

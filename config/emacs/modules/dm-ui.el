@@ -99,10 +99,12 @@ visual wrapping more closely matches the intended `fill-column'."
 (set-face-attribute 'default nil :family "Source Code Pro" :height 180)
 
 (use-package doom-themes
+  :defer 0.1
   :config
   (load-theme 'doom-one t))
 
 (use-package doom-modeline
+  :defer 0.2
   :init
   (setq doom-modeline-major-mode-icon nil)
   (setq doom-modeline-buffer-state-icon nil)
