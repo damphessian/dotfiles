@@ -37,11 +37,6 @@
   "Whether to focus the Codex window when it opens."
   :type 'boolean :group 'codex-ide)
 
-(defun codex-ide--working-directory ()
-  (if-let* ((proj (project-current)))
-      (project-root proj)
-    default-directory))
-
 (defun codex-ide--buffer-name (dir)
   (format "*codex[%s]*" (file-name-nondirectory (directory-file-name dir))))
 
@@ -77,7 +72,7 @@
 (defun codex-ide ()
   "Start or switch to a Codex session for the current project."
   (interactive)
-  (let* ((dir (codex-ide--working-directory))
+  (let* ((dir (dm-working-directory))
          (name (codex-ide--buffer-name dir))
          (buf (get-buffer name)))
     (cond
@@ -100,7 +95,7 @@
 (defun codex-ide-toggle ()
   "Toggle visibility of the Codex window for the current project."
   (interactive)
-  (let* ((dir (codex-ide--working-directory))
+  (let* ((dir (dm-working-directory))
          (name (codex-ide--buffer-name dir))
          (win (get-buffer-window name)))
     (if win
@@ -111,7 +106,7 @@
 (defun codex-ide-stop ()
   "Kill the Codex session for the current project."
   (interactive)
-  (let* ((dir (codex-ide--working-directory))
+  (let* ((dir (dm-working-directory))
          (name (codex-ide--buffer-name dir)))
     (when-let* ((buf (get-buffer name)))
       (kill-buffer buf))))
