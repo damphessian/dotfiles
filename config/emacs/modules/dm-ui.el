@@ -104,7 +104,6 @@ visual wrapping more closely matches the intended `fill-column'."
   (load-theme 'doom-one t))
 
 (use-package doom-modeline
-  :defer 0.2
   :init
   (setq doom-modeline-major-mode-icon nil)
   (setq doom-modeline-buffer-state-icon nil)
