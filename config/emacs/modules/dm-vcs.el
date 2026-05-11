@@ -93,6 +93,9 @@ FN and ARGS are the advised `treesit-auto--set-major-remap' arguments."
     (transient-append-suffix 'magit-commit "c"
       '("g" "Generate commit message" dm-magit-commit-generate))))
 
+  ;; Pre-warm at idle so the first magit invocation doesn't pay the build cost.
+ (run-with-idle-timer 3 nil (lambda () (require 'magit)))
+
 (use-package git-timemachine
   :commands git-timemachine
   :config
