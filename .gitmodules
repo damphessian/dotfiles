@@ -53,3 +53,6 @@
 [submodule "config/vim"]
 	path = config/vim
 	url = git@github.com:h35514n/vim.git
+[submodule "config/emacs"]
+	path = config/emacs
+	url = https://github.com/h35514n/emacs.git
