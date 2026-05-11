@@ -266,8 +266,7 @@ otherwise kill Emacs." t)
 
 ;;; Generated autoloads from dm-core.el
 
-(register-definition-prefixes "dm-core" '("dm-core-"))
-
+(register-definition-prefixes "dm-core" '("dm-core-global-minor-modes"))
 
 
 ;;; Generated autoloads from codex-ide.el
@@ -284,6 +283,10 @@ otherwise kill Emacs." t)
 "Kill the Codex session for the current project." t)
 (register-definition-prefixes "codex-ide" '("codex-ide-"))
 
+
+;;; Generated autoloads from dm-util.el
+
+(register-definition-prefixes "dm-util" '("dm-util-"))
 
 ;;; End of scraped data
 

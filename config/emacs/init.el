@@ -7,23 +7,12 @@
 ;;; Code:
 
 (require 'dm-paths)
+(require 'dm-util)
 (require 'dm-log)
 (dm-log-initialize)
 
 (require 'dm-straight)
 (require 'dm-autoload)
-
-;; Utilities
-
-(defun dm-working-directory (&optional directory)
-  "Return the project root for DIRECTORY, or DIRECTORY/default-directory.
-
-If DIRECTORY is nil, use `default-directory'.  If DIRECTORY is inside a
-known project, return that project's root.  Otherwise return DIRECTORY."
-  (let ((default-directory (or directory default-directory)))
-    (if-let ((project (project-current nil)))
-        (project-root project)
-      default-directory)))
 
 ;; Eager, cross-cutting setup lives in cohesive modules; command-only helpers
 ;; keep using autoload cookies and stay out of the startup path.
@@ -42,7 +31,7 @@ known project, return that project's root.  Otherwise return DIRECTORY."
 (require 'dm-langs)
 (require 'dm-keys)
 
-(when (dm-core-daemon-is-tty-p)
+(when (dm-util-daemon-is-tty-p)
   (require 'dm-tty))
 
 (message (emacs-init-time "%.2fs"))
