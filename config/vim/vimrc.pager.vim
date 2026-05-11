@@ -1,6 +1,7 @@
 source $XDG_CONFIG_HOME/vim/vimrc.minimal.vim
 
 set runtimepath+=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after
+set runtimepath+=$XDG_DATA_HOME/fzf
 set runtimepath+=$VIM,$VIMRUNTIME
 
 "--------------------------------------------------------------
@@ -55,4 +56,3 @@ nnoremap q :q!  " intentional CR literal
 " Rebind 'y' to copy to system clipboard
 nnoremap y "+y
 vnoremap y "+y
-

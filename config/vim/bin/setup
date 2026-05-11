@@ -1,0 +1,308 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: bin/setup [options]
+
+Set up this Vim config on a remote Linux host. Intended for disposable or
+semi-disposable SSH environments on cloud VMs.
+
+Options:
+  --minimal             Install only Vim, git, curl, ripgrep, and fzf.
+  --with-language-tools Install optional linters/formatters where available.
+  --no-link             Do not symlink this directory to $XDG_CONFIG_HOME/vim.
+  --no-plugins          Do not run Vim-plug installation.
+  --dry-run             Print commands without running them.
+  -h, --help            Show this help.
+USAGE
+}
+
+log() {
+  printf '==> %s\n' "$*"
+}
+
+warn() {
+  printf 'warning: %s\n' "$*" >&2
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+run() {
+  if [ "${DRY_RUN}" = "1" ]; then
+    printf '+'
+    printf ' %q' "$@"
+    printf '\n'
+  else
+    "$@"
+  fi
+}
+
+have() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+as_root() {
+  if [ "$(id -u)" -eq 0 ]; then
+    run "$@"
+  elif have sudo; then
+    run sudo "$@"
+  else
+    die "this step needs root privileges; install sudo or run as root"
+  fi
+}
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+VIM_CONFIG_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd -P)"
+
+DRY_RUN=0
+LINK_CONFIG=1
+INSTALL_PLUGINS=1
+INSTALL_LANGUAGE_TOOLS=0
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --minimal)
+      INSTALL_LANGUAGE_TOOLS=0
+      ;;
+    --with-language-tools)
+      INSTALL_LANGUAGE_TOOLS=1
+      ;;
+    --no-link)
+      LINK_CONFIG=0
+      ;;
+    --no-plugins)
+      INSTALL_PLUGINS=0
+      ;;
+    --dry-run)
+      DRY_RUN=1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      die "unknown option: $1"
+      ;;
+  esac
+  shift
+done
+
+case "$(uname -s)" in
+  Linux)
+    ;;
+  *)
+    die "this setup script is only intended for remote Linux hosts"
+    ;;
+esac
+
+if [ -n "${SSH_CONNECTION:-}" ] || [ -n "${AWS_EXECUTION_ENV:-}" ] || [ -n "${EC2_HOME:-}" ] || [ -n "${CLOUDSDK_CONFIG:-}" ]; then
+  :
+elif [ -r /sys/class/dmi/id/product_name ] &&
+  grep -Eqi 'Google Compute Engine|Amazon EC2' /sys/class/dmi/id/product_name; then
+  :
+else
+  warn "could not confirm SSH/GCP/AWS environment; continuing because this is Linux"
+fi
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-${HOME}/.cache}"
+
+BASE_APT_PACKAGES=(
+  ca-certificates
+  curl
+  fzf
+  git
+  ripgrep
+  vim
+)
+
+LANG_APT_PACKAGES=(
+  jq
+  nodejs
+  npm
+  python3-pip
+  shellcheck
+  shfmt
+  universal-ctags
+  yamllint
+)
+
+BASE_DNF_PACKAGES=(
+  ca-certificates
+  curl
+  fzf
+  git
+  ripgrep
+  vim-enhanced
+)
+
+LANG_DNF_PACKAGES=(
+  jq
+  nodejs
+  npm
+  python3-pip
+  ShellCheck
+  shfmt
+  ctags
+  yamllint
+)
+
+detect_package_manager() {
+  if have apt-get; then
+    printf 'apt\n'
+  elif have dnf; then
+    printf 'dnf\n'
+  elif have yum; then
+    printf 'yum\n'
+  else
+    die "could not find apt-get, dnf, or yum"
+  fi
+}
+
+install_packages() {
+  local manager="$1"
+  shift
+
+  if [ "$#" -eq 0 ]; then
+    return
+  fi
+
+  case "${manager}" in
+    apt)
+      as_root apt-get update
+      as_root env DEBIAN_FRONTEND=noninteractive apt-get install -y "$@"
+      ;;
+    dnf)
+      as_root dnf install -y "$@"
+      ;;
+    yum)
+      as_root yum install -y "$@"
+      ;;
+    *)
+      die "unsupported package manager: ${manager}"
+      ;;
+  esac
+}
+
+install_language_tools() {
+  if have python3; then
+    if have pipx; then
+      run pipx install ruff
+    elif have python3 && python3 -m pip --version >/dev/null 2>&1; then
+      run python3 -m pip install --user --upgrade ruff
+    else
+      warn "python3 pip is not available; skipping ruff"
+    fi
+  fi
+
+  if have npm; then
+    run npm install --global eslint prettier @taplo/cli
+  else
+    warn "npm is not available; skipping eslint, prettier, and taplo"
+  fi
+}
+
+ensure_vim_plug() {
+  local plug_path="${XDG_CONFIG_HOME}/vim/autoload/plug.vim"
+  local repo_plug="${VIM_CONFIG_DIR}/autoload/plug.vim"
+
+  if [ -f "${plug_path}" ]; then
+    return
+  fi
+
+  run mkdir -p "$(dirname "${plug_path}")"
+
+  if [ -f "${repo_plug}" ]; then
+    run cp "${repo_plug}" "${plug_path}"
+  else
+    run curl -fLo "${plug_path}" \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  fi
+}
+
+link_config() {
+  local dest="${XDG_CONFIG_HOME}/vim"
+
+  run mkdir -p "${XDG_CONFIG_HOME}"
+
+  if [ -L "${dest}" ]; then
+    local target
+    target="$(readlink "${dest}")"
+    if [ "${target}" = "${VIM_CONFIG_DIR}" ]; then
+      return
+    fi
+    run rm -f "${dest}"
+  elif [ -e "${dest}" ]; then
+    run mv "${dest}" "${dest}.bak.$(date +%Y%m%d%H%M%S)"
+  fi
+
+  run ln -s "${VIM_CONFIG_DIR}" "${dest}"
+}
+
+install_plugins() {
+  run vim -Nu "${VIM_CONFIG_DIR}/vimrc" -n --not-a-term \
+    '+PlugInstall --sync' '+qa!'
+}
+
+PACKAGE_MANAGER="$(detect_package_manager)"
+
+log "Using package manager: ${PACKAGE_MANAGER}"
+
+case "${PACKAGE_MANAGER}" in
+  apt)
+    packages=("${BASE_APT_PACKAGES[@]}")
+    if [ "${INSTALL_LANGUAGE_TOOLS}" = "1" ]; then
+      packages+=("${LANG_APT_PACKAGES[@]}")
+    fi
+    ;;
+  dnf|yum)
+    packages=("${BASE_DNF_PACKAGES[@]}")
+    if [ "${INSTALL_LANGUAGE_TOOLS}" = "1" ]; then
+      packages+=("${LANG_DNF_PACKAGES[@]}")
+    fi
+    ;;
+esac
+
+log "Installing OS packages"
+install_packages "${PACKAGE_MANAGER}" "${packages[@]}"
+
+log "Creating XDG directories"
+run mkdir -p \
+  "${XDG_CONFIG_HOME}" \
+  "${XDG_DATA_HOME}/vim/plugged" \
+  "${XDG_CACHE_HOME}/vim/backup" \
+  "${XDG_CACHE_HOME}/vim/swap" \
+  "${XDG_CACHE_HOME}/vim/undo"
+
+if [ "${LINK_CONFIG}" = "1" ]; then
+  log "Linking Vim config"
+  link_config
+fi
+
+log "Ensuring Vim-plug"
+ensure_vim_plug
+
+if [ "${INSTALL_LANGUAGE_TOOLS}" = "1" ]; then
+  log "Installing optional language tools"
+  install_language_tools
+fi
+
+if [ "${INSTALL_PLUGINS}" = "1" ]; then
+  log "Installing Vim plugins"
+  install_plugins
+fi
+
+log "Done"
+cat <<EOF
+
+Add this to your shell profile if it is not already set:
+
+  export VIMINIT="source ${XDG_CONFIG_HOME}/vim/vimrc"
+
+EOF

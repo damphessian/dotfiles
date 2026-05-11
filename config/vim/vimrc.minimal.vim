@@ -1,3 +1,4 @@
+set nocompatible
 filetype plugin indent on
 scriptencoding utf-8
 set fileencodings=utf-8
@@ -27,7 +28,7 @@ setlocal undolevels=1     " only one undo allowed
 set backspace=indent,eol,start  " make that backspace key work the way it should
 set runtimepath=$VIMRUNTIME     " turn off user scripts, https://github.com/igrigorik/vimgolf/issues/129
 
-runtime xdg.vim
+source $XDG_CONFIG_HOME/vim/xdg.vim
 
 " " disable event bindings used by augroups for syntax highlighting, etc.
 " set eventignore+=FileType

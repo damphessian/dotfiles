@@ -1,34 +1,37 @@
-" ---------------- Plugins --------------------------
-Plug 'liuchengxu/space-vim-dark'
+" ---------------- Plugin Manifest ----------------
+" Keep this list small enough for a fresh remote machine and useful enough for
+" daily editing. Vim runtime packages cover comment, editorconfig, matchit,
+" netrw, and osc52 when the installed Vim is modern enough.
 
+" Search / fuzzy selection
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" Editing ergonomics
+Plug 'airblade/vim-gitgutter'
 Plug 'christoomey/vim-sort-motion'
-Plug 'christoomey/vim-system-copy'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'haya14busa/incsearch.vim'
-Plug 'itchyny/lightline.vim'          " lightweight, configurable status line
-Plug 'jiangmiao/auto-pairs'
+Plug 'dense-analysis/ale'
+Plug 'itchyny/lightline.vim'
+Plug 'jreybert/vimagit'
 Plug 'junegunn/vim-easy-align'
-Plug 'kien/rainbow_parentheses.vim'   " delimiter highlighting
 Plug 'mhinz/vim-hugefile'
-Plug 'ntpeters/vim-better-whitespace' " detect and highlight bad whitespace
-Plug 'pbrisbin/vim-mkdir'             " create subdirectories as needed
-Plug 'rhysd/vim-healthcheck'
-Plug 'tomtom/tcomment_vim'            " gcc / gc[ai][pim]
+Plug 'pbrisbin/vim-mkdir'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-git'                  " git commit filetype settings, et al
+Plug 'tpope/vim-git'
+Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-rhubarb'
-Plug 'tpope/vim-rsi'                  " readline bindings in insert mode
-Plug 'tpope/vim-surround'             " surround text block with delimiters
+Plug 'tpope/vim-rsi'
+Plug 'tpope/vim-sleuth'
+Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'tpope/vim-vinegar'              " enhancements to netrw
+Plug 'tpope/vim-vinegar'
 
 " Text objects
-Plug 'kana/vim-textobj-entire' " Adds ae/ie
-Plug 'kana/vim-textobj-indent' " Adds i
-Plug 'kana/vim-textobj-user'   " custom text objects
-Plug 'kana/vim-textobj-line'   " Adds l
+Plug 'kana/vim-textobj-user'
+Plug 'kana/vim-textobj-entire'
+Plug 'kana/vim-textobj-indent'
+Plug 'kana/vim-textobj-line'
 
-" JSON
-Plug 'elzr/vim-json'
-Plug 'mogelbrod/vim-jsonpath'
+" Data navigation
+Plug 'mogelbrod/vim-jsonpath', { 'for': 'json' }
