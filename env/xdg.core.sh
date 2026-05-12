@@ -2,6 +2,7 @@
 # - also set in LaunchAgent for mac GUI access (see set-xdg-env-vars.sh)
 
 export DOTFILES_DIR="${HOME}/.dotfiles"
+export SHELL_CONFIG_DIR="${DOTFILES_DIR}/shell"
 export XDG_CACHE_HOME="${DOTFILES_DIR}/cache"        # ephemeral data files
 export XDG_CONFIG_DIRS="/etc/xdg"                    # base directories to search for configuration files in addition to the $XDG_CONFIG_HOME base directory.
 export XDG_CONFIG_HOME="${DOTFILES_DIR}/config"      # user config home
