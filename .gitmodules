@@ -1,61 +1,25 @@
-[submodule "config/vim"]
-	path = config/vim
-	url = git@github.com:h35514n/vim.git
-[submodule "config/emacs"]
-	path = config/emacs
-	url = https://github.com/h35514n/emacs.git
 [submodule "shell"]
 	path = shell
+	branch = master
+	update = rebase
 	url = https://github.com/h35514n/shell.git
+[submodule "config/vim"]
+	path = config/vim
+	branch = master
+	update = rebase
+	url = https://github.com/h35514n/vim.git
+[submodule "config/emacs"]
+	path = config/emacs
+	branch = master
+	update = rebase
+	url = https://github.com/h35514n/emacs.git
 [submodule "codespaces"]
 	path = codespaces
 	branch = master
+	update = rebase
 	url = https://github.com/h35514n/codespaces.git
-[submodule "share/pd"]
-	path = share/pd
-	url = https://github.com/h35514n/pd.git
-	branch = master
-	update = rebase
-[submodule "share/fzf"]
-	path = share/fzf
-	url = https://github.com/junegunn/fzf.git
-	branch = master
-	update = rebase
 [submodule "share/vim/vim-plug"]
 	path = share/vim/vim-plug
 	url = https://github.com/junegunn/vim-plug.git
 	branch = master
 	update = rebase
-[submodule "share/zsh/zsh-autosuggestions"]
-	path = share/zsh/zsh-autosuggestions
-	branch = master
-	url = https://github.com/zsh-users/zsh-autosuggestions.git
-[submodule "share/zsh/zsh-syntax-highlighting"]
-	path = share/zsh/zsh-syntax-highlighting
-	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
-	branch = master
-	update = rebase
-[submodule "share/zsh/zsh-vim-mode"]
-	path = share/zsh/zsh-vim-mode
-	url = https://github.com/softmoth/zsh-vim-mode.git
-	branch = main
-	update = rebase
-[submodule "share/tmux/tpm"]
-	path = share/tmux/tpm
-	url = https://github.com/tmux-plugins/tpm
-	branch = master
-	update = rebase
-[submodule "share/tmux/tmux-open"]
-	path = share/tmux/tmux-open
-	url = https://github.com/tmux-plugins/tmux-open.git
-	branch = master
-	update = rebase
-[submodule "share/tmux/tmux-prefix-highlight"]
-	path = share/tmux/tmux-prefix-highlight
-	url = https://github.com/tmux-plugins/tmux-prefix-highlight.git
-	branch = master
-	update = rebase
-[submodule "share/tmux/tmux-urlview"]
-	path = share/tmux/tmux-urlview
-	branch = master
-	url = https://github.com/tmux-plugins/tmux-urlview
