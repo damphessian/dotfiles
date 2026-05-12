@@ -3,13 +3,13 @@
 	branch = master
 	update = rebase
 	url = https://github.com/h35514n/shell.git
-[submodule "config/vim"]
-	path = config/vim
+[submodule "vim"]
+	path = vim
 	branch = master
 	update = rebase
 	url = https://github.com/h35514n/vim.git
-[submodule "config/emacs"]
-	path = config/emacs
+[submodule "emacs"]
+	path = emacs
 	branch = master
 	update = rebase
 	url = https://github.com/h35514n/emacs.git
