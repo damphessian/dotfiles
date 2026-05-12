@@ -13,13 +13,3 @@
 	branch = master
 	update = rebase
 	url = https://github.com/h35514n/emacs.git
-[submodule "codespaces"]
-	path = codespaces
-	branch = master
-	update = rebase
-	url = https://github.com/h35514n/codespaces.git
-[submodule "share/vim/vim-plug"]
-	path = share/vim/vim-plug
-	url = https://github.com/junegunn/vim-plug.git
-	branch = master
-	update = rebase
