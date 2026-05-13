@@ -10,11 +10,10 @@ python   = "latest"
 ruby     = "latest"
 rust     = "latest"
 
-"cargo:evcxr_repl"                    = "latest"
-"github:expert-lsp/expert"            = "latest"
-"npm:@github/copilot-language-server" = "latest"
-"pipx:basedpyright"                   = "latest"
-"pipx:ruff"                           = "latest"
+"cargo:evcxr_repl"         = "latest"
+"github:expert-lsp/expert" = "latest"
+"pipx:basedpyright"        = "latest"
+"pipx:ruff"                = "latest"
 
 [settings]
 
@@ -49,6 +48,7 @@ mise reshim go
 description = "Install cross-cutting Node dependencies"
 run = """
 npm install -g \
+      @github/copilot-language-server \
       prettier \
       tsx \
       typescript \
