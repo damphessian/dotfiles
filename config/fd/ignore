@@ -1,6 +1,29 @@
-/nix/
-/System/
+# Explicitly allow selected top-level dot directories
+
+!/.config/
+!/.config/**
+!/.dotfiles/
+!/.dotfiles/**
+!/.dotfiles/shell/
+!/.dotfiles/shell/**
+!/.dotfiles/shell/share/
+!/.dotfiles/shell/share/**
+!/.local/
+!/.local/**
+
+# Large/noisy home directories
+**/*.photoslibrary/
+/.Trash/
+/.vscode/
+/Applications/
 /Library/
+/Movies/
+/Music/
+/Parallels/
+/Pictures/
+/Public/
+/System/
+/Zotero/
+/nix/
 /private/
 /usr/
-**/*.photoslibrary/
