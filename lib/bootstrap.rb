@@ -227,11 +227,14 @@ def ensure_locals_are_created
   end
 end
 
-def setup_emacs_plus(version: 30)
+def setup_emacs_plus(version: 31)
   setup :emacs_plus do
     execho "brew unlink emacs"
     brew_tap "d12frosted/emacs-plus"
-    yield
+
+    options = %i[with_compress_install with_xwidgets] if machine_is?(:apple)
+    brew_install :emacs_plus, version: version, options: options
+
     execho <<~SH
       \rm -rf '/Applications/Emacs.app' '/Applications/Emacs Client.app'
       osascript -e 'tell application "Finder" to make alias file to posix file "#{HOMEBREW_PREFIX}/opt/emacs-plus@#{version}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'

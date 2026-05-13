@@ -1,49 +1,10 @@
-# -*- mode: gitignore; -*-
-
-# Vim
-
-[._]*.s[a-v][a-z]
-!*.svg  # comment out if you don't need vector files
-[._]*.sw[a-p]
-[._]s[a-rt-v][a-z]
-[._]ss[a-gi-z]
-[._]sw[a-p]
-Session.vim
-Sessionx.vim
-.netrwhist
-tags
-[._]*.un~
-
-
-# macOS
-
-.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
 # xdg: top-level directories
-
 cache
 locals
 sockets
 state
 
 # xdg: data directories
-
 /share/*
 !share/git_diet/
 
@@ -119,10 +80,6 @@ state
 
 config/gem/credentials
 /secure
-
-# binaries
-
-bin/pd
 
 # keep
 

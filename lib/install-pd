@@ -26,5 +26,5 @@ if [[ -z "$(command -v go)" ]]; then
 fi
 
 go get
-go build -o ${DOTFILES_DIR}/bin/pd main.go
+go build -o ${XDG_LOCALS_DIR}/bin/pd main.go
 pd --pd-refresh &
