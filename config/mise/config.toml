@@ -20,6 +20,19 @@ rust     = "latest"
 [settings.ruby]
 compile = false
 
+[tasks.bootstrap]
+description = "Install cross-cutting dependencies"
+run = """
+mise run bootstrap-elixir
+mise run bootstrap-go
+mise run bootstrap-node
+mise run bootstrap-perl
+mise run bootstrap-python
+mise run bootstrap-ruby
+mise run bootstrap-rust
+mise reshim
+"""
+
 [tasks.bootstrap-elixir]
 description = "Install cross-cutting Elixir dependencies"
 run = """
@@ -97,7 +110,6 @@ gem install \
 ln -sf "${MISE_DIR}/shims/andyw8_seeing_is_believing" \
      "${XDG_SECURE_DIR}/bin/seeing_is_believing"
 """
-
 
 [tasks.bootstrap-rust]
 description = "Install cross-cutting Rust dependencies"
