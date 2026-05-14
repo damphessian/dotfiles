@@ -85,6 +85,7 @@ setup :development_tools do
   brew_install :gemini_cli
   brew_install :gh
   brew_install :git_delta
+  brew_install :git_filter_repo
   brew_install :hermes_agent
   brew_install :imsg
   brew_install :mise
@@ -165,7 +166,9 @@ if machine_is?(:mac)
     cask_install :claude
     cask_install :claude_code
     cask_install :coderunner
+    cask_install :codex
     cask_install :codex_app
+    cask_install :copilot_cli
     cask_install :figma
     cask_install :finbar
     cask_install :gcloud_cli
@@ -187,6 +190,7 @@ if machine_is?(:mac)
     cask_install :rectangle_pro
     cask_install :responsively
     cask_install :screenflow
+    cask_install :scrivener
     cask_install :shottr
     cask_install :skim
     cask_install :tex_live_utility
