@@ -137,14 +137,12 @@ def install_system_zshenv
   execho("sudo cp #{zshenv} #{target}")
 end
 
-def install_launchagent(filename)
+def install_launchagents
   return unless machine_is?(:mac)
   return if File.exist?(File.expand_path("~/Library/LaunchAgents/#{filename}.plist"))
 
   FileUtils.mkdir_p(File.expand_path("~/Library/LaunchAgents/"))
-  execho("ln -sfv ${DOTFILES_DIR}/launch_agents/#{filename}.plist ~/Library/LaunchAgents/#{filename}.plist")
-  execho("launchctl unload ~/Library/LaunchAgents/#{filename}.plist 2>/dev/null")
-  execho("launchctl load ~/Library/LaunchAgents/#{filename}.plist")
+  execho("cp ~/Dropbox/launch_agents/* ~/Library/LaunchAgents/")
 end
 
 def reset_quicklookd

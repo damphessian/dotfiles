@@ -4,13 +4,15 @@
 # rubocop:disable Layout/EmptyLinesAroundBlockBody
 require_relative "../lib/bootstrap"
 
-setup :xdg_base_directory_environment do
-  install_launchagent "com.dmarksys.xdg"
-  install_system_zshenv
-end
-
 setup :homebrew do
   install_homebrew
+end
+
+cask_install :maestral
+
+setup :xdg_base_directory_environment do
+  install_launchagents
+  install_system_zshenv
 end
 
 setup :core_cli_tools do
@@ -38,7 +40,6 @@ setup :core_cli_tools do
   brew_install :jo
   brew_install :jq
   brew_install :less
-  brew_install :maestral
   brew_install :parallel
   brew_install :pnpm
   brew_install :ripgrep
@@ -207,7 +208,6 @@ ensure_locals_are_created
 ensure_gpg_permissions_are_set_correctly
 
 setup :pd_tool do
-  install_launchagent "com.dmarksys.pd"
   script_install :pd
 end
 
