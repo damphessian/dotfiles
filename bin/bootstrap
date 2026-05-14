@@ -136,11 +136,13 @@ if machine_is?(:mac)
 
   setup :mac_tools do
 
+    brew install "steipete/tap/imsg"
     brew_install :colima
+    brew_install :macvim
     brew_install :osxutils
     brew_install :pinentry_mac
+    brew_install :remindctl
     brew_install :trash
-    brew_install :macvim
     cask_install :cursor
     cask_install :daisydisk
     cask_install :karabiner_elements
