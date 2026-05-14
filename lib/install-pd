@@ -16,7 +16,7 @@ elif [[ -z "$(command -v mise)" ]]; then
   exit 1
 fi
 
-builtin cd "${XDG_DATA_HOME}/pd"
+builtin cd "${SHELL_CONFIG_DIR}/share/pd"
 eval "$(mise activate bash)"
 mise use go
 
