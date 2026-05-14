@@ -6,7 +6,6 @@ state
 
 # xdg: data directories
 /share/*
-!share/git_diet/
 
 # high-churn config files,
 # state files miscategorized as config
@@ -15,71 +14,16 @@ state
 /config/.gsd-keyboard.settings-ported
 /config/GNOME-xdg-terminals.list
 /config/NVIDIA/
-/config/Webull\ Desktop
-/config/autostart/
 /config/colima
-/config/configstore/update-notifier-gatsby-cli.json
-/config/configstore/update-notifier-npm.json
 /config/cups/
 /config/cursor/
-/config/dconf/
 /config/docker/*
-/config/doom/config.el
-/config/evolution/
-/config/exercism
-/config/gatsby/
 /config/gcloud/
-/config/github-copilot/versions.json
-/config/glib-2.0/
-/config/glow/
-/config/gnome-control-center/
-/config/gnome-initial-setup-done
-/config/go
-/config/gtk-3.0/
-/config/ibus-mozc-gnome-initial-setup-done
-/config/ibus/
-/config/irb/irb_history
-/config/iterm2/AppSupport
-/config/jj/
-/config/jupyter/migrated
-/config/karabiner/automatic_backups
-/config/linear/*
-/config/maestral/
-/config/mimeapps.list
-/config/mlflow/telemetry.json
-/config/monitors.xml
-/config/mozc/
-/config/nautilus/
-/config/nvidia-ai-workbench/
-/config/poke/
-/config/pop-shell/
-/config/pop-system-updater/
-/config/pulse/
-/config/qalculate/qalc.history
-/config/raycast/
-/config/rstudio
-/config/swiftpm/
-/config/systemd/
-/config/tiling-assistant/
-/config/toshy/*
-/config/touchegg/
-/config/ubuntu-xdg-terminals.list
-/config/ulauncher/
-/config/user-dirs.dirs
-/config/user-dirs.locale
-/config/vlc/
-/config/wireshark
-/config/zed/prompts/*
-/config/zsh/.iterm2*
-/config/zsh/.zcompcache
+/config/iterm2/
+/config/karabiner/automatic_backups/
 /config/zsh/.zcompdump
 /config/zsh/.zsh_history
-/config/zsh/.zsh_sessions
-
-# symlinks to secure
-
-config/gem/credentials
-/secure
+/config/zsh/.zsh_sessions/
 
 # keep
 
