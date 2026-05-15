@@ -182,8 +182,6 @@ end
 
 def ensure_locals_are_created
   execho("mkdir -p ${XDG_LOCALS_DIR}/bin")
-  execho("mkdir -p ${XDG_LOCALS_DIR}/config/emacs")
-  execho("touch ${XDG_LOCALS_DIR}/config/emacs/config.el")
 
   unless File.exist?(ENVIRONMENT.fetch("ORG_HOME"))
     execho("ln -s ${HOME}/Dropbox/org ${ORG_HOME}")
@@ -198,12 +196,7 @@ def ensure_locals_are_created
   end
 
   unless File.exist?(ENVIRONMENT.fetch("XDG_SECURE_DIR"))
-    target =
-      if machine_is?(:mac)
-        "~/Library/Mobile\\ Documents/com~apple~CloudDocs"
-      else
-        "~/Dropbox"
-      end
+    target = "~/Dropbox"
     execho("ln -s #{target}/dotfiles ${XDG_SECURE_DIR}")
   end
 
