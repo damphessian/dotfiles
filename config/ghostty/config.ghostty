@@ -1,4 +1,4 @@
-command = /home/linuxbrew/.linuxbrew/bin/zsh
+command = tmux new -As main zsh
 term = xterm-256color
 
 # theme = light:iTerm2 Solarized Light,dark:One Double Dark
@@ -7,18 +7,44 @@ theme = One Double Dark
 font-family = Source Code Pro Ligaturized
 font-size = 18
 
+window-width = 9999
+window-height = 9999
 window-padding-x = 10
 window-padding-y = 10
 window-inherit-working-directory = true
+confirm-close-surface = false
 
 scrollback-limit = 200000
 shell-integration = detect
 link-url = true
 
-keybind = cmd+ctrl+h=goto_split:left
-keybind = cmd+ctrl+j=goto_split:down
-keybind = cmd+ctrl+k=goto_split:up
-keybind = cmd+ctrl+l=goto_split:right
 keybind = global:option+space=toggle_quick_terminal
-
 quick-terminal-animation-duration = 0
+
+# basic:
+keybind = super+c=copy_to_clipboard
+keybind = super+v=paste_from_clipboard
+keybind = super+w=close_surface
+
+# for tmux:
+# ^h (pd)
+keybind = super+p=text:\x8
+# ctrl+a ]
+keybind = super+shift+left_bracket=text:\x1d
+# ctrl+a \
+keybind = super+shift+right_bracket=text:\x1c
+# ctrl+a n
+keybind = super+t=text:\x01\x6E
+
+# gui-first:
+# keybind = cmd+ctrl+h=goto_split:left
+# keybind = cmd+ctrl+j=goto_split:down
+# keybind = cmd+ctrl+k=goto_split:up
+# keybind = cmd+ctrl+l=goto_split:right
+# keybind = ctrl+a>backslash=new_split:right
+# keybind = ctrl+a>minus=new_split:down
+# keybind = super+q=quit
+# keybind = super+shift+left_bracket=previous_tab
+# keybind = super+shift+right_bracket=next_tab
+# keybind = super+t=new_tab
+# keybind = super+w=close_surface
