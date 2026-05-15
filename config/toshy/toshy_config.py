@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__version__ = '20250710'
+__version__ = '20260506'
 ###############################################################################
 ############################   Welcome to Toshy!   ############################
 ###
@@ -26,8 +26,11 @@ import asyncio
 import inspect
 import subprocess
 
+# Removing problematic types before they get deprecated:
+# from typing import Any, Callable, Optional, Union, List, Dict, Tuple
+from typing import Any
 from subprocess import DEVNULL
-from typing import Any, Callable, Optional, Union, List, Dict, Tuple
+from collections.abc import Callable
 
 from xwaykeyz.config_api import *
 from xwaykeyz.lib.key_context import KeyContext
@@ -49,26 +52,59 @@ timeouts(
 
 # Delays often needed for Wayland and/or virtual machines or slow systems
 throttle_delays(
-    key_pre_delay_ms    = 12,      # default: 0 ms, range: 0-150 ms, suggested: 1-50 ms
-    key_post_delay_ms   = 18,      # default: 0 ms, range: 0-150 ms, suggested: 1-100 ms
+    key_pre_delay_ms    = 8,      # default: 0 ms, range: 0-150 ms, suggested: 1-50 ms
+    key_post_delay_ms   = 12,      # default: 0 ms, range: 0-150 ms, suggested: 1-100 ms
 )
+
+
+# ─── Devices API Reference ───────────────────────────────────────────────────
+#
+# Use `devices_api()` to control which input devices the keymapper grabs.
+# Run `toshy-devices` to see all available identifiers for connected devices.
+#
+# Both `only_devices` and `ignore_devices` accept lists of strings.
+# Each string can be any of the following match types:
+#
+#   'AT Translated Set 2 keyboard'                          # device name
+#   '/dev/input/event3'                                     # device path (volatile across reboots)
+#   '/dev/input/by-id/usb-Example_Keyboard-event-kbd'       # by-id symlink (stable, USB/BT only)
+#   'b0003:v1234:p5678:e0001:nab12cd34'                     # synthetic ID (stable, any device)
+#   'b0003:v1234:p5678:e0001:nab12cd34@usb-0000:00:14.0'    # synthetic ID with bus path (stable)
+#   'AA:BB:CC:DD:EE:FF'                                     # device uniq (stable, rarely populated)
+#
+# NOTE: Device paths like /dev/input/eventN can change across reboots or
+# when devices are unplugged and reconnected. Prefer device name, by-id
+# path, or synthetic ID for entries that should survive across reboots.
 
 devices_api(
-    # Only the specified devices will be "grabbed" and watched for during
-    # device connections/disconnections.
+
+    # Only the specified devices will be "grabbed" and watched for
+    # during device connections/disconnections. When empty or omitted,
+    # the keymapper autodetects all keyboard-like devices.
     only_devices = [
-        # 'Example Disconnected Keyboard',
-        # 'Example Connected Keyboard',
-    ]
+        # 'Example Keyboard Name',
+    ],
+
+    # Devices to never grab, even if they match autodetection or the
+    # allowlist above. Useful for combo keyboard/mouse devices that
+    # cause pointer stutter when grabbed, or media control devices
+    # that do not need remapping.
+    ignore_devices = [
+        # 'Example Wireless Receiver Mouse',
+    ],
 )
 
+
 ###########################################################
-# If you need to use something like the wordwise 'emacs'
-# style shortcuts, and want them to be repeatable, use
-# the API call below to stop the keymapper from ignoring
-# "repeat" key events. This will use a bit more CPU while
-# holding any key down, especially while holding a key combo
-# that is getting remapped onto something else in the config.
+# Use this ONLY if you want near zero CPU usage for held,
+# repeating keys. This will bypass the new repeating keys
+# cache mechanism that reduces CPU usage for repeats to
+# very low levels (but not zero), in xwaykeyz>=1.11.0.
+#
+# This override will BREAK shortcuts like Emacs-style
+# cursor movement, which will not be able to repeat.
+#
+# A warning will appear in verbose debug logging.
 ###########################################################
 ignore_repeating_keys(False)
 
@@ -89,8 +125,8 @@ try:
     ###########################################################################
     # # Virtualized (left) Control key (in Terminals)
 
-    LC_aliases: List[str]           = Modifier.L_CONTROL.aliases
-    LC_keys: List[Key]              = Modifier.L_CONTROL.keys
+    LC_aliases: 'list[str]'         = Modifier.L_CONTROL.aliases
+    LC_keys: 'list[Key]'            = Modifier.L_CONTROL.keys
     # use slice assignment instead of insert()
     LC_aliases[:0]                  = ['VLCtrl', 'VirtLCtrl']
     # debug(f"{LC_aliases             = }")
@@ -116,8 +152,8 @@ try:
     ###########################################################################
     # Virtualized Option/Alt keys (left/right)
 
-    LA_aliases: List[str]           = Modifier.L_ALT.aliases
-    LA_keys: List[Key]              = Modifier.L_ALT.keys
+    LA_aliases: 'list[str]'         = Modifier.L_ALT.aliases
+    LA_keys: 'list[Key]'            = Modifier.L_ALT.keys
     # use slice assignment instead of insert()
     LA_aliases[:0]                  = ['VLOpt', 'VirtLOpt']
     # debug(f"{LA_aliases             = }")
@@ -133,8 +169,8 @@ try:
     ###########################################################################
     # Virtualized Command key (all keyboard types)
 
-    R_CONTROL_aliases: List[str]    = Modifier.R_CONTROL.aliases
-    R_CONTROL_keys: List[Key]       = Modifier.R_CONTROL.keys
+    R_CONTROL_aliases: 'list[str]'  = Modifier.R_CONTROL.aliases
+    R_CONTROL_keys: 'list[Key]'     = Modifier.R_CONTROL.keys
     # use slice assignment instead of insert()
     R_CONTROL_aliases[:0]           = ['VCmd', 'VirtCmd']
     # debug(f"{R_CONTROL_aliases      = }")
@@ -161,7 +197,10 @@ sys.path.insert(0, current_folder_path)
 from toshy_common.env_context import EnvironmentInfo
 from toshy_common.machine_context import get_machine_id_hash
 from toshy_common.notification_manager import NotificationManager
+from toshy_common.overlay_context import OverlayFlag as OFlag
+from toshy_common.runtime_utils import sanitize_text
 from toshy_common.settings_class import Settings
+from toshy_common.terminal_utils import print_pango_text
 
 assets_path         = os.path.join(current_folder_path, 'assets')
 icon_file_active    = os.path.join(assets_path, "toshy_app_icon_rainbow.svg")
@@ -230,7 +269,7 @@ DE_MAJ_VER                      = None
 WINDOW_MGR                      = None
 
 env_ctxt_getter = EnvironmentInfo()
-env_ctxt: Dict[str, str] = env_ctxt_getter.get_env_info()
+env_ctxt: 'dict[str, str]' = env_ctxt_getter.get_env_info()
 
 DISTRO_ID       = locals().get('OVERRIDE_DISTRO_ID')    or env_ctxt.get('DISTRO_ID',    'keymissing')
 DISTRO_VER      = locals().get('OVERRIDE_DISTRO_VER')   or env_ctxt.get('DISTRO_VER',   'keymissing')
@@ -328,8 +367,6 @@ MACHINE_ID = get_machine_id_hash()
 # Establish important global variables here
 
 
-STARTUP_TIMESTAMP = time.time()     # only gets evaluated once for each run of keymapper
-
 # Variable to hold the keyboard type
 KBTYPE = None
 
@@ -405,7 +442,7 @@ def negRgx(rgx_str):
     return neg_rgx_str
 
 
-def create_list_of_dicts(lst: List[str]):
+def create_list_of_dicts(lst: 'list[str]'):
     """
     Convert a simple list of class names into a list of dictionaries,
     each dictionary containing a single key 'clas' with the regex pattern
@@ -418,7 +455,7 @@ def create_list_of_dicts(lst: List[str]):
 
 terminals = [
     "alacritty",
-    "com.mitchellh.ghostty",
+    # "com.mitchellh.ghostty",          # Replaced with double-wildcard ghostty pattern
     "com.raggesilver.BlackBox",
     "com.system76.CosmicTerm",
     "contour",
@@ -427,8 +464,9 @@ terminals = [
     "dev.warp.Warp",
     "emacs",  # [Custom]
     "eterm",
-    "ghostty",
-    "ghostty-debug",
+    ".*ghostty.*",
+    # "ghostty",                        # Replaced with double-wildcard ghostty pattern
+    # "ghostty-debug",                  # Replaced with double-wildcard ghostty pattern
     "gnome-terminal",
     "gnome-terminal-server",
     "guake",
@@ -443,7 +481,7 @@ terminals = [
     "MateTerminal",
     "org.codeberg.dnkl.foot.desktop",
     "org.gnome.Console",
-    # "org.gnome.Ptyxis.*",             # Replaced by double-wildcard entry
+    # "org.gnome.Ptyxis.*",             # Replaced by double-wildcard Ptyxis pattern
     "org.gnome.Terminal",
     "org.kde.konsole",
     "org.kde.yakuake",
@@ -475,6 +513,13 @@ termStr                         = toRgxStr(terminals)
 # DEPRECATED
 # This is only for use with 'remotes_lod', otherwise regex pattern string is used.
 terminals_lod = create_list_of_dicts(terminals)
+
+term_sigint_preventer_lst = [
+    ".*Ptyxis.*",
+    "konsole",
+    "org.kde.konsole",
+]
+term_sigint_preventer_Str       = toRgxStr(term_sigint_preventer_lst)
 
 vscodes = [
     "code",
@@ -599,9 +644,11 @@ browsers_chromeStr      = "|".join('^'+x+'$' for x in browsers_chrome)
 browsers_firefox = [
     "firedragon",               # Garuda Firefox fork
     "Firefox",
+    "firefox_.*",   # Catch "firefox_firefox" (WTF?), seen on Ubuntu Cinnamon 25.10 in X11 session
     "firefox-esr",
     "Firefox Developer Edition",
     "firefoxdeveloperedition",
+    "firefox-nightly.*",
     "floorp",
     "LibreWolf",
     "Mullvad Browser",
@@ -610,9 +657,9 @@ browsers_firefox = [
     "Waterfox",
     "zen-browser",
     "zen",
-    "zen-bin",
     "zen-alpha",
     "zen-beta",
+    "zen-bin",
     "zen-twilight",
 ]
 browsers_firefox        = [x.casefold() for x in browsers_firefox]
@@ -663,6 +710,7 @@ dialogs_Escape_lod = [
     # Reference: https://github.com/AtomsDevs/Atoms/issues/61
     {clas: "^atoms$", name: "^Preferences$|^Shortcuts$|^About$|^atoms$"},
     {clas: "^com.github.rafostar.Clapper$", name: "^Preferences$"},
+    {clas: "^dolphin$|^org.kde.dolphin$", name: "^Configure.*Dolphin"},
     {clas: "^epiphany$|^org.gnome.Epiphany$", name: "^Preferences$"},
     {clas: "^gnome-text-editor$|^org.gnome.TextEditor$", name: "^Preferences$"},
     {clas: "^io.github.celluloid_player.Celluloid$", name: "^Preferences$"},
@@ -942,6 +990,23 @@ not_win_type_rgx    = re.compile("IBM|Chromebook|Apple", re.I)
 # Instantiate a useful notification object class instance, to make notifications easier
 ntfy = NotificationManager(icon_file_active, title='Toshy Alert (Config)')
 
+# Boolean variable to toggle Enter key state between F2 and Enter
+# True = Enter key sends F2, False = Enter key sends Enter
+_enter_is_F2 = True                 # DON'T CHANGE THIS! Must be set to True here.
+_enter_F2_last_app_class = None     # Track which app set the state to be False
+
+
+def _get_iEF2_context(ctx: KeyContext):
+    """Reset Enter-to-rename state variable to True, if the current
+        application does not match on the file manager app class string"""
+    global _enter_is_F2, _enter_F2_last_app_class
+    if not _enter_is_F2 and not hmp_is_filemanager(ctx):
+        debug("Resetting Enter-to-rename state variable to True.")
+        _enter_is_F2 = True
+        _enter_F2_last_app_class = None
+
+    return False
+
 
 def isKBtype(kbtype: str, map=None):
     # guard against failure to give valid type arg (we don't need to casefold anything with this)
@@ -957,7 +1022,7 @@ def isKBtype(kbtype: str, map=None):
 kbtype_cache_dct = {}
 
 
-def getKBtype():
+def getKBtype(ctx: KeyContext):
     """
     ### Get the keyboard type string for the current device
 
@@ -977,66 +1042,154 @@ def getKBtype():
 
     valid_kbtypes = ['IBM', 'Chromebook', 'Windows', 'Apple']
 
-    def _getKBtype(ctx: KeyContext):
-        # debug(f"Entering getKBtype with override value: '{cnfg.override_kbtype}'")
-        global KBTYPE
-        kbd_dev_name = ctx.device_name
+    # debug(f"Entering getKBtype with override value: '{cnfg.override_kbtype}'")
+    global KBTYPE
+    kbd_dev_name = ctx.device_name
 
-        def log_kbtype(msg, cache_dev):
-            debug(f"KBTYPE: '{KBTYPE}' | {msg}: '{kbd_dev_name}'")
-            if cache_dev:
-                kbtype_cache_dct[kbd_dev_name] = (KBTYPE, msg)
+    def log_kbtype(msg, cache_dev):
+        debug(f"KBTYPE: '{KBTYPE}' | {msg}: '{kbd_dev_name}'")
+        if cache_dev:
+            kbtype_cache_dct[kbd_dev_name] = (KBTYPE, msg)
 
-        # If user wants to override, apply override and return.
-        # Breaks per-device adaptatation capability while engaged!
-        if cnfg.override_kbtype in valid_kbtypes:
-            KBTYPE = cnfg.override_kbtype
-            log_kbtype(f"WARNING: Override applied! Dev", cache_dev=False)
-            return
+    # If user wants to override, apply override and return.
+    # Breaks per-device adaptatation capability while engaged!
+    if cnfg.override_kbtype in valid_kbtypes:
+        KBTYPE = cnfg.override_kbtype
+        log_kbtype(f"WARNING: Override applied! Dev", cache_dev=False)
+        return
 
-        # Check in the kbtype cache dict for the device
-        if kbd_dev_name in kbtype_cache_dct:
-            KBTYPE, cached_msg = kbtype_cache_dct[kbd_dev_name]
-            log_kbtype(f'(CACHED) {cached_msg}', cache_dev=False)
-            return
+    # Check in the kbtype cache dict for the device
+    if kbd_dev_name in kbtype_cache_dct:
+        KBTYPE, cached_msg = kbtype_cache_dct[kbd_dev_name]
+        log_kbtype(f'(CACHED) {cached_msg}', cache_dev=False)
+        return
 
-        kbd_dev_name_cf = ctx.device_name.casefold()
+    kbd_dev_name_cf = ctx.device_name.casefold()
 
-        # Check if there is a custom type for the device
-        custom_kbtype = kbds_UserCustom_dct_cf.get(kbd_dev_name_cf, '')
-        if custom_kbtype and custom_kbtype in valid_kbtypes:
-            KBTYPE = custom_kbtype
-            log_kbtype('Custom type for dev', cache_dev=True)
-            return
+    # Check if there is a custom type for the device
+    custom_kbtype = kbds_UserCustom_dct_cf.get(kbd_dev_name_cf, '')
+    if custom_kbtype and custom_kbtype in valid_kbtypes:
+        KBTYPE = custom_kbtype
+        log_kbtype('Custom type for dev', cache_dev=True)
+        return
 
-        # Check against the keyboard type lists
-        for kbtype, regex_lst in kbtype_lists_rgx.items():
-            for rgx in regex_lst:
-                if rgx.search(kbd_dev_name_cf):
-                    KBTYPE = kbtype
-                    log_kbtype('Rgx matched on dev', cache_dev=True)
-                    return
-
-        # Check if any keyboard type string is found in the device name
-        for kbtype in ['IBM', 'Chromebook', 'Windows', 'Apple']:
-            if kbtype.casefold() in kbd_dev_name_cf:
+    # Check against the keyboard type lists
+    for kbtype, regex_lst in kbtype_lists_rgx.items():
+        for rgx in regex_lst:
+            if rgx.search(kbd_dev_name_cf):
                 KBTYPE = kbtype
-                log_kbtype('Type in dev name', cache_dev=True)
+                log_kbtype('Rgx matched on dev', cache_dev=True)
                 return
 
-        # Check if the device name indicates a "Windows" keyboard
-        if ('windows' not in kbd_dev_name_cf
-            and not not_win_type_rgx.search(kbd_dev_name_cf)
-            and not all_kbds_rgx.search(kbd_dev_name_cf) ):
-            KBTYPE = 'Windows'
-            log_kbtype('Default type for dev', cache_dev=True)
+    # Check if any keyboard type string is found in the device name
+    for kbtype in ['IBM', 'Chromebook', 'Windows', 'Apple']:
+        if kbtype.casefold() in kbd_dev_name_cf:
+            KBTYPE = kbtype
+            log_kbtype('Type in dev name', cache_dev=True)
             return
 
-        # Default to None if no matching keyboard type is found
-        KBTYPE = 'unidentified'
-        error(f"KBTYPE: '{KBTYPE}' | Dev fell through all checks: '{kbd_dev_name}'")
+    # Check if the device name indicates a "Windows" keyboard
+    if ('windows' not in kbd_dev_name_cf
+        and not not_win_type_rgx.search(kbd_dev_name_cf)
+        and not all_kbds_rgx.search(kbd_dev_name_cf) ):
+        KBTYPE = 'Windows'
+        log_kbtype('Default type for dev', cache_dev=True)
+        return
 
-    return _getKBtype  # Return the inner function
+    # Default to None if no matching keyboard type is found
+    KBTYPE = 'unidentified'
+    error(f"KBTYPE: '{KBTYPE}' | Dev fell through all checks: '{kbd_dev_name}'")
+
+
+# ─── Add to existing module-level ctx_* globals ────────────────────
+# Place after the ctx_kbd_is_* block.
+
+# Built-in overlay flag states
+ctx_ovl_macos_globals           = False
+ctx_ovl_terminal_ergo           = False
+ctx_ovl_finder_mods             = False
+ctx_ovl_enter_to_rename         = False
+ctx_ovl_browser_shortcuts       = False
+ctx_ovl_vscode_shortcuts        = False
+ctx_ovl_dialog_ergo             = False
+
+# User overlay flag states
+ctx_ovl_user_flag_a             = False
+ctx_ovl_user_flag_b             = False
+ctx_ovl_user_flag_c             = False
+ctx_ovl_user_flag_d             = False
+ctx_ovl_user_flag_e             = False
+ctx_ovl_user_flag_f             = False
+
+
+def _context_pre_check(ctx: KeyContext):
+    """Side-effect trigger: pre-computes per-event context once at the
+    top of the event chain, so downstream keymaps and modmaps can read
+    cached values instead of repeating the same checks dozens of times.
+
+    Checks:
+        - App is a remote/VM? (Disables most remapping)
+        - App is a terminal?  (Enable terminal-specific remaps)
+        - Keyboard type (via getKBtype())
+        - Active overlay flags (avoids ~100 property-getter calls per event)
+        - State of "Is Enter F2" latch
+        - Future context checks...
+    """
+
+    global ctx_app_is_remote
+    global ctx_app_is_terminal
+
+    global ctx_kbd_is_apple
+    global ctx_kbd_is_chromebook
+    global ctx_kbd_is_ibm
+    global ctx_kbd_is_windows
+
+    global ctx_ovl_macos_globals, ctx_ovl_dialog_ergo
+    global ctx_ovl_terminal_ergo
+    global ctx_ovl_finder_mods, ctx_ovl_enter_to_rename
+    global ctx_ovl_browser_shortcuts
+    global ctx_ovl_vscode_shortcuts
+    global ctx_ovl_user_flag_a, ctx_ovl_user_flag_b, ctx_ovl_user_flag_c
+    global ctx_ovl_user_flag_d, ctx_ovl_user_flag_e, ctx_ovl_user_flag_f
+
+    # Update the boolean global vars to minimize repeated (hoisted) matchProps calls
+    ctx_app_is_remote           = hmp_is_remote(ctx)
+    ctx_app_is_terminal         = hmp_is_terminal(ctx)
+
+    # Establish the keyboard type during the context pre-check
+    getKBtype(ctx)
+
+    # Sync keyboard type bools from the (now-current) KBTYPE global
+    ctx_kbd_is_apple            = (KBTYPE == 'Apple')
+    ctx_kbd_is_chromebook       = (KBTYPE == 'Chromebook')
+    ctx_kbd_is_ibm              = (KBTYPE == 'IBM')
+    ctx_kbd_is_windows          = (KBTYPE == 'Windows')
+
+    # Cache overlay flag states once per event. Single property access
+    # (cnfg.overlay_mask) replaces ~100 getter calls across keymap when-
+    # clause evaluations downstream.
+    mask = cnfg.overlay_mask
+
+    ctx_ovl_macos_globals       = mask & OFlag.MACOS_GLOBALS
+    ctx_ovl_terminal_ergo       = mask & OFlag.TERMINAL_ERGO
+    ctx_ovl_finder_mods         = mask & OFlag.FINDER_MODS
+    ctx_ovl_enter_to_rename     = mask & OFlag.ENTER_TO_RENAME
+    ctx_ovl_browser_shortcuts   = mask & OFlag.BROWSER_SHORTCUTS
+    ctx_ovl_vscode_shortcuts    = mask & OFlag.VSCODE_SHORTCUTS
+    ctx_ovl_dialog_ergo         = mask & OFlag.DIALOG_ERGO
+
+    ctx_ovl_user_flag_a         = mask & OFlag.USER_FLAG_A
+    ctx_ovl_user_flag_b         = mask & OFlag.USER_FLAG_B
+    ctx_ovl_user_flag_c         = mask & OFlag.USER_FLAG_C
+    ctx_ovl_user_flag_d         = mask & OFlag.USER_FLAG_D
+    ctx_ovl_user_flag_e         = mask & OFlag.USER_FLAG_E
+    ctx_ovl_user_flag_f         = mask & OFlag.USER_FLAG_F
+
+    # Maintain the Enter-to-rename latch (resets when focus leaves a file manager)
+    _get_iEF2_context(ctx)
+
+    # Always return false so the trigger modmap and keymap are never active
+    return False    # never matches; runs only for the side effect
 
 
 def isDoubleTap(dt_combo):
@@ -1102,216 +1255,40 @@ def isDoubleTap(dt_combo):
     return _isDoubleTap
 
 
-total_matchProps_iterations = 0
-MAX_MATCHPROPS_ITERATIONS = 1000
-MAX_MATCHPROPS_ITERATIONS_REACHED = False
+###  Hoisted matchProps closures — factory runs once here, not on every key event  ###
+hmp_is_remote                   = matchProps(clas=remoteStr)        # Only needed for diagnostic dlg
+hmp_not_remote                  = matchProps(not_clas=remoteStr)
+hmp_is_terminal                 = matchProps(clas=termStr)
+hmp_not_term_or_remote          = matchProps(not_clas=terms_and_remotes_Str)
+hmp_not_vscode_or_remote        = matchProps(not_clas=vscodes_and_remotes_Str)
+hmp_is_vscode                   = matchProps(clas=vscodeStr)
+hmp_numlk_off                   = matchProps(numlk=False)
+hmp_is_browser                  = matchProps(clas=browsers_allStr)
+hmp_is_chrome_browser           = matchProps(clas=browsers_chromeStr)
+hmp_is_firefox_browser          = matchProps(clas=browsers_firefoxStr)
+hmp_is_filemanager              = matchProps(clas=filemanagerStr)
 
+# Hoisted list-of-dicts calls — pre-build inner closures at load time
+_dialog_escape_closures         = [matchProps(**dct) for dct in dialogs_Escape_lod]
+hmp_is_dialog_escape            = lambda ctx: any(c(ctx) for c in _dialog_escape_closures)
+_dialog_closewin_closures       = [matchProps(**dct) for dct in dialogs_CloseWin_lod]
+hmp_is_dialog_closewin          = lambda ctx: any(c(ctx) for c in _dialog_closewin_closures)
 
-# Correct syntax to reject all positional parameters: put `*,` at beginning
-def matchProps(*,
-    # string parameters (positive matching)
-    clas: str = None, name: str = None, devn: str = None,
-    # string parameters (negative matching)
-    not_clas: str = None, not_name: str = None, not_devn: str = None,
-    # bool parameters
-    numlk: bool = None, capslk: bool = None, cse: bool = None,
-    # list of dicts of parameters (positive)
-    lst: List[Dict[str, Union[str, bool]]] = None,
-    # list of dicts of parameters (negative)
-    not_lst: List[Dict[str, Union[str, bool]]] = None,
-    dbg: str = None,    # debugging info (such as: which modmap/keymap?)
-) -> Callable[[KeyContext], bool]:
-    """
-    ### Match all given properties to current window context.       \n
-    - Parameters must be _named_, no positional arguments.          \n
-    - All parameters optional, but at least one must be given.      \n
-    - Defaults to case insensitive matching of:                     \n
-        - WM_CLASS, WM_NAME, device_name                            \n
-    - To negate/invert regex pattern match use:                     \n
-        - `not_clas` `not_name` `not_devn` params or...             \n
-        - "^(?:(?!^pattern$).)*$"                                   \n
-    - To force case insensitive pattern match use:                  \n
-        - "^(?i:pattern)$" or...                                    \n
-        - "^(?i)pattern$"                                           \n
-
-    ### Accepted Parameters:                                        \n
-    `clas` = WM_CLASS    (regex/string) [xprop WM_CLASS]            \n
-    `name` = WM_NAME     (regex/string) [xprop _NET_WM_NAME]        \n
-    `devn` = Device Name (regex/string) [xwaykeyz --list-devices]   \n
-    `not_clas` = `clas` but inverted, matches when "not"            \n
-    `not_name` = `name` but inverted, matches when "not"            \n
-    `not_devn` = `devn` but inverted, matches when "not"            \n
-    `numlk`    = Num Lock LED state         (bool)                  \n
-    `capslk`   = Caps Lock LED state        (bool)                  \n
-    `cse`      = Case Sensitive matching    (bool)                  \n
-    `lst`      = List of dicts of the above arguments               \n
-    `not_lst`  = `lst` but inverted, matches when "not"             \n
-    `dbg`      = Debugging info             (string)                \n
-
-    ### Negative match parameters:
-    - `not_clas`|`not_name`|`not_devn`                              \n
-    Parameters take same regex patterns as `clas`|`name`|`devn`     \n
-    but result in a True condition only if pattern is NOT found.    \n
-    Negative parameters cannot be used together with the normal     \n
-    positive matching equivalent parameter in same instance.        \n
-
-    ### List of Dicts parameter: `lst`|`not_lst`
-    A [list] of {dicts} with each dict containing 1 to 6 of the     \n
-    named parameters above, to be processed recursively as args.    \n
-    A dict can also contain a single `lst` or `not_lst` argument.   \n
-
-    ### Debugging info parameter: `dbg`
-    A string that will print as part of logging output. Use to      \n
-    help identify origin of logging output.                         \n
-    -                                                               \n
-    """
-    # Reference for successful negative lookahead pattern, and
-    # explanation of why it works:
-    # https://stackoverflow.com/questions/406230/\
-        # regular-expression-to-match-a-line-that-doesnt-contain-a-word
-
-    global MAX_MATCHPROPS_ITERATIONS_REACHED
-    global total_matchProps_iterations
-
-    # Return `False` immediately if screen does not have focus (e.g. Synergy),
-    # but only after the guard clauses have had a chance to evaluate on
-    # all possible uses of the function that may exist in the config.
-    if MAX_MATCHPROPS_ITERATIONS_REACHED and not cnfg.screen_has_focus:
-        # return False    # Returning a boolean here causes as exception. Must return a callable!
-        return lambda _: False
-
-    if total_matchProps_iterations >= MAX_MATCHPROPS_ITERATIONS:
-        MAX_MATCHPROPS_ITERATIONS_REACHED = True
-        bypass_guard_clauses = True
-    else:
-        total_matchProps_iterations += 1
-        current_timestamp = time.time()
-
-        # 'STARTUP_TIMESTAMP' is a global variable, set when config is executed
-        time_elapsed = current_timestamp - STARTUP_TIMESTAMP
-
-        # Bypass all guard clauses if more than a few seconds have passed since keymapper
-        # started and loaded the config file. Inputs never change until keymapper
-        # restarts and reloads the config file, so we don't need to keep checking.
-        bypass_guard_clauses = time_elapsed > 6
-
-    logging_enabled = False
-
-    allowed_params  = (clas, name, devn, not_clas, not_name, not_devn,
-                        numlk, capslk, cse, lst, not_lst, dbg)
-    lst_dct_params  = (clas, name, devn, not_clas, not_name, not_devn,
-                        numlk, capslk, cse)
-    string_params   = (clas, name, devn, not_clas, not_name, not_devn, dbg)
-
-    # This was using up a lot of CPU time, actually. Bad idea.
-    # dct_param_strs  = list(inspect.signature(matchProps).parameters.keys())
-
-    # Static list of parameter names. Using this instead of `inspect` cuts CPU
-    # usage considerably, for reasons I don't yet understand. Apparently the
-    # keymapper is actually running the entire function again on each key
-    # press and release, rather than just re-evaluating the inner closure.
-    dct_param_strs = [
-        'clas', 'name', 'devn', 'not_clas', 'not_name', 'not_devn',
-        'numlk', 'capslk', 'cse', 'lst', 'not_lst', 'dbg'
-    ]
-
-    if not MAX_MATCHPROPS_ITERATIONS_REACHED or not bypass_guard_clauses:
-        if all([x is None for x in allowed_params]):
-            raise ValueError(f"\n\n(EE) matchProps(): Received no valid argument\n")
-        if any([x not in (True, False, None) for x in (numlk, capslk, cse)]):
-            raise TypeError(f"\n\n(EE) matchProps(): Params 'numlk|capslk|cse' are bools\n")
-        if any([x is not None and not isinstance(x, str) for x in string_params]):
-            raise TypeError(    f"\n\n(EE) matchProps(): These parameters must be strings:"
-                                f"\n\t'clas|name|devn|not_clas|not_name|not_devn|dbg'\n")
-        if clas and not_clas or name and not_name or devn and not_devn or lst and not_lst:
-            raise ValueError(   f"\n\n(EE) matchProps(): Do not mix positive and "
-                                f"negative match params for same property\n")
-
-    # consolidate positive and negative matching params into new vars
-    # only one should be in use at a time (checked above)
-    _lst = not_lst if lst is None else lst
-    _clas = not_clas if clas is None else clas
-    _name = not_name if name is None else name
-    _devn = not_devn if devn is None else devn
-
-    # process lists of conditions
-    if _lst is not None:
-
-        if not MAX_MATCHPROPS_ITERATIONS_REACHED or not bypass_guard_clauses:
-            if any([x is not None for x in lst_dct_params]):
-                raise TypeError(f"\n\n(EE) matchProps(): Param 'lst|not_lst' must be used alone\n")
-            if not isinstance(_lst, list) or not all(isinstance(item, dict) for item in _lst):
-                raise TypeError(
-                    f"\n\n(EE) matchProps(): Param 'lst|not_lst' wants a [list] of {{dicts}}\n")
-            # verify that every {dict} in [list of dicts] only contains valid parameter names
-            for dct in _lst:
-                for param in list(dct.keys()):
-                    if param not in dct_param_strs:
-                        error(f"matchProps(): Invalid parameter: '{param}'")
-                        error(f"Invalid parameter is in this dict: \n\t{dct}")
-                        error(f"Dict is in this list:")
-                        for item in _lst:
-                            print(f"\t{item}")
-                        raise ValueError(
-                            f"\n(EE) matchProps(): Invalid parameter found in dict in list. "
-                            f"See log output before traceback.\n")
-
-        def _matchProps_Lst(ctx: KeyContext):
-            if not cnfg.screen_has_focus:
-                return False
-            if not_lst is not None:
-                if logging_enabled: print(f"## _matchProps_Lst()[not_lst] ## {dbg=}")
-                return not any(matchProps(**dct)(ctx) for dct in not_lst)
-            else:
-                if logging_enabled: print(f"## _matchProps_Lst()[lst] ## {dbg=}")
-                return any(matchProps(**dct)(ctx) for dct in lst)
-
-        return _matchProps_Lst      # outer function returning inner function
-
-    # compile case insensitive regex object for given params, unless cse=True
-    if _clas is not None: clas_rgx = re.compile(_clas, 0 if cse else re.I)
-    if _name is not None: name_rgx = re.compile(_name, 0 if cse else re.I)
-    if _devn is not None: devn_rgx = re.compile(_devn, 0 if cse else re.I)
-
-    def _matchProps(ctx: KeyContext):
-        if not cnfg.screen_has_focus:
-            return False
-        cond_list       = []
-        nt_err          = 'ERR: matchProps: NoneType in ctx.'
-        if _clas is not None:
-            clas_match = re.search(clas_rgx, ctx.wm_class or nt_err + 'wm_class')
-            cond_list.append(not clas_match if not_clas is not None else clas_match)
-        if _name is not None:
-            name_match = re.search(name_rgx, ctx.wm_name or nt_err + 'wm_name')
-            cond_list.append(not name_match if not_name is not None else name_match)
-        if _devn is not None:
-            devn_match = re.search(devn_rgx, ctx.device_name or nt_err + 'device_name')
-            cond_list.append(not devn_match if not_devn is not None else devn_match)
-        # these two MUST check explicitly for "is not None" because external input is True/False,
-        # and we want to be able to match the LED_on state of either "True" or "False"
-        if numlk is not None: cond_list.append( numlk is ctx.numlock_on  )
-        if capslk is not None: cond_list.append( capslk is ctx.capslock_on )
-        if logging_enabled: # and all(cnd_lst): # << add this to show only "True" condition lists
-            print(f'####  CND_LST ({all(cond_list)})  ####  {dbg=}')
-            for elem in cond_list:
-                print('##', re.sub(r'^.*span=.*\), ', '', str(elem)).replace('>',''))
-            print('-------------------------------------------------------------------')
-        return all(cond_list)
-
-    return _matchProps      # outer function returning inner function
-
-
-# Boolean variable to toggle Enter key state between F2 and Enter
-# True = Enter key sends F2, False = Enter key sends Enter
-_enter_is_F2 = True     # DON'T CHANGE THIS! Must be set to True here.
+# # Boolean variable to toggle Enter key state between F2 and Enter
+# # True = Enter key sends F2, False = Enter key sends Enter
+# _enter_is_F2 = True                 # DON'T CHANGE THIS! Must be set to True here.
+# _enter_F2_last_app_class = None     # Track which app set the state to be False
 
 
 def iEF2(combo_if_true, latch_or_combo_if_false,
                 keep_value_if_true=False, keep_value_if_false=False):
     """
     Formerly 'is_Enter_F2'
-    Send a different combo for the Enter key based on the state of the _enter_is_F2 variable,
+    Send a different combo for the Enter key based on the state of the `_enter_is_F2` variable,
     or latch the variable to True or False to control the Enter key output on the next use.
+
+    Store the app class of the file manager that sets the state variable to be False, and
+    reset the state variable to True if the current app class does not match.
 
     Args:
         combo_if_true:              The combo to send if _enter_is_F2 is True.
@@ -1325,15 +1302,23 @@ def iEF2(combo_if_true, latch_or_combo_if_false,
     Returns:
         A function that, when called, returns the appropriate combo based on the current
         state of _enter_is_F2 and the provided parameters, and updates _enter_is_F2
-        based on the provided parameters.
+        based on the provided parameters. The current app class is obtained by checking
+        the context object.
 
-    This enables a simulation of the Finder "Enter to rename" capability, allowing
+    This enables a simulation of the macOS Finder's "Enter to rename" capability, allowing
     for complex control over the Enter key's behavior in various scenarios.
     """
-    def _is_Enter_F2():
-        global _enter_is_F2
+    def _is_Enter_F2(ctx: KeyContext):
+        global _enter_is_F2, _enter_F2_last_app_class
+
+        # If last app class that set state to False is not None, and does not match current
+        # app, reset the state var to True for initial behavior in new file manager windows.
+        if _enter_F2_last_app_class and _enter_F2_last_app_class != ctx.wm_class:
+            _enter_is_F2 = True
+            _enter_F2_last_app_class = None
+
         combo_list = [combo_if_true]
-        if latch_or_combo_if_false in (True, False):    # Latch variable to given bool value
+        if latch_or_combo_if_false in (True, False):    # Latch variable to the provided bool value
             _enter_is_F2 = latch_or_combo_if_false
         elif _enter_is_F2:                              # If Enter is F2 now, set to be Enter next
             if keep_value_if_true is False:
@@ -1342,8 +1327,20 @@ def iEF2(combo_if_true, latch_or_combo_if_false,
             combo_list = [latch_or_combo_if_false]
             if keep_value_if_false is False:
                 _enter_is_F2 = True
-        debug(f"_is_Enter_F2:  {combo_list      = }")
-        debug(f"_is_Enter_F2:  {_enter_is_F2    = }")
+
+        # At this point we know whether the state var was set to True or False
+        if not _enter_is_F2:
+            # Record which app set state var to False
+            _enter_F2_last_app_class = ctx.wm_class
+
+        # If state var is currently True, clear last app.
+        elif _enter_is_F2:
+            _enter_F2_last_app_class = None
+
+        debug(f"_is_Enter_F2:               {combo_list      = }")
+        debug(f"_is_Enter_F2:               {_enter_is_F2    = }")
+        debug(f"_enter_F2_last_app_class:   {_enter_F2_last_app_class = }")
+
         return combo_list
     return _is_Enter_F2
 
@@ -1439,13 +1436,13 @@ def notify_context():
         ctx_devn        = ctx.device_name
 
         # ------ following are all True/False
-        ctx_term        = matchProps(clas=termStr           )(ctx)
-        ctx_rmte        = matchProps(clas=remoteStr         )(ctx)
-        ctx_fmgr        = matchProps(clas=filemanagerStr    )(ctx)
-        ctx_brws        = matchProps(clas=browsers_allStr   )(ctx)
-        ctx_vscd        = matchProps(clas=vscodeStr         )(ctx)
+        ctx_term        = hmp_is_terminal(ctx)
+        ctx_rmte        = hmp_is_remote(ctx)
+        ctx_fmgr        = hmp_is_filemanager(ctx)
+        ctx_brws        = hmp_is_browser(ctx)
+        ctx_vscd        = hmp_is_vscode(ctx)
 
-        if matchProps(lst=dialogs_CloseWin_lod)(ctx) or matchProps(lst=dialogs_Escape_lod)(ctx):
+        if hmp_is_dialog_closewin(ctx) or hmp_is_dialog_escape(ctx):
             ctx_dlgs        = True
         else:
             ctx_dlgs        = False
@@ -1482,15 +1479,18 @@ def notify_context():
             f"</tt>"
         )
 
+        # Sanitize Unicode characters in dialog text if locale does not support
+        sane_message = sanitize_text(message)
+
         zenity_cmd_lst = [  zenity_cmd, '--info', '--no-wrap',
                             '--title=Toshy Context Info',
-                            '--text=' + message ]
+                            '--text=' + sane_message ]
 
         # insert the icon argument if it's supported
         if zenity_icon_option is not None:
             zenity_cmd_lst.insert(3, zenity_icon_option)
 
-        kdialog_cmd_lst = [kdialog_cmd, '--msgbox', message, '--title', 'Toshy Context Info']
+        kdialog_cmd_lst = [kdialog_cmd, '--msgbox', sane_message, '--title', 'Toshy Context Info']
         # Add icon if needed: kdialog_cmd_lst += ['--icon', '/path/to/icon']
         # Figure out why icon argument doesn't work. Need a proper icon theme folder?
         # DONE: Figured out that Kdialog does not support custom icons at all!
@@ -1501,9 +1501,79 @@ def notify_context():
         elif dialog_cmd == zenity_cmd:
             subprocess.Popen(zenity_cmd_lst, cwd=icons_dir, stderr=DEVNULL, stdout=DEVNULL)
 
+        # Also print out the diagnostics to the terminal, in case the dialog doesn't work.
+        # Trim the last 4 lines (dialog-only hints) for terminal output
+        term_message = nwln_str.join(message.split(nwln_str)[:-4])
+        print(f"\n{'=' * 50}")
+        print(f"  Toshy Context Info (diagnostic dialog content)")
+        print(f"{'=' * 50}")
+        print_pango_text(term_message, nwln_str)
+        print()     # separate from following lines
+
         # Optionally, also send a system notification:
         # ntfy.send_notification(message)
     return _notify_context
+
+
+###  XKB OPTIONS CHECK  ###
+
+from toshy_common.xkb_check import XKBOptionsCheck
+
+_xkb_checker                    = XKBOptionsCheck()
+_xkb_has_issues                 = _xkb_checker.check_for_issues()
+
+if _xkb_has_issues:
+    _xkb_sep = '!' * 72
+    print()     # blank line in logging
+    error(f'\n'
+        f'{_xkb_sep}\n'
+        f'{_xkb_sep}\n'
+        f'\n'
+        f'  WARNING: XKB configuration issue detected!\n'
+        f'\n'
+        f'  Your system has XKB options that reassign modifier keys\n'
+        f'  Toshy depends on. This WILL cause shortcuts like\n'
+        f'  Cmd+C, Cmd+V, Cmd+X, Cmd+A, Cmd+F, etc. to FAIL.\n'
+        f'\n'
+        f'  Run this command for details and fix instructions:\n'
+        f'\n'
+        f'      toshy-xkb-check\n'
+        f'\n'
+        f'{_xkb_sep}\n'
+        f'{_xkb_sep}\n'
+    )
+
+    ntfy.send_notification(
+        message     = 'XKB config issue detected! '
+                        'Modifier key shortcuts will not work correctly. '
+                        'Run "toshy-xkb-check" in a terminal for details.',
+        urgency     = 'critical',
+    )
+
+    if zenity_cmd:
+        try:
+            _xkb_dialog_text = (
+                'WARNING: XKB configuration issue detected!\n'
+                '\n'
+                'Your system has XKB options that reassign modifier\n'
+                'keys Toshy depends on. This WILL cause shortcuts\n'
+                'like copy, paste, cut, select-all, and find to FAIL.\n'
+                '\n'
+                'Run this command in a terminal for details:\n'
+                '\n'
+                '    toshy-xkb-check'
+            )
+            _xkb_dialog_cmd = [zenity_cmd, '--warning',
+                                '--title=Toshy XKB Warning',
+                                f'--text={_xkb_dialog_text}',
+                                '--width=450']
+            if zenity_icon_option:
+                _xkb_dialog_cmd.append(zenity_icon_option)
+            subprocess.Popen(_xkb_dialog_cmd,
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL)
+        except Exception:
+            pass    # dialog is best-effort, don't block config loading
 
 
 def is_pre_GNOME_45(de_ver):
@@ -1663,12 +1733,12 @@ def process_multitap_command(command, ctx):
 
 
 # Per-combo state tracking using action tuple as key
-tap_states: Dict[tuple, Dict[str, Any]] = {}
+tap_states: 'dict[tuple, dict[str, Any]]' = {}
 
-event_loop: Optional[asyncio.AbstractEventLoop] = None
+event_loop: 'asyncio.AbstractEventLoop | None' = None
 
 
-def get_loop() -> Optional[asyncio.AbstractEventLoop]:
+def get_loop() -> 'asyncio.AbstractEventLoop | None':
     global event_loop
     if event_loop is None or event_loop.is_closed():
         try:
@@ -1716,13 +1786,13 @@ def multitap_config(tap_interval=None, min_tap_delay=None):
                 f"adjusted to {_MULTITAP_CONFIG['min_tap_delay']:.3f}s")
 
 
-def isMultiTap( tap_1_action: Optional[Callable] = None,
-                tap_2_action: Optional[Callable] = None,
-                tap_3_action: Optional[Callable] = None,
-                tap_4_action: Optional[Callable] = None,
-                tap_5_action: Optional[Callable] = None,
+def isMultiTap( tap_1_action: 'Callable | None' = None,
+                tap_2_action: 'Callable | None' = None,
+                tap_3_action: 'Callable | None' = None,
+                tap_4_action: 'Callable | None' = None,
+                tap_5_action: 'Callable | None' = None,
                 tap_interval: float = None,
-                min_tap_delay: float = None) -> Callable:
+                min_tap_delay: float = None):    # returns Callable
     """
     Multi-tap handler that supports 1-5 taps with asyncio.
 
@@ -1866,7 +1936,7 @@ def isMultiTap( tap_1_action: Optional[Callable] = None,
             state = tap_states[action_key]
 
         # Cancel any pending finalization
-        finalize_handle: Optional[asyncio.Handle] = state['finalize_handle']
+        finalize_handle: 'asyncio.Handle | None' = state['finalize_handle']
         if finalize_handle is not None:
             finalize_handle.cancel()
             state['finalize_handle'] = None
@@ -1916,8 +1986,8 @@ def isMultiTap( tap_1_action: Optional[Callable] = None,
 
 # DO NOT REMOVE THIS MODMAP AND KEYMAP!
 # Special modmap to trigger the evaluation of the keyboard type when
-# any modifier key is pressed
-modmap("Keyboard Type Trigger Modmap", {
+# any modifier key is pressed (UPDATE: And some common app class conditions).
+modmap("Trigger Modmap: Context Pre-Check", {
     # This modmap must have all modifier keys inside it, so they will
     # all trigger the re-evaluation of the keyboard type.
     # The accompanying keymap can be empty and still accomplish
@@ -1931,12 +2001,14 @@ modmap("Keyboard Type Trigger Modmap", {
     Key.RIGHT_CTRL:             Key.RIGHT_CTRL,
     Key.LEFT_SHIFT:             Key.LEFT_SHIFT,
     Key.RIGHT_SHIFT:            Key.RIGHT_SHIFT,
-}, when = lambda ctx: getKBtype()(ctx) )    # THIS CONDITIONAL MUST EVALUATE TO FALSE ALWAYS!
+# }, when = lambda ctx: getKBtype()(ctx) )    # THIS CONDITIONAL MUST NEVER EVALUATE TO TRUE!
+}, when = _context_pre_check )    # THIS CONDITIONAL MUST NEVER EVALUATE TO TRUE!
 # Special keymap to trigger the evaluation of the keyboard type when
 # any non-modifier key is pressed
-keymap("Keyboard Type Trigger Keymap", {
+keymap("Trigger Keymap: Context Pre-Check", {
     # Nothing needed here.
-}, when = lambda ctx: getKBtype()(ctx) )
+# }, when = lambda ctx: getKBtype()(ctx) )
+}, when = _context_pre_check )
 
 
 modmap("Cond modmap - Media Arrows Fix",{
@@ -1948,7 +2020,7 @@ modmap("Cond modmap - Media Arrows Fix",{
 }, when = lambda ctx:
     cnfg.media_arrows_fix and
     cnfg.screen_has_focus and
-    matchProps(not_clas=remoteStr)(ctx)
+    not ctx_app_is_remote
 )
 
 
@@ -1995,6 +2067,9 @@ exclude_kpad_devs_lst = [
 ]
 exclude_kpad_devs_Str = toRgxStr(exclude_kpad_devs_lst)
 
+# Hoist placed here because exclude_kpad_devs_Str is defined above
+hmp_not_kpad_devs               = matchProps(not_devn=exclude_kpad_devs_Str)
+
 modmap("Cond modmap - Forced Numpad feature",{
     # Make numpad be a numpad regardless of Numlock state (like an Apple keyboard in macOS)
     Key.KP1:                    Key.KEY_1,
@@ -2012,8 +2087,8 @@ modmap("Cond modmap - Forced Numpad feature",{
 }, when = lambda ctx:
     cnfg.forced_numpad and
     cnfg.screen_has_focus and
-    matchProps(not_devn=exclude_kpad_devs_Str)(ctx) and
-    matchProps(not_clas=remoteStr)(ctx)
+    hmp_not_kpad_devs(ctx) and
+    not ctx_app_is_remote
 )
 
 
@@ -2037,16 +2112,15 @@ modmap("Cond modmap - GTK3 numpad nav keys fix", {
 }, when = lambda ctx:
     not cnfg.forced_numpad and
     cnfg.screen_has_focus and
-    matchProps(numlk=False)(ctx) and
-    matchProps(not_devn=exclude_kpad_devs_Str)(ctx) and
-    matchProps(not_clas=remoteStr)(ctx)
+    hmp_numlk_off(ctx) and
+    hmp_not_kpad_devs(ctx) and
+    not ctx_app_is_remote
 )
 
 
 # multipurpose_modmap("Optional Tweaks",
-#     {Key.CAPSLOCK:              [Key.CAPSLOCK, Key.RIGHT_CTRL]    # Caps2Ctrl
-#     {Key.RIGHT_ALT:              [Key.ESC, Key.RIGHT_ALT]         # Alt2Esc
 #     # {Key.ENTER:                 [Key.ENTER, Key.RIGHT_CTRL]     # Enter2Cmd
+#     # {Key.CAPSLOCK:              [Key.ESC, Key.RIGHT_CTRL]       # Caps2Esc
 #     # {Key.LEFT_META:             [Key.ESC, Key.RIGHT_CTRL]       # Caps2Esc - Chromebook
 #     {                                                             # Placeholder
 # })
@@ -2056,7 +2130,7 @@ multipurpose_modmap("Enter2Cmd", {
 }, when = lambda ctx:
     cnfg.Enter2Ent_Cmd and
     cnfg.screen_has_focus and
-    matchProps(not_clas=remoteStr)(ctx)
+    not ctx_app_is_remote
 )
 
 multipurpose_modmap("Caps2Esc - not Chromebook kbd", {
@@ -2064,8 +2138,8 @@ multipurpose_modmap("Caps2Esc - not Chromebook kbd", {
 }, when = lambda ctx:
     cnfg.Caps2Esc_Cmd and
     cnfg.screen_has_focus and
-    not isKBtype('Chromebook')(ctx) and
-    matchProps(not_clas=remoteStr)(ctx)
+    not ctx_kbd_is_chromebook and
+    not ctx_app_is_remote
 )
 
 multipurpose_modmap("Caps2Esc - Chromebook kbd", {
@@ -2073,8 +2147,8 @@ multipurpose_modmap("Caps2Esc - Chromebook kbd", {
 }, when = lambda ctx:
     cnfg.Caps2Esc_Cmd and
     cnfg.screen_has_focus and
-    isKBtype('Chromebook')(ctx) and
-    matchProps(not_clas=remoteStr)(ctx)
+    ctx_kbd_is_chromebook and
+    not ctx_app_is_remote
 )
 
 
@@ -2103,16 +2177,16 @@ modmap("Cond modmap - GUI - Caps2Cmd - not Cbk kdb", {
 }, when = lambda ctx:
     cnfg.Caps2Cmd and
     cnfg.screen_has_focus and
-    not isKBtype('Chromebook')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    not ctx_kbd_is_chromebook and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 modmap("Cond modmap - GUI - Caps2Cmd - Cbk kdb", {
     Key.LEFT_META:              Key.RIGHT_CTRL,                 # Caps2Cmd - Chromebook
 }, when = lambda ctx:
     cnfg.Caps2Cmd and
     cnfg.screen_has_focus and
-    isKBtype('Chromebook')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_kbd_is_chromebook and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 modmap("Cond modmap - GUI - IBM kbd - multi_lang OFF", {
     # - IBM
@@ -2121,8 +2195,8 @@ modmap("Cond modmap - GUI - IBM kbd - multi_lang OFF", {
 }, when = lambda ctx:
     not cnfg.multi_lang and
     cnfg.screen_has_focus and
-    isKBtype('IBM', map='mmap GUI IBM ML-OFF')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_kbd_is_ibm and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 modmap("Cond modmap - GUI - IBM kbd", {
     # - IBM
@@ -2131,8 +2205,8 @@ modmap("Cond modmap - GUI - IBM kbd", {
     Key.LEFT_ALT:               Key.RIGHT_CTRL,                 # IBM
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    isKBtype('IBM', map='mmap GUI IBM')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_kbd_is_ibm and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 modmap("Cond modmap - GUI - Cbk kbd - multi_lang OFF", {
     # - Chromebook
@@ -2141,8 +2215,8 @@ modmap("Cond modmap - GUI - Cbk kbd - multi_lang OFF", {
 }, when = lambda ctx:
     not cnfg.multi_lang and
     cnfg.screen_has_focus and
-    isKBtype('Chromebook', map='mmap GUI Cbk ML-OFF')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_kbd_is_chromebook and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 modmap("Cond modmap - GUI - Cbk kbd", {
     # - Chromebook
@@ -2150,8 +2224,8 @@ modmap("Cond modmap - GUI - Cbk kbd", {
     Key.LEFT_ALT:               Key.RIGHT_CTRL,                 # Chromebook
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    isKBtype('Chromebook', map='mmap GUI Cbk')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_kbd_is_chromebook and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 modmap("Cond modmap - GUI - Win kbd - multi_lang OFF", {
     # - Default Mac/Win
@@ -2162,8 +2236,8 @@ modmap("Cond modmap - GUI - Win kbd - multi_lang OFF", {
 }, when = lambda ctx:
     not cnfg.multi_lang and
     cnfg.screen_has_focus and
-    isKBtype('Windows', map='mmap GUI Win ML-OFF')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_kbd_is_windows and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 modmap("Cond modmap - GUI - Win kbd", {
     # - Default Mac/Win
@@ -2173,8 +2247,8 @@ modmap("Cond modmap - GUI - Win kbd", {
     Key.LEFT_ALT:               Key.RIGHT_CTRL,                 # WinMac
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    isKBtype('Windows', map='mmap GUI Win')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_kbd_is_windows and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 modmap("Cond modmap - GUI - Mac kbd - multi_lang OFF", {
     # - Mac Only
@@ -2183,8 +2257,8 @@ modmap("Cond modmap - GUI - Mac kbd - multi_lang OFF", {
 }, when = lambda ctx:
     not cnfg.multi_lang and
     cnfg.screen_has_focus and
-    isKBtype('Apple', map='mmap GUI Apple ML-OFF')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_kbd_is_apple and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 modmap("Cond modmap - GUI - Mac kbd", {
     # - Mac Only
@@ -2192,8 +2266,8 @@ modmap("Cond modmap - GUI - Mac kbd", {
     Key.LEFT_META:              Key.RIGHT_CTRL,                 # Mac
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    isKBtype('Apple', map='mmap GUI Apple')(ctx) and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_kbd_is_apple and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 
 
@@ -2204,8 +2278,8 @@ modmap("Cond modmap - Terms - IBM kbd - multi_lang OFF", {
 }, when = lambda ctx:
     not cnfg.multi_lang and
     cnfg.screen_has_focus and
-    isKBtype('IBM', map='mmap terms IBM ML-OFF')(ctx) and
-    matchProps(clas=termStr)(ctx)
+    ctx_kbd_is_ibm and
+    ctx_app_is_terminal
 )
 modmap("Cond modmap - Terms - IBM kbd", {
     # - IBM
@@ -2216,8 +2290,8 @@ modmap("Cond modmap - Terms - IBM kbd", {
     Key.RIGHT_CTRL:             Key.RIGHT_ALT,                  # IBM
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    isKBtype('IBM', map='mmap terms IBM')(ctx) and
-    matchProps(clas=termStr)(ctx)
+    ctx_kbd_is_ibm and
+    ctx_app_is_terminal
 )
 modmap("Cond modmap - Terms - Cbk kbd - multi_lang OFF", {
     # - Chromebook
@@ -2225,8 +2299,8 @@ modmap("Cond modmap - Terms - Cbk kbd - multi_lang OFF", {
 }, when = lambda ctx:
     not cnfg.multi_lang and
     cnfg.screen_has_focus and
-    isKBtype('Chromebook', map='mmap terms Cbk ML-OFF')(ctx) and
-    matchProps(clas=termStr)(ctx)
+    ctx_kbd_is_chromebook and
+    ctx_app_is_terminal
 )
 modmap("Cond modmap - Terms - Cbk kbd", {
     # - Chromebook
@@ -2237,8 +2311,8 @@ modmap("Cond modmap - Terms - Cbk kbd", {
     Key.RIGHT_CTRL:             Key.RIGHT_ALT,                  # Chromebook
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    isKBtype('Chromebook', map='mmap terms Cbk')(ctx) and
-    matchProps(clas=termStr)(ctx)
+    ctx_kbd_is_chromebook and
+    ctx_app_is_terminal
 )
 modmap("Cond modmap - Terms - Win kbd - multi_lang OFF", {
     # - Default Mac/Win
@@ -2249,8 +2323,8 @@ modmap("Cond modmap - Terms - Win kbd - multi_lang OFF", {
 }, when = lambda ctx:
     not cnfg.multi_lang and
     cnfg.screen_has_focus and
-    isKBtype('Windows', map='mmap terms Win ML-OFF')(ctx) and
-    matchProps(clas=termStr)(ctx)
+    ctx_kbd_is_windows and
+    ctx_app_is_terminal
 )
 modmap("Cond modmap - Terms - Win kbd", {
     # - Default Mac/Win
@@ -2260,8 +2334,8 @@ modmap("Cond modmap - Terms - Win kbd", {
     Key.LEFT_ALT:               Key.RIGHT_CTRL,                 # WinMac
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    isKBtype('Windows', map='mmap terms Win')(ctx) and
-    matchProps(clas=termStr)(ctx)
+    ctx_kbd_is_windows and
+    ctx_app_is_terminal
 )
 modmap("Cond modmap - Terms - Mac kbd - multi_lang OFF", {
     # - Mac Only
@@ -2271,8 +2345,8 @@ modmap("Cond modmap - Terms - Mac kbd - multi_lang OFF", {
 }, when = lambda ctx:
     not cnfg.multi_lang and
     cnfg.screen_has_focus and
-    isKBtype('Apple', map='mmap terms Apple ML-OFF')(ctx) and
-    matchProps(clas=termStr)(ctx)
+    ctx_kbd_is_apple and
+    ctx_app_is_terminal
 )
 modmap("Cond modmap - Terms - Mac kbd", {
     # - Mac Only
@@ -2283,8 +2357,8 @@ modmap("Cond modmap - Terms - Mac kbd", {
     Key.RIGHT_ALT:              Key.RIGHT_ALT,                  # Mac (self-modmap)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    isKBtype('Apple', map='mmap terms Apple')(ctx) and
-    matchProps(clas=termStr)(ctx)
+    ctx_kbd_is_apple and
+    ctx_app_is_terminal
 )
 
 
@@ -2292,6 +2366,8 @@ modmap("Cond modmap - Terms - Mac kbd", {
 # Suggested location for adding custom modmaps for personal use.
 ###################################################################################################
 ###  SLICE_MARK_START: user_custom_modmaps  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
+
+
 
 ###  SLICE_MARK_END: user_custom_modmaps  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
 ###################################################################################################
@@ -3609,7 +3685,7 @@ keymap("OptSpecialChars - ABC", {
 }, when = lambda ctx:
     cnfg.screen_has_focus and
     cnfg.optspec_layout == 'ABC' and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 
 
@@ -3760,7 +3836,7 @@ keymap("OptSpecialChars - US", {
 }, when = lambda ctx:
     cnfg.screen_has_focus and
     cnfg.optspec_layout == 'US' and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 
 
@@ -3793,7 +3869,7 @@ keymap("User hardware keys", {
 
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(not_clas=remoteStr)(ctx)
+    not ctx_app_is_remote
 )
 
 ###  SLICE_MARK_END: user_apps  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
@@ -3810,7 +3886,7 @@ keymap("User hardware keys", {
 #     C("Shift-LC-Space"):        None,    # block the default general terminals shortcut for input switching
 # }, when = lambda ctx:
 #       cnfg.screen_has_focus and
-#       matchProps(clas=termStr)(ctx)
+#       ctx_app_is_terminal
 # )
 # keymap("User overrides general", {
 #     C("Super-Space"):           [iEF2NT(),C("THE-REAL-COMBO-FOR-SOME-LAUNCHER")],    # Spotlight equivalent
@@ -3820,7 +3896,7 @@ keymap("User hardware keys", {
 #     C("Shift-RC-Space"):        [bind,C("THE-REAL-COMBO-FOR-REVERSE-INPUT-SWITCHING")],    # input switch reverse (OPTIONAL)
 # }, when = lambda ctx:
 #       cnfg.screen_has_focus and
-#       matchProps(clas=remoteStr)(ctx)
+#       ctx_app_is_remote
 # )
 
 
@@ -3838,6 +3914,7 @@ keymap("User hardware keys", {
 ###################################################################################
 # Miscellaneous apps that need a few fixes
 
+hmp_is_thunderbird              = matchProps(clas="^thunderbird.*$|^org.mozilla.thunderbird$")
 keymap("Thunderbird email client", {
     C("Alt-RC-I"):              C("Shift-C-I"),                 # Dev tools
     # Enable Cmd+Option+Left/Right for tab navigation
@@ -3845,8 +3922,10 @@ keymap("Thunderbird email client", {
     C("RC-Alt-Right"):         [bind,C("C-Page_Down")],         # Go to next tab (macOS Thunderbird tab nav shortcut)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^thunderbird.*$|^org.mozilla.thunderbird$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_thunderbird(ctx) )
 
+hmp_is_angry_ipscan             = matchProps(clas="^Angry.*IP.*Scanner$")
 keymap("Angry IP Scanner", {
     C("RC-comma"):              C("Shift-C-P"),                 # Open preferences
     C("RC-i"):                  C("Alt-Enter"),                 # Get info (details)
@@ -3854,15 +3933,20 @@ keymap("Angry IP Scanner", {
     C("Shift-RC-i"):            C("C-i"),                       # Invert selection
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^Angry.*IP.*Scanner$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_angry_ipscan(ctx) )
 
+hmp_is_transmission             = matchProps(clas=transmissionStr)
 keymap("Transmission bittorrent client", {
     C("RC-i"):                  C("Alt-Enter"),                 # Open properties (Get Info) dialog
     C("RC-comma"):             [C("Alt-e"),C("p")],             # Open preferences (settings) dialog
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=transmissionStr)(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_transmission(ctx) )
 
+_jdownloader_closures           = [matchProps(**dct) for dct in JDownloader_lod]
+hmp_is_jdownloader              = lambda ctx: any(c(ctx) for c in _jdownloader_closures)
 keymap("JDownloader", {
     # Fixes for tab navigation done here instead of in the main tab nav fix keymaps,
     # because we have to use a "list of dicts" to match some  JDownloader windows.
@@ -3876,25 +3960,32 @@ keymap("JDownloader", {
     C("RC-Comma"):              C("C-P"),                       # Open preferences (settings)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(lst=JDownloader_lod)(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_jdownloader(ctx) )
 
+hmp_is_totem                    = matchProps(clas="^totem$")
 keymap("Totem video player", {
     C("RC-dot"):                C("C-q"),                       # Stop (quit player, there is no "Stop" function)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^totem$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_totem(ctx) )
 
+hmp_is_eog                      = matchProps(clas="^eog$")
 keymap("GNOME image viewer", {
     C("RC-i"):                  C("Alt-Enter"),                 # Image properties
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^eog$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_eog(ctx) )
 
+hmp_is_libreoffice_writer       = matchProps(clas="^libreoffice-writer$")
 keymap("LibreOffice Writer", {
     C("RC-comma"):              C("Alt-F12"),                   # Tools > Options (preferences dialog)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^libreoffice-writer$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_libreoffice_writer(ctx) )
 
 
 
@@ -3914,15 +4005,18 @@ keymap("LibreOffice Writer", {
 
 # Keybindings overrides for Caja
 # (overrides some bindings from general file manager code block below)
+hmp_is_caja                     = matchProps(clas="^caja$")
 keymap("Overrides for Caja - Finder Mods", {
     C("RC-Super-o"):            C("Shift-C-Enter"),             # Open in new tab
     # C("RC-Super-o"):            C("Shift-C-W"),                 # Open in new window
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^caja$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_caja(ctx) )
 
 # Keybindings overrides for COSMIC Files
 # (overrides some bindings from general file manager code block below)
+hmp_is_cosmic_files             = matchProps(clas="^com.system76.CosmicFiles$")
 keymap("Overrides for COSMIC Files - Finder Mods", {
     # No shortcuts yet to change the view modes?
     # TODO: Add Grid/List view mode shortcuts when available (if different from general FMs)
@@ -3936,10 +4030,12 @@ keymap("Overrides for COSMIC Files - Finder Mods", {
     C("Alt-Enter"):             C("Space"),                     # Get info (properties) [Linux shortcut]
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^com.system76.CosmicFiles$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_cosmic_files(ctx) )
 
 # Keybindings overrides for DDE (Deepin) File Manager
 # (overrides some bindings from general file manager code block below)
+hmp_is_dde_filemgr              = matchProps(clas="^dde-file-manager$")
 keymap("Overrides for DDE File Manager - Finder Mods", {
     C("RC-i"):                  C("C-i"),                       # File properties dialog (Get Info)
     C("RC-comma"):              None,                           # Disable preferences shortcut (no shortcut available)
@@ -3950,11 +4046,13 @@ keymap("Overrides for DDE File Manager - Finder Mods", {
     C("Shift-RC-Right"):       [bind,C("C-Tab")],               # Go to next tab
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^dde-file-manager$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_dde_filemgr(ctx) )
 
 ##########################  DOLPHIN KEYMAPS - BEGIN  ##########################
 # Keybindings overrides for Dolphin (KDE file manager)
 # (overrides some bindings from general file manager code block below)
+hmp_is_dolphin                  = matchProps(clas="^dolphin$|^org.kde.dolphin$")
 
 keymap("Overrides for Dolphin - Finder Mods pre-KF6", {
     # KDE Frameworks 6 assigns F10 to "Open Main Manu" so this is only valid for KF5 now
@@ -3962,8 +4060,9 @@ keymap("Overrides for Dolphin - Finder Mods pre-KF6", {
     C("Shift-RC-n"):            iEF2(C("F10"), False),          # Create new folder (F10), toggle Enter to be Enter (pre-KF6!)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
+    ctx_ovl_finder_mods and
     DESKTOP_ENV == 'kde' and DE_MAJ_VER in ['5', '4', '3'] and
-    matchProps(clas="^dolphin$|^org.kde.dolphin$")(ctx)
+    hmp_is_dolphin(ctx)
 )
 
 # Dolphin dialog names where Enter should always be Enter (not F2/Enter toggle)
@@ -3976,11 +4075,13 @@ dlgs_Dolphin_Enter_is_Enter = [
 # Convert list to regex pattern string
 dlgs_Dolphin_Enter_is_Enter_Str = toRgxStr(dlgs_Dolphin_Enter_is_Enter)
 
+hmp_is_dolphin_dialogs          = matchProps(clas="^dolphin$|^org.kde.dolphin$", name=dlgs_Dolphin_Enter_is_Enter_Str)
 keymap("Overrides for Dolphin dialogs - Finder Mods", {
     C("Enter"):                 C("Enter"),                     # Override Enter to be Enter (never F2) for dialogs
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^dolphin$|^org.kde.dolphin$", name=dlgs_Dolphin_Enter_is_Enter_Str)(ctx)
+    ctx_ovl_finder_mods and
+    hmp_is_dolphin_dialogs(ctx)
 )
 
 keymap("Overrides for Dolphin - Finder Mods", {
@@ -3996,7 +4097,8 @@ keymap("Overrides for Dolphin - Finder Mods", {
     C("RC-comma"):              C("Shift-C-comma"),             # Open preferences dialog
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^dolphin$|^org.kde.dolphin$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_dolphin(ctx) )
 
 #
 ###########################  DOLPHIN KEYMAPS - END  ###########################
@@ -4004,15 +4106,18 @@ keymap("Overrides for Dolphin - Finder Mods", {
 
 # Keybindings overrides for elementary OS Files (Pantheon)
 # (overrides some bindings from general file manager code block below)
+hmp_is_elementary_files         = matchProps(clas="^io.elementary.files$")
 keymap("Overrides for Pantheon - Finder Mods", {
     C("RC-Super-o"):            C("Shift-Enter"),               # Open folder in new tab
     C("RC-comma"):              None,                           # Disable preferences shortcut since none available
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^io.elementary.files$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_elementary_files(ctx) )
 
 # Keybindings overrides for Krusader (alternative/old KDE file manager)
 # (overrides some bindings from general file manager code block below)
+hmp_is_krusader                 = matchProps(clas="^org.kde.krusader$|^krusader$")
 keymap("Overrides for Krusader - Finder Mods", {
     C("Shift-RC-Dot"):          C("Alt-Dot"),                   # Toggle hidden files visibility ("dot" files)
     # C("RC-n"):                  None,                           # Enable this to block Cmd+N (new window is not possible?)
@@ -4025,16 +4130,19 @@ keymap("Overrides for Krusader - Finder Mods", {
     # C("RC-Backspace"):          C("Delete"),                    # Delete file/folder (no auto-confirm)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^org.kde.krusader$|^krusader$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_krusader(ctx) )
 
 # Keybindings overrides for Nautilus
 # (overrides some bindings from general file manager code block below)
+hmp_is_nautilus_archive         = matchProps(clas="^org.gnome.nautilus$|^nautilus$", name="Create Archive")
 keymap("Overrides for Nautilus Create Archive dialog - Finder Mods", {
     C("Enter"):                 C("Enter"),                     # Use Enter as Enter in the Create Archive dialog
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^org.gnome.nautilus$|^nautilus$", name="Create Archive")(ctx) )
-
+    ctx_ovl_finder_mods and
+    hmp_is_nautilus_archive(ctx) )
+hmp_is_nautilus                 = matchProps(clas="^org.gnome.nautilus$|^nautilus$")
 keymap("Overrides for Nautilus - Finder Mods", {
     # Optional "new window at home folder" in Nautilus
     # C("RC-N"):                  C("C-Alt-Space"),               # macOS Finder search window shortcut Cmd+Option+Space
@@ -4048,23 +4156,29 @@ keymap("Overrides for Nautilus - Finder Mods", {
     C("RC-F"):                  C("C-F"),                       # Don't toggle Enter key, pass Cmd+F
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^org.gnome.nautilus$|^nautilus$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_nautilus(ctx) )
 
 # Keybindings overrides for Nemo
 # (overrides some bindings from general file manager code block below)
+hmp_is_nemo                     = matchProps(clas="^nemo$")
 keymap("Overrides for Nemo - Finder Mods", {
     C("RC-Backspace"):          iEF2(C("Delete"), False),       # Set Enter to Enter for Cmd+Delete confirmation
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^nemo$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_nemo(ctx) )
 
 # Keybindings overrides for PCManFM and PCManFM-Qt
 # (overrides some bindings from general file manager code block below)
+hmp_is_pcmanfm_qt_desktop       = matchProps(clas="^pcmanfm-qt$", name="^pcmanfm-desktop.*$")
 keymap("Overrides for PCManFM-Qt - Finder Mods - LXQt desktop", {
     C("Enter"):                 C("Enter"),                     # Use Enter as Enter on the LXQt desktop
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^pcmanfm-qt$", name="^pcmanfm-desktop.*$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_pcmanfm_qt_desktop(ctx) )
+hmp_is_pcmanfm_qt               = matchProps(clas="^pcmanfm-qt$")
 keymap("Overrides for PCManFM-Qt - Finder Mods", {
     C("RC-Backspace"):          C("Delete"),                    # Move to Trash (delete, bypass dialog)
     # Change folder view
@@ -4074,16 +4188,22 @@ keymap("Overrides for PCManFM-Qt - Finder Mods", {
     C("RC-KEY_4"):  [C("Alt-V"), sleep(0.1), C("V"), sleep(0.1), C("T")],   # View as Thumbnails
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^pcmanfm-qt$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_pcmanfm_qt(ctx) )
 
+hmp_is_pcmanfm_any              = matchProps(clas="^pcmanfm$|^pcmanfm-qt$")
 keymap("Overrides for PCManFM - Finder Mods", {
     C("RC-KEY_2"):              C("C-KEY_4"),                   # View as List (Detailed) [Not in PCManFM-Qt]
     C("RC-Backspace"):         [C("Delete"),C("Space")],        # Move to Trash (delete, bypass dialog)
     C("RC-F"):                  C("C-F"),                       # Don't toggle Enter key state, pass Cmd+F (Ctrl+F)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^pcmanfm$|^pcmanfm-qt$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_pcmanfm_any(ctx) )
 
+# Keybindings overrides for Peony-Qt
+# (overrides some bindings from general file manager code block below)
+hmp_is_peony_qt                 = matchProps(clas="^peony-qt$")
 keymap("Overrides for Peony-Qt - Finder Mods", {
     C("RC-Comma"):              None,                           # Block Cmd+Comma (doesn't work in Peony)
     C("RC-Equal"):              C("Shift-C-Equal"),             # Enlarge icons
@@ -4093,18 +4213,21 @@ keymap("Overrides for Peony-Qt - Finder Mods", {
     C("Shift-RC-Right"):       [bind,C("C-Tab")],               # Go to next tab
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^peony-qt$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_peony_qt(ctx) )
 
 # Keybindings overrides for SpaceFM
 # (overrides some bindings from general file manager code block below)
+hmp_is_spacefm_findfiles        = matchProps(clas="^SpaceFM$", name="Find Files")
 keymap("Overrides for SpaceFM Find Files dialog - Finder Mods", {
     C("Enter"):                 C("Enter"),                     # Use Enter as Enter in the Find dialog
     C("Esc"):                   C("Alt-F4"),                    # Close Find Files dialog with Escape
     C("RC-W"):                  C("Alt-F4"),                    # Close Find Files dialog with Cmd+W
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^SpaceFM$", name="Find Files")(ctx) )
-
+    ctx_ovl_finder_mods and
+    hmp_is_spacefm_findfiles(ctx) )
+hmp_is_spacefm                  = matchProps(clas="^spacefm$")
 keymap("Overrides for SpaceFM - Finder Mods", {
     C("RC-Page_Up"):           [bind,C("C-Shift-Tab")],         # Go to prior tab
     C("RC-Page_Down"):         [bind,C("C-Tab")],               # Go to next tab
@@ -4121,17 +4244,20 @@ keymap("Overrides for SpaceFM - Finder Mods", {
     # SpaceFM is doing some nasty binding that blocks all shortcuts, including Alt+Tab, while any menu is open.
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^spacefm$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_spacefm(ctx) )
 
 # Keybindings overrides for Thunar
 # (overrides some bindings from general file manager code block below)
+hmp_is_thunar                   = matchProps(clas="^thunar$")
 keymap("Overrides for Thunar - Finder Mods", {
     C("RC-Super-o"):            C("Shift-C-P"),                 # Open in new tab
     C("RC-comma"):             [C("Alt-E"),C("E")],             # Overrides "Open preferences dialog" shortcut below
     C("RC-F"):                  C("C-F"),                       # Don't toggle Enter key, pass Cmd+F (Ctrl+F)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^thunar$")(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_thunar(ctx) )
 
 # Keybindings overrides for GNOME XDG "Save As" and "Open File" dialogs
 file_open_save_dialogs = [
@@ -4140,6 +4266,10 @@ file_open_save_dialogs = [
         name: "^Open File$|^Save As$"
     },
 ]
+
+# Hoisted list-of-dicts call to matchProps()
+_xdg_file_dialog_closures       = [matchProps(**dct) for dct in file_open_save_dialogs]
+hmp_is_xdg_file_dialog          = lambda ctx: any(c(ctx) for c in _xdg_file_dialog_closures)
 keymap("XDG file dialogs", {
     C("RC-Left"):               C("Alt-Left"),                  # Go Back
     C("RC-Right"):              C("Alt-Right"),                 # Go Forward
@@ -4147,7 +4277,8 @@ keymap("XDG file dialogs", {
     C("RC-Down"):               C("Enter"),                     # Go Down dir (open folder/file) [universal]
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(lst=file_open_save_dialogs)(ctx)
+    ctx_ovl_dialog_ergo and
+    hmp_is_xdg_file_dialog(ctx)
 )
 
 ####################################################################################################
@@ -4230,7 +4361,8 @@ keymap("General File Managers - Finder Mods", {
     C("Shift-RC-Enter"):        C("Enter"),                             # alternative "Enter" key for unusual cases
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=filemanagerStr)(ctx) )
+    ctx_ovl_finder_mods and
+    hmp_is_filemanager(ctx) )
 
 
 
@@ -4247,35 +4379,59 @@ keymap("General File Managers - Finder Mods", {
 ####################################################################################
 
 keymap("Firefox Browsers Overrides", {
+
     C("C-comma"):              [C("C-t"), sleep(0.2),
                                 ST("about:preferences"),
-                                sleep(0.2), C("Enter")],            # Open preferences (Settings)
-    C("Shift-RC-N"):            C("Shift-C-P"),                     # Open private window with Cmd+Shift+N like other browsers
-    C("RC-Backspace"):         [C("Shift-Home"), C("Backspace")],   # Delete Entire Line Left of Cursor
-    C("RC-Delete"):            [C("Shift-End"), C("Delete")],       # Delete Entire Line Right of Cursor
+                                sleep(0.2), C("Enter")],        # Open preferences (Settings)
+
+    # Open private window with Cmd+Shift+N like other browsers
+    C("Shift-RC-N"):            C("Shift-C-P"),
+
+    # Wordwise shortcuts (overrides of general wordwise)
+    C("RC-Backspace"):         [C("Shift-Home"),
+                                C("Backspace")],                # Delete Line Left of Cursor
+    C("RC-Delete"):            [C("Shift-End"), C("Delete")],   # Delete Line Right of Cursor
+
+    # Specific numbered tab navigation - removed from general browsers keymap
+    C("RC-1"):                  C("Alt-1"),                     # Jump to Tab #1
+    C("RC-2"):                  C("Alt-2"),                     # Jump to Tab #2
+    C("RC-3"):                  C("Alt-3"),                     # Jump to Tab #3
+    C("RC-4"):                  C("Alt-4"),                     # Jump to Tab #4
+    C("RC-5"):                  C("Alt-5"),                     # Jump to Tab #5
+    C("RC-6"):                  C("Alt-6"),                     # Jump to Tab #6
+    C("RC-7"):                  C("Alt-7"),                     # Jump to Tab #7
+    C("RC-8"):                  C("Alt-8"),                     # Jump to Tab #8
+    C("RC-9"):                  C("Alt-9"),                     # Jump to last tab
+
     # Block shortcuts that might get confused with Shift+Cmd+[Left/Right]_Brace
-    C("Shift-RC-Minus"):        ignore_combo,                       # Ignore alternate zoom out shortcut
-    C("Shift-RC-Equal"):        ignore_combo,                       # Ignore alternate zoom in shortcut
+    C("Shift-RC-Minus"):        ignore_combo,                   # Ignore alternate zoom out shortcut
+    C("Shift-RC-Equal"):        ignore_combo,                   # Ignore alternate zoom in shortcut
+
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=browsers_firefoxStr)(ctx) )
+    ctx_ovl_browser_shortcuts and
+    hmp_is_firefox_browser(ctx) )
 
-# Zotero is a Firefox based research app
+# Zotero is a Firefox-based research app
+hmp_is_zotero                   = matchProps(clas="^.*Zotero.*$")
 keymap("Zotero", {
     # (override the Shift+Opt+Cmd+I,I diagnostic dialog shortcut in Zotero)
     C("Shift-Alt-RC-i"):        C("Shift-Alt-C-i"),             # Import from clipboard
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^.*Zotero.*$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_zotero(ctx) )
 
 
+# Vivaldi is a Chromium-based web browser
+hmp_is_vivaldi_settings         = matchProps(clas="^Vivaldi.*$", name="^Vivaldi Settings:.*Vivaldi$")
 keymap("Vivaldi browser - Settings dialog", {
     C("Esc"):                   C("Alt-F4"),                    # Close Settings dialog with Escape
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^Vivaldi.*$", name="^Vivaldi Settings:.*Vivaldi$")(ctx) )
-
-# Vivaldi is a Chromium based web browser
+    ctx_ovl_browser_shortcuts and
+    hmp_is_vivaldi_settings(ctx) )
+hmp_is_vivaldi_browser          = matchProps(clas="^Vivaldi.*$")
 keymap("Overrides for Vivaldi browser", {
 
     # These get caught by the shell in KDE Plasma!!! (Show Desktop and Go to Desktop 1 shortcuts):
@@ -4295,27 +4451,29 @@ keymap("Overrides for Vivaldi browser", {
     C("C-comma"):              [C("F10"),
                                 sleep(0.2), C("S")],            # Open preferences (Settings)
 
-    # Browser tab switching
-    C("RC-1"):                  C("C-1"),                       # Jump to Tab #1
-    C("RC-2"):                  C("C-2"),                       # Jump to Tab #2
-    C("RC-3"):                  C("C-3"),                       # Jump to Tab #3
-    C("RC-4"):                  C("C-4"),                       # Jump to Tab #4
-    C("RC-5"):                  C("C-5"),                       # Jump to Tab #5
-    C("RC-6"):                  C("C-6"),                       # Jump to Tab #6
-    C("RC-7"):                  C("C-7"),                       # Jump to Tab #7
-    C("RC-8"):                  C("C-8"),                       # Jump to Tab #8
-    C("RC-9"):                  C("C-9"),                       # Jump to last tab
-
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^Vivaldi.*$")(ctx) )
+    ctx_ovl_browser_shortcuts and
+    hmp_is_vivaldi_browser(ctx) )
 
 # Falkon is a Chromium based web browser
+hmp_is_falkon_browser           = matchProps(clas="^org.kde.falkon$|^Falkon$")
 keymap("Overrides for Falkon browser", {
     C("RC-comma"):              C("Shift-C-comma"),             # Open preferences (Settings)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^org.kde.falkon$|^Falkon$")(ctx) )
+    ctx_ovl_browser_shortcuts and
+    hmp_is_falkon_browser(ctx) )
+
+# Brave is a Chromium-based web browser
+hmp_is_brave_browser            = matchProps(clas="^brave-browser$")
+keymap("Brave Browser Overrides", {
+    # This won't do anything unless Brave's "Exit" shortcut is set to use Ctrl+Q
+    C("RC-q"):                  C("RC-q"),                      # Quit Brave browser with Cmd+Q
+}, when = lambda ctx:
+    cnfg.screen_has_focus and
+    ctx_ovl_browser_shortcuts and
+    hmp_is_brave_browser(ctx) )
 
 keymap("Chrome Browsers Overrides", {
     # C("C-comma"):              [C("Alt-e"), C("s"),C("Enter")], # Open preferences (Settings)
@@ -4333,37 +4491,36 @@ keymap("Chrome Browsers Overrides", {
     C("Shift-RC-j"):            C("C-J"),                       # Show Downloads view
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=browsers_chromeStr)(ctx) )
+    ctx_ovl_browser_shortcuts and
+    hmp_is_chrome_browser(ctx) )
 
 # Keybindings for General Web Browsers
 keymap("General Web Browsers", {
+
     C("RC-Q"):                  C("C-Q"),                       # Close all browsers Instances
     C("Alt-RC-I"):              C("Shift-C-I"),                 # Dev tools
     C("Alt-RC-J"):              C("Shift-C-J"),                 # Dev tools
-    C("RC-1"):                  C("Alt-1"),                     # Jump to Tab #1
-    C("RC-2"):                  C("Alt-2"),                     # Jump to Tab #2
-    C("RC-3"):                  C("Alt-3"),                     # Jump to Tab #3
-    C("RC-4"):                  C("Alt-4"),                     # Jump to Tab #4
-    C("RC-5"):                  C("Alt-5"),                     # Jump to Tab #5
-    C("RC-6"):                  C("Alt-6"),                     # Jump to Tab #6
-    C("RC-7"):                  C("Alt-7"),                     # Jump to Tab #7
-    C("RC-8"):                  C("Alt-8"),                     # Jump to Tab #8
-    C("RC-9"):                  C("Alt-9"),                     # Jump to last tab
+
     # Enable Cmd+Shift+Braces for tab navigation (redundant with General GUI)
     # C("Shift-RC-Left_Brace"):   C("C-Page_Up"),                 # Go to prior tab
     # C("Shift-RC-Right_Brace"):  C("C-Page_Down"),               # Go to next tab
+
     # Enable Cmd+Option+Left/Right for tab navigation
     C("RC-Alt-Left"):           C("C-Page_Up"),                 # Go to prior tab
     C("RC-Alt-Right"):          C("C-Page_Down"),               # Go to next tab
+
     # Enable Ctrl+PgUp/PgDn for tab navigation
     C("Super-Page_Up"):         C("C-Page_Up"),                 # Go to prior tab
     C("Super-Page_Down"):       C("C-Page_Down"),               # Go to next tab
+
     # Use Cmd+Braces keys for tab navigation instead of page navigation
     # C("C-Left_Brace"):        C("C-Page_Up"),
     # C("C-Right_Brace"):       C("C-Page_Down"),
+
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=browsers_allStr)(ctx) )
+    ctx_ovl_browser_shortcuts and
+    hmp_is_browser(ctx) )
 
 
 
@@ -4381,6 +4538,7 @@ keymap("General Web Browsers", {
 
 
 # Keybindings for IntelliJ
+hmp_is_jetbrains                = matchProps(clas="^jetbrains-(?!.*toolbox).*$")
 keymap("Jetbrains", {
     # General
     C("C-Key_0"):               C("Alt-Key_0"),                 # Open corresponding tool window
@@ -4471,13 +4629,14 @@ keymap("Jetbrains", {
     C("Super-c"):               C("C-c"),                       # Sigints - interrupt
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^jetbrains-(?!.*toolbox).*$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_jetbrains(ctx) )
 
 keymap("Wordwise - not vscode", {
     # Wordwise remaining - for Everything but VS Code
     C("Alt-Left"):              C("C-Left"),                    # Left of Word
-    C("Alt-Shift-Left"):        C("C-Shift-Left"),              # Select Left of Word
     C("Alt-Right"):             C("C-Right"),                   # Right of Word
+    C("Alt-Shift-Left"):        C("C-Shift-Left"),              # Select Left of Word
     C("Alt-Shift-Right"):       C("C-Shift-Right"),             # Select Right of Word
     C("Alt-Shift-g"):           C("C-Shift-g"),                 # View source control
     # ** VS Code fix **
@@ -4496,7 +4655,7 @@ keymap("Wordwise - not vscode", {
     #
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(not_clas=vscodes_and_remotes_Str)(ctx)
+    hmp_not_vscode_or_remote(ctx)
 )
 
 # Keybindings for VS Code and variants
@@ -4504,43 +4663,55 @@ keymap("VSCodes overrides for Chromebook/IBM - Sublime", {
     C("C-Alt-g"):               C("C-f2"),                      # Chromebook/IBM - Sublime - find_all_under
 }, when = lambda ctx:
     cnfg.screen_has_focus and
+    ctx_ovl_vscode_shortcuts and
     cnfg.ST3_in_VSCode and
-    (   isKBtype('Chromebook', map="vscodes ovr cbook - sublime")(ctx) or
-        isKBtype('IBM', map="vscodes ovr ibm - sublime")(ctx) ) and
-    matchProps(clas=vscodeStr)(ctx)
+    (   ctx_kbd_is_chromebook or
+        ctx_kbd_is_ibm ) and
+    hmp_is_vscode(ctx)
 )
 keymap("VSCodes overrides for not Chromebook/IBM - Sublime", {
     C("Super-C-g"):             C("C-f2"),                      # Default - Sublime - find_all_under
 }, when = lambda ctx:
     cnfg.screen_has_focus and
+    ctx_ovl_vscode_shortcuts and
     cnfg.ST3_in_VSCode and
-    not ( isKBtype('Chromebook', map="vscodes ovr not cbook - sublime")(ctx) or
-    isKBtype('IBM', map="vscodes ovr not ibm - sublime")(ctx) ) and
-    matchProps(clas=vscodeStr)(ctx)
+    not ( ctx_kbd_is_chromebook or
+    ctx_kbd_is_ibm ) and
+    hmp_is_vscode(ctx)
 )
 keymap("VSCodes overrides for Chromebook/IBM", {
     C("Alt-c"):                 C("C-c"),                       #  Chromebook/IBM - Terminal - Sigint
     C("Alt-x"):                 C("C-x"),                       #  Chromebook/IBM - Terminal - Exit nano
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    (   isKBtype('Chromebook', map="vscodes ovr cbook")(ctx) or
-        isKBtype('IBM', map="vscodes ovr ibm")(ctx) ) and
-    matchProps(clas=vscodeStr)(ctx)
+    ctx_ovl_vscode_shortcuts and
+    (   ctx_kbd_is_chromebook or
+        ctx_kbd_is_ibm ) and
+    hmp_is_vscode(ctx)
 )
 keymap("VSCodes overrides for not Chromebook/IBM", {
     C("Super-c"):               C("C-c"),                       # Default - Terminal - Sigint
     C("Super-x"):               C("C-x"),                       # Default - Terminal - Exit nano
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    not (   isKBtype('Chromebook', map="vscodes ovr not cbook")(ctx) or
-            isKBtype('IBM', map="vscodes ovr not ibm")(ctx) ) and
-    matchProps(clas=vscodeStr)(ctx)
+    ctx_ovl_vscode_shortcuts and
+    not (   ctx_kbd_is_chromebook or
+            ctx_kbd_is_ibm ) and
+    hmp_is_vscode(ctx)
 )
 keymap("VSCodes", {
     # C("Super-Space"):           C("C-Space"),                  # Basic code completion (conflicts with input switching)
 
     # Override the global Cmd+Dot (Escape/cancel) shortcut for QuickFix in VSCode(s)
     C("RC-Dot"):                C("C-Dot"),                     # QuickFix, overriding global shortcut
+
+    # Override the global copy shortcut, to allow Cmd+C to work properly in the embedded
+    # VSCode terminal, without an internal VSCode keyboard shortcut remap.
+    C("RC-C"):                 C("C-Insert"),                   # Copy
+
+    # This override unfortunately seems to paste from the "wrong" clipboard. Only pastes content
+    # that was copied from within the VSCode window, not content copied from other app windows:
+    # C("RC-V"):                 C("Shift-Insert"),               # Paste
 
     # In-app terminal operations (Cmd+J is "Toggle Panel Visibility" for problems/output/debug/terminal panel)
     C("Super-Grave"):           C("C-Grave"),                   # Terminal: Toggle Terminal
@@ -4552,6 +4723,7 @@ keymap("VSCodes", {
     C("Alt-RC-R"):              C("Alt-R"),                     # Find: toggle "Use Regular Expression"
     C("Alt-RC-L"):              C("Alt-L"),                     # Find: toggle "Find in Selection"
     C("Alt-RC-P"):              C("Alt-P"),                     # Replace: toggle "Preserve Case"
+    C("RC-Enter"):              C("C-Alt-Enter"),               # Find: Replace All
 
     C("Alt-RC-Z"):              C("Alt-Z"),                     # View: toggle "Word Wrap"
 
@@ -4602,10 +4774,12 @@ keymap("VSCodes", {
     C("C-Shift-g"):             C("Shift-f3"),                  # find_prev
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=vscodeStr)(ctx)
+    ctx_ovl_vscode_shortcuts and
+    hmp_is_vscode(ctx)
 )
 
 # Keybindings for Sublime Text
+hmp_is_sublime_text             = matchProps(clas=sublimeStr)
 keymap("Sublime Text overrides for Chromebook/IBM", {
     C("Alt-c"):                 C("C-c"),                       #  Chromebook/IBM - Terminal - Sigint
     C("Alt-x"):                 C("C-x"),                       #  Chromebook/IBM - Terminal - Exit nano
@@ -4613,9 +4787,10 @@ keymap("Sublime Text overrides for Chromebook/IBM", {
     C("Alt-C-g"):               C("Alt-Refresh"),               # Chromebook/IBM - find_all_under
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    (   isKBtype('Chromebook', map="sublime ovr cbook")(ctx) or
-        isKBtype('IBM', map="sublime ovr ibm")(ctx) ) and
-    matchProps(clas=sublimeStr)(ctx)
+    ctx_ovl_macos_globals and
+    (   ctx_kbd_is_chromebook or
+        ctx_kbd_is_ibm ) and
+    hmp_is_sublime_text(ctx)
 )
 keymap("Sublime Text overrides for not Chromebook/IBM", {
     # C("Super-c"):               C("C-c"),                       # Default - Terminal - Sigint
@@ -4624,9 +4799,10 @@ keymap("Sublime Text overrides for not Chromebook/IBM", {
     C("Super-C-g"):             C("Alt-f3"),                    # Default - find_all_under
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    not (   isKBtype('Chromebook', map="sublime ovr not cbook")(ctx) or
-            isKBtype('IBM', map="sublime ovr not ibm")(ctx) ) and
-    matchProps(clas=sublimeStr)(ctx)
+    ctx_ovl_macos_globals and
+    not (   ctx_kbd_is_chromebook or
+            ctx_kbd_is_ibm ) and
+    hmp_is_sublime_text(ctx)
 )
 keymap("Sublime Text", {
     # C("Super-c"):               C("C-c"),                       # Default - Terminal - Sigint
@@ -4697,44 +4873,57 @@ keymap("Sublime Text", {
     # C(""):                    C(""),                          #
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=sublimeStr)(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_sublime_text(ctx) )
 
+hmp_is_kate                     = matchProps(clas="^org.kde.kate$")
 keymap("Kate Advanced Text Editor", {
     C("RC-Comma"):              C("Shift-C-Comma"),             # Open settings/preferences
     C("RC-g"):                  C("F3"),                        # Find next
     C("Super-g"):               C("C-g"),                       # Go to line
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^org.kde.kate$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_kate(ctx) )
 
+hmp_is_xed                      = matchProps(clas="^xed$")
 keymap("Linux Mint xed text editor", {
     C("RC-T"):                  C("C-N"),                       # Open new tab (new file)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^xed$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_xed(ctx) )
 
+hmp_is_kwrite_close_dlg         = matchProps(clas="^kwrite$|^org.kde.Kwrite$", name="^Close Document.*KWrite$")
 keymap("KWrite text editor - Close Document dialog", {
     C("RC-d"):                  C("Alt-d"),                     # [D]iscard file without saving (from Close Document dialog)
     C("RC-s"):                  C("Alt-s"),                     # Save file (from Close Document dialog)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^kwrite$|^org.kde.Kwrite$", name="^Close Document.*KWrite$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_kwrite_close_dlg(ctx) )
+hmp_is_kwrite                   = matchProps(clas="^kwrite$|^org.kde.Kwrite$")
 keymap("KWrite text editor", {
     C("RC-comma"):              C("Shift-C-comma"),             # Open preferences dialog
-    C("RC-t"):                  C("C-n"),                       # New tab (new document)
+    C("RC-t"):                  C("C-n"),                       # New tab (new document appears in tab)
     C("Super-g"):               C("C-g"),                       # Go to line with physical Ctrl+G
     C("RC-g"):                  C("F3"),                        # Find next instance (Cmd+G)
     C("Shift-RC-g"):            C("Shift-F3"),                  # Find previous instance (Shift+Cmd+G)
+    # wordwise shortcuts
+    C("RC-Backspace"):          C("C-k"),                       # Delete line (Cmd+Delete)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^kwrite$|^org.kde.Kwrite$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_kwrite(ctx) )
 
+hmp_is_gnome_text_editor        = matchProps(clas="^gnome-text-editor$|^org.gnome.TextEditor$")
 keymap("GNOME Text Editor", {
     C("RC-Slash"):              None,                           # Block Cmd+Slash from doing "Select All"
     C("RC-Alt-f"):              C("C-h"),                       # Search and replace within the document
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^gnome-text-editor$|^org.gnome.TextEditor$")(ctx) )
+    ctx_ovl_macos_globals and
+    hmp_is_gnome_text_editor(ctx) )
 
 
 ###########################  DIALOG FIXES  ###########################
@@ -4765,7 +4954,8 @@ keymap("Cmd+W dialog fix - send Escape", {
     C("RC-W"):                  iEF2(C("Esc"), True),
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(lst=dialogs_Escape_lod)(ctx)
+    ctx_ovl_dialog_ergo and
+    hmp_is_dialog_escape(ctx)
 )
 
 # This keymap for Manjaro GNOME will override the same shortcut from the keymap just below it,
@@ -4775,14 +4965,16 @@ if DISTRO_ID == 'manjaro'  and DESKTOP_ENV == 'gnome':
         C("RC-W"):                  iEF2(C("Super-Q"), True),
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(lst=dialogs_CloseWin_lod)(ctx)
+        ctx_ovl_dialog_ergo and
+        hmp_is_dialog_closewin(ctx)
     )
 
 keymap("Cmd+W dialog fix - Alt+F4", {
     C("RC-W"):                  iEF2(C("Alt-F4"), True),
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(lst=dialogs_CloseWin_lod)(ctx)
+    ctx_ovl_dialog_ergo and
+    hmp_is_dialog_closewin(ctx)
 )
 
 
@@ -4819,6 +5011,7 @@ tab_UI_fix_CtrlAltPgUp_lst = [
 tab_UI_fix_CtrlAltPgUp_Str = toRgxStr(tab_UI_fix_CtrlAltPgUp_lst)
 
 # Tab navigation overrides for tabbed UI apps that use Ctrl+Shift+Tab/Ctrl+Tab instead of Ctrl+PgUp/PgDn
+hmp_is_tab_UI_fix_CtrlShiftTab  = matchProps(clas=tab_UI_fix_CtrlShiftTab_Str)
 keymap("Tab Nav fix for apps that use Ctrl+Shift+Tab/Ctrl+Tab", {
     C("Shift-RC-Left_Brace"):  [bind,C("C-Shift-Tab")],         # Tab nav: Go to prior tab (left)
     C("Shift-RC-Right_Brace"): [bind,C("C-Tab")],               # Tab nav: Go to next tab (right)
@@ -4826,18 +5019,22 @@ keymap("Tab Nav fix for apps that use Ctrl+Shift+Tab/Ctrl+Tab", {
     C("Shift-RC-Right"):       [bind,C("C-Tab")],               # Tab nav: Go to next tab (right)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=tab_UI_fix_CtrlShiftTab_Str)(ctx)
+    ctx_ovl_dialog_ergo and
+    hmp_is_tab_UI_fix_CtrlShiftTab(ctx)
 )
 
 # Tab navigation overrides for tabbed UI apps that use Ctrl+Alt+PgUp/PgDn instead of Ctrl+PgUp/PgDn
+hmp_is_tab_UI_fix_CtrlAltPgUp   = matchProps(clas=tab_UI_fix_CtrlAltPgUp_Str)
 keymap("Tab Nav fix for apps that use Ctrl+Alt+PgUp/PgDn", {
     C("Shift-RC-Left_Brace"):  [bind,C("C-Alt-Page_Up")],       # Go to prior tab (Left)
     C("Shift-RC-Right_Brace"): [bind,C("C-Alt-Page_Down")],     # Go to next tab (Right)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=tab_UI_fix_CtrlAltPgUp_Str)(ctx)
+    ctx_ovl_dialog_ergo and
+    hmp_is_tab_UI_fix_CtrlAltPgUp(ctx)
 )
 
+hmp_is_term_konsole             = matchProps(clas="^konsole$|^org.kde.Konsole$")
 keymap("Konsole tab switching", {
     # Ctrl Tab - In App Tab Switching
     C("Shift-LC-Tab") :        [bind,C("Shift-Left")],
@@ -4848,8 +5045,10 @@ keymap("Konsole tab switching", {
     C("Shift-RC-Right_Brace"): [bind,C("Shift-Right")],         # Go to next tab (Right)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^konsole$|^org.kde.Konsole$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_konsole(ctx) )
 
+hmp_is_term_elem_term_kitty     = matchProps(clas="^Io.elementary.terminal$|^kitty$")
 keymap("Elementary Terminal tab switching", {
     # Ctrl Tab - In App Tab Switching
     C("Shift-LC-Tab") :        [bind,C("Shift-C-Left")],        # Go to prior tab (Left)
@@ -4857,7 +5056,8 @@ keymap("Elementary Terminal tab switching", {
     C("LC-Tab") :              [bind,C("Shift-C-Right")],       # Go to next tab (Right)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^Io.elementary.terminal$|^kitty$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_elem_term_kitty(ctx) )
 
 
 
@@ -4873,21 +5073,100 @@ keymap("Elementary Terminal tab switching", {
 ###                                                                                    ###
 ##########################################################################################
 
+
+# ============================================================================
+# SIGINT Preventer — Cmd+C in Ptyxis/Konsole without a text selection
+# ----------------------------------------------------------------------------
+# Problem:
+#   In some terminals (currently confirmed: Ptyxis, Konsole), pressing the
+#   default Copy shortcut (Ctrl+Shift+C) with NO active text selection
+#   causes the terminal to fall through and deliver a plain Ctrl+C to the
+#   running process as SIGINT, killing whatever is running at the prompt.
+#
+#   Other terminals tested — WezTerm, Ghostty, Xfce4-terminal, Qterminal,
+#   and the older GNOME Terminal (VTE-based) — are NOT affected. They
+#   swallow Ctrl+Shift+C unconditionally when nothing is selected, which
+#   is the correct behavior.
+#
+#   Toshy cannot query the terminal's selection state from the outside,
+#   so a fully transparent fix is not possible. The workaround here is to
+#   remap Cmd+C to Ctrl+Insert (the legacy X11/Windows Copy shortcut) for
+#   the affected terminals only. This is strictly safer than the current
+#   Ctrl+Shift+C behavior, even for users who do no additional setup:
+#
+#     • Before (Ctrl+Shift+C, no selection): SIGINT kills running process.
+#     • After  (Ctrl+Insert, no selection):  a short escape sequence
+#                                             (\e[2;5~) reaches the pty,
+#                                             which appears as a few
+#                                             stray characters at the
+#                                             prompt or is ignored by
+#                                             most running processes.
+#
+#   Visual noise is a clear improvement over destroying work.
+#
+# OPTIONAL MANUAL SETUP — for fully clean behavior with no stray output:
+#
+#   Bind the terminal's "Copy" action to Ctrl+Insert. Once bound, the
+#   terminal intercepts the combo as a shortcut and the escape sequence
+#   no longer reaches the pty.
+#
+#     • Konsole:
+#         Settings → Configure Keyboard Shortcuts → search "Copy"
+#         Set "Copy" to Ctrl+Insert.
+#         NOTE: Konsole caches shortcuts at launch. You must fully quit
+#         and relaunch Konsole (all windows) for the new binding to
+#         take effect. Changing it while Konsole is running will appear
+#         to do nothing.
+#
+#     • Ptyxis:
+#         Check Preferences → Shortcuts for a "Copy" entry and set it
+#         to Ctrl+Insert. If the current Ptyxis version does not expose
+#         an editable Copy shortcut, the mouse / right-click menu
+#         remains available for copying until it does.
+#
+# To extend this fix to additional terminals that are later confirmed to
+# exhibit the same bug, append their window class strings to
+# term_sigint_preventer_lst in the LISTS section near the top of the file.
+# ============================================================================
+
+
+hmp_is_term_sigint_preventer    = matchProps(clas=term_sigint_preventer_Str)
+keymap("SIGINT Preventer", {
+    # Activating this may require manual Copy shortcut rebind in affected terminal apps
+    C("RC-C"):                  C("Ctrl-Insert"),
+}, when = lambda ctx:
+    cnfg.screen_has_focus and
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_sigint_preventer(ctx)
+)
+
+
+hmp_is_term_alacritty           = matchProps(clas="^alacritty$")
 keymap("Alacritty terminal", {
     C("RC-K"):                  C("C-L"),                       # clear log
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^alacritty$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_alacritty(ctx) )
 
+hmp_is_term_contour             = matchProps(clas="^contour$")
+keymap("Contour terminal overrides", {
+    C("RC-minus"):              C("Shift-C-minus"),             # Decrease font size (override general terminals remap)
+}, when = lambda ctx:
+    cnfg.screen_has_focus and
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_contour(ctx) )
 
+hmp_is_term_cosmic_term         = matchProps(clas="^com.system76.CosmicTerm$")
 keymap("COSMIC Terminal overrides", {
     # There are already tab nav fixes in the usual place.
     C("RC-equal"):              C("C-equal"),                   # Increase font size (override general terminals remap)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^com.system76.CosmicTerm$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_cosmic_term(ctx) )
 
-
+hmp_is_term_deepin_term         = matchProps(clas="^deepin-terminal$")
 keymap("Deepin Terminal overrides", {
     C("RC-w"):                  C("Alt-w"),                     # Close only current tab, instead of all other tabs
     C("RC-j"):                  None,                           # Block Cmd+J from remapping to vertical split (Ctrl+Shift+J)
@@ -4895,32 +5174,42 @@ keymap("Deepin Terminal overrides", {
     C("RC-equal"):              C("C-equal"),                   # Increase font size/zoom in
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^deepin-terminal$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_deepin_term(ctx) )
 
+hmp_is_term_ghostty             = matchProps(clas="^.*ghostty.*$")
 keymap("Ghostty terminal overrides", {
-    C("RC-Equal"):              C("C-Equal"),                   # Increase font size [override general terminals remap]
+    C("RC-Equal"): C(
+        "C-Equal"
+    ),              # Increase font size [override general terminals remap]
     C("RC-D"):                  C("RC-Shift-O"),                # Open right split
     C("RC-Shift-D"):            C("RC-Shift-E"),                # Open down split
     C("RC-Alt-I"):              C("RC-Shift-I"),                # Open inspector
     C("RC-K"):                  C("C-L"),                       # clear log
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^ghostty$|^ghostty-debug$|^com.mitchellh.ghostty$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_ghostty(ctx)
+)
 
+hmp_is_term_hyper_term          = matchProps(clas="^hyper$")
 keymap("Hyper terminal tab switching", {
     C("RC-Equal"):              C("C-Equal"),                   # Increase font size [override general terminals remap]
     C("Shift-LC-Tab"):         [bind,C("Shift-C-Tab")],         # Tab nav: Go to prior tab (left) [override general remap]
     C("LC-Tab"):               [bind,C("C-Tab")],               # Tab nav: Go to next tab (right) [override general remap]
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^hyper$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_hyper_term(ctx) )
 
+hmp_is_term_kitty               = matchProps(clas="^kitty$")
 keymap("Kitty terminal - not tab nav", {
     C("RC-L"):                  C("C-L"),                       # Clear log
     C("RC-K"):                  C("C-L"),                       # Clear log (macOS)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^kitty$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_kitty(ctx) )
 
 keymap("Konsole terminal - not tab nav", {
     C("RC-comma"):              C("Shift-C-comma"),             # Open Preferences dialog
@@ -4928,8 +5217,10 @@ keymap("Konsole terminal - not tab nav", {
     C("RC-K"):                  C("Shift-C-K"),                 # Clear Scrollback and Reset
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^Konsole$|^org.kde.Konsole$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_konsole(ctx) )
 
+hmp_is_term_terminology         = matchProps(clas="^terminology$")
 keymap("Terminology terminal", {
     C("RC-w"):                  C("Shift-C-End"),               # Close focused tab
     C("RC-c"):                  C("Alt-w"),                     # Copy selection to primary buffer
@@ -4939,8 +5230,10 @@ keymap("Terminology terminal", {
     C("RC-Equal"):              C("C-Alt-Equal"),               # Increase font size
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^terminology$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_terminology(ctx) )
 
+hmp_is_term_wave                = matchProps(clas="^Wave$")
 keymap("Wave terminal", {
     C("RC-t"):                  C("Alt-t"),                     # Open a new tab
     C("RC-n"):                  C("Alt-n"),                     # Open a new terminal block
@@ -4949,13 +5242,16 @@ keymap("Wave terminal", {
     C("Shift-RC-w"):            C("Shift-Alt-w"),               # Close the current tab
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^Wave$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_wave(ctx) )
 
+hmp_is_term_xfce4_term          = matchProps(clas="^xfce4-terminal$")
 keymap("Xfce4 terminal", {
     C("RC-comma"):      [C("Alt-e"), sleep(0.1), C("e")],       # Open Preferences dialog
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas="^xfce4-terminal$")(ctx) )
+    ctx_ovl_terminal_ergo and
+    hmp_is_term_xfce4_term(ctx) )
 
 
 # Overrides to General Terminals shortcuts for specific distros (or are they really just desktop environments?)
@@ -4965,7 +5261,8 @@ if DISTRO_ID in ['fedora', 'almalinux'] and DESKTOP_ENV == 'gnome':
         C("RC-H"):                  C("Super-h"),                   # Hide Window/Minimize app (gnome/fedora)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 if DISTRO_ID == 'pop':
@@ -4974,7 +5271,8 @@ if DISTRO_ID == 'pop':
         C("LC-Left"):               [bind,C("Super-C-Down")],       # SL - Change workspace (pop)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 if DISTRO_ID in ['ubuntu', 'fedora'] and DESKTOP_ENV == 'gnome':
@@ -4984,7 +5282,8 @@ if DISTRO_ID in ['ubuntu', 'fedora'] and DESKTOP_ENV == 'gnome':
         C("LC-Left"):               [bind,C("Super-Page_Down")],    # SL - Change workspace (ubuntu/fedora)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 
@@ -4996,7 +5295,8 @@ if DESKTOP_ENV == 'budgie':
         C("LC-Left"):               [bind,C("C-Alt-Left")],         # Default SL - Change workspace (budgie)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 # On Pop!_OS 22.04, System76 seems to have changed the name of the DE from 'cosmic' to 'pop'.
@@ -5006,7 +5306,8 @@ if DESKTOP_ENV in ['cosmic', 'pop']:
         C("LC-RC-F"):               C("Super-M"),                   # Maximize window toggle (overrides General terminals)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 if DESKTOP_ENV == 'gnome':
@@ -5016,7 +5317,8 @@ if DESKTOP_ENV == 'gnome':
         C("Shift-LC-Space"):       [bind,C("Super-Shift-Space")],   # keyboard input source (layout) switching (reverse) (gnome)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 if DESKTOP_ENV == 'kde':
@@ -5037,7 +5339,8 @@ if DESKTOP_ENV == 'kde':
 
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 if DESKTOP_ENV == 'pantheon':
@@ -5046,7 +5349,8 @@ if DESKTOP_ENV == 'pantheon':
         C("LC-Left"):               [bind,C("Super-Left")],         # SL - Change workspace (elementary)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 if DESKTOP_ENV == 'sway':
@@ -5054,7 +5358,8 @@ if DESKTOP_ENV == 'sway':
         C("RC-Q"):                  C("Shift-C-Q"),                 # Override sway GenGUI Cmd+Q
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 if DESKTOP_ENV == 'xfce':
@@ -5065,7 +5370,8 @@ if DESKTOP_ENV == 'xfce':
         C("LC-Left"):              [bind,C("C-Alt-End")],           # SL - Change workspace xfce4
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(clas=termStr)(ctx)
+        ctx_ovl_terminal_ergo and
+        ctx_app_is_terminal
     )
 
 
@@ -5144,7 +5450,8 @@ keymap("General Terminals", {
 
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(clas=termStr)(ctx)
+    ctx_ovl_terminal_ergo and
+    ctx_app_is_terminal
 )
 
 
@@ -5166,7 +5473,8 @@ keymap("Cmd+Dot not in terminals", {
     C("RC-Dot"):                C("Esc"),                       # Mimic macOS Cmd+dot = Escape key (not in terminals)
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(not_clas=terms_and_remotes_Str)(ctx)
+    ctx_ovl_macos_globals and
+    not ctx_app_is_terminal and not ctx_app_is_remote
 )
 
 
@@ -5180,9 +5488,10 @@ keymap("GenGUI overrides: Chromebook/IBM", {
     C("LAlt-Backspace"):        C("C-Backspace"),                   # Chromebook/IBM - Delete Left Word of Cursor
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    (   isKBtype('Chromebook', map="gengui ovr cbook")(ctx) or
-        isKBtype('IBM', map="gengui ovr ibm")(ctx) ) and
-    matchProps(not_clas=remoteStr)(ctx)
+    ctx_ovl_macos_globals and
+    (   ctx_kbd_is_chromebook or
+        ctx_kbd_is_ibm ) and
+    not ctx_app_is_remote
 )
 keymap("GenGUI overrides: not Chromebook", {
     # In-App Tab switching
@@ -5191,8 +5500,9 @@ keymap("GenGUI overrides: not Chromebook", {
     C("Alt-Backspace"):         C("C-Backspace"),                   # Default not-chromebook
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    not isKBtype('Chromebook', map="gengui ovr not cbook")(ctx) and
-    matchProps(not_clas=remoteStr)(ctx)
+    ctx_ovl_macos_globals and
+    not ctx_kbd_is_chromebook and
+    not ctx_app_is_remote
 )
 
 
@@ -5203,7 +5513,8 @@ if DISTRO_ID in ['almalinux', 'rhel', 'rocky'] and DESKTOP_ENV == 'xfce':
         C("RC-Space"):             [iEF2NT(),C("Alt-F3")],       # Launch App Finder xfce4 (AlmaLinux/Rocky)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DISTRO_ID == 'debian' and DESKTOP_ENV == 'xfce':
@@ -5211,7 +5522,8 @@ if DISTRO_ID == 'debian' and DESKTOP_ENV == 'xfce':
         C("RC-Space"):             [iEF2NT(),C("Alt-F1")],     # Launch Application Menu xfce4 (Debian)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DISTRO_ID in ['fedora', 'almalinux'] and DESKTOP_ENV == 'gnome':
@@ -5222,7 +5534,8 @@ if DISTRO_ID in ['fedora', 'almalinux'] and DESKTOP_ENV == 'gnome':
         C("Super-Left"):           [bind,C("Super-Page_Down")],     # SL - Change workspace (ubuntu/fedora)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DISTRO_ID == 'manjaro' and DESKTOP_ENV == 'gnome':
@@ -5230,7 +5543,8 @@ if DISTRO_ID == 'manjaro' and DESKTOP_ENV == 'gnome':
         C("RC-Q"):              C("Super-Q"),                       # Close window
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DISTRO_ID == 'manjaro' and DESKTOP_ENV == 'xfce':
@@ -5238,7 +5552,8 @@ if DISTRO_ID == 'manjaro' and DESKTOP_ENV == 'xfce':
         C("RC-Space"):             [iEF2NT(),C("Alt-F1")],          # Open Whisker Menu with Cmd+Space
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DISTRO_ID == 'manjaro':
@@ -5246,7 +5561,8 @@ if DISTRO_ID == 'manjaro':
         C("Super-RC-f"):              C("Super-PAGE_UP"),             # SL- Maximize app manjaro
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DISTRO_ID == 'mint' and DESKTOP_ENV == 'xfce':
@@ -5254,7 +5570,8 @@ if DISTRO_ID == 'mint' and DESKTOP_ENV == 'xfce':
         C("RC-Space"):             [iEF2NT(),C("Super-Space")],     # Launch Application Menu xfce4 (Linux Mint)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DISTRO_ID == 'neon':
@@ -5264,7 +5581,8 @@ if DISTRO_ID == 'neon':
                                                                     # SL - Default SL - Change workspace (kde_neon)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DISTRO_ID == 'pop':
@@ -5276,7 +5594,8 @@ if DISTRO_ID == 'pop':
         C("RC-Q"):                  C("Super-q"),                   # SL - Close Apps (pop)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DISTRO_ID == 'ubuntu':
@@ -5286,7 +5605,8 @@ if DISTRO_ID == 'ubuntu':
         C("Super-Left"):           [bind,C("Super-Page_Down")],     # SL - Change workspace (ubuntu)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 
@@ -5300,7 +5620,8 @@ if DESKTOP_ENV == 'budgie':
         C("RC-H"):                  C("Super-h"),                   # Minimize app (gnome/budgie/popos/fedora) not-deepin
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'cinnamon':
@@ -5308,7 +5629,8 @@ if DESKTOP_ENV == 'cinnamon':
         C("RC-Space"):             [iEF2NT(),C("C-Esc")],           # Right click, configure Mint menu shortcut to Ctrl+Esc
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 # On Pop!_OS 22.04, System76 seems to have changed the name of the DE from 'cosmic' to 'pop'.
@@ -5322,7 +5644,8 @@ if DESKTOP_ENV in ['cosmic', 'pop']:
         C("Super-RC-F"):            C("Super-M"),                   # Maximize window toggle (overrides General GUI)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'dde':
@@ -5330,7 +5653,8 @@ if DESKTOP_ENV == 'dde':
         C("RC-Space"):             [iEF2NT(),Key.LEFT_META],        # Open Launcher menu (Deeping Desktop Environment)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'deepin':
@@ -5339,7 +5663,8 @@ if DESKTOP_ENV == 'deepin':
         C("Alt-RC-Space"):          C("Super-e"),                   # Open Finder - (deepin)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'enlightenment':
@@ -5349,7 +5674,8 @@ if DESKTOP_ENV == 'enlightenment':
         C("RC-Space"):             [iEF2NT(),C("C-Alt-Space")],     # enlightenment main menu (override in "User Apps" slice if necessary)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'gnome':
@@ -5359,7 +5685,8 @@ if DESKTOP_ENV == 'gnome':
             C("RC-Space"):             [iEF2NT(),C("Super-s")],         # Override GNOME 45+ Shift+Ctrl+Space remap
         }, when = lambda ctx:
             cnfg.screen_has_focus and
-            matchProps(not_clas=remoteStr)(ctx)
+            ctx_ovl_macos_globals and
+            not ctx_app_is_remote
         )
     keymap("GenGUI overrides: GNOME", {
         C("RC-Space"):             [iEF2NT(),C("Shift-C-Space")],   # Show GNOME overview/app launcher
@@ -5372,7 +5699,8 @@ if DESKTOP_ENV == 'gnome':
         C("RC-Shift-Key_5"):        C("Print"),                     # Take a screenshot interactively (gnome)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'hyprland':
@@ -5381,7 +5709,8 @@ if DESKTOP_ENV == 'hyprland':
         C("RC-Space"):             [C("Super-d"), iEF2NT()],        # Open Launcher with Cmd+Space
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'icewm':
@@ -5389,7 +5718,8 @@ if DESKTOP_ENV == 'icewm':
         C("RC-Space"):             [iEF2NT(),Key.LEFT_META],        # IceWM: Win95Keys=1 (Meta shows menu)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'kde':
@@ -5424,7 +5754,8 @@ if DESKTOP_ENV == 'kde':
 
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'mate' and DISTRO_ID == 'mint':
@@ -5433,7 +5764,8 @@ if DESKTOP_ENV == 'mate' and DISTRO_ID == 'mint':
         C("RC-Space"):             [iEF2NT(), C("Alt-Space")],       # Open Mint app menu
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'mate' and DISTRO_ID == 'ubuntu':
@@ -5442,7 +5774,8 @@ if DESKTOP_ENV == 'mate' and DISTRO_ID == 'ubuntu':
         C("RC-Space"):             [iEF2NT(), Key.LEFT_META],       # Open Brisk Menu Launcher
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'miracle-wm':
@@ -5451,7 +5784,17 @@ if DESKTOP_ENV == 'miracle-wm':
         C("RC-Space"):             [C("Super-d"), iEF2NT()],        # Open Launcher with Cmd+Space
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
+    )
+
+if DESKTOP_ENV == 'nebide':
+    keymap("GenGUI overrides: NebiDE", {
+        C("RC-Space"):             [iEF2NT(),Key.LEFT_META],        # Open Launcher with Cmd+Space
+    }, when = lambda ctx:
+        cnfg.screen_has_focus and
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'pantheon':
@@ -5462,7 +5805,8 @@ if DESKTOP_ENV == 'pantheon':
         C("Super-RC-f"):            C("Super-Up"),                  # Maximize app elementary
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'sway':
@@ -5471,7 +5815,8 @@ if DESKTOP_ENV == 'sway':
         C("RC-Q"):                  C("C-Q"),                       # Override General GUI Alt+F4 remap
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'trinity':
@@ -5479,7 +5824,8 @@ if DESKTOP_ENV == 'trinity':
         C("RC-Space"):             [iEF2NT(),Key.LEFT_META],        # Trinity desktop (Q4OS)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'unity':
@@ -5487,7 +5833,8 @@ if DESKTOP_ENV == 'unity':
         C("RC-Space"):             [iEF2NT(),Key.LEFT_META],        # Trinity desktop (Q4OS)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'xfce' and DISTRO_ID == 'zorin':
@@ -5495,7 +5842,8 @@ if DESKTOP_ENV == 'xfce' and DISTRO_ID == 'zorin':
         C("RC-Space"):             [iEF2NT(),C("Alt-Pause")],     # "Launch and switch applications" (Xfce on Zorin)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 if DESKTOP_ENV == 'xfce':
@@ -5511,7 +5859,8 @@ if DESKTOP_ENV == 'xfce':
         C("RC-Shift-Key_5"):        C("Shift-Print"),               # Take a screenshot interactively (xfce4)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
-        matchProps(not_clas=remoteStr)(ctx)
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
     )
 
 
@@ -5541,34 +5890,37 @@ keymap("General GUI", {
     # Fn to Alt style remaps
     C("RAlt-Enter"):            C("insert"),                    # Insert
 
-    # emacs style [customize: disabled]
-    # C("Super-a"):               C("Home"),                      # Beginning of Line
-    # C("Super-e"):               C("End"),                       # End of Line
-    # C("Super-b"):               C("Left"),
-    # C("Super-f"):               C("Right"),
-    # C("Super-n"):               C("Down"),
-    # C("Super-p"):               C("Up"),
-    # C("Super-k"):              [C("Shift-End"), C("Backspace")],
-    # C("Super-d"):               C("Delete"),
+    # emacs style
+    C("Super-a"):               C("Home"),                      # Beginning of Line
+    C("Super-e"):               C("End"),                       # End of Line
+    C("Super-b"):               C("Left"),
+    C("Super-f"):               C("Right"),
+    C("Super-n"):               C("Down"),
+    C("Super-p"):               C("Up"),
+    C("Super-k"):              [C("Shift-End"), C("Backspace")],
+    C("Super-d"):               C("Delete"),
 
     # This is better done with a native custom shortcut in each DE
     # C("Alt-RC-Space"):          C(""),                          # Open Finder - Placeholder not-deepin
 
-    # Wordwise
-    C("RC-Left"):               C("Home"),                      # Beginning of Line
-    C("Shift-RC-Left"):         C("Shift-Home"),                # Select all to Beginning of Line
-    C("RC-Right"):              C("End"),                       # End of Line
-    C("Shift-RC-Right"):        C("Shift-End"),                 # Select all to End of Line
-    C("RC-Up"):                 C("C-Home"),                    # Beginning of File
-    C("Shift-RC-Up"):           C("C-Shift-Home"),              # Select all to Beginning of File
-    C("RC-Down"):               C("C-End"),                     # End of File
-    C("Shift-RC-Down"):         C("C-Shift-End"),               # Select all to End of File
-    C("Super-Backspace"):       C("C-Backspace"),               # Delete Left Word of Cursor
-    C("Super-Delete"):          C("C-Delete"),                  # Delete Right Word of Cursor
-    C("RC-Backspace"):          C("C-Shift-Backspace"),         # Delete Entire Line Left of Cursor
-    C("Alt-Delete"):            C("C-Delete"),                  # Delete Right Word of Cursor
-    C("Shift-Alt-Backspace"):   C("C-Backspace"),               # Delete word left of cursor
-    C("Shift-Alt-Delete"):      C("C-Delete"),                  # Delete word right of cursor
+    # Wordwise - cursor movement and word/line selection/deletion
+    C("RC-Left"):               C("Home"),                      # Move Cursor to Beginning of Line
+    C("RC-Right"):              C("End"),                       # Move Cursor to End of Line
+    C("RC-Up"):                 C("C-Home"),                    # Move Cursor to Beginning of File
+    C("RC-Down"):               C("C-End"),                     # Move Cursor to End of File
+
+    C("Shift-RC-Left"):         C("Shift-Home"),                # Extend Selection to Beginning of Line
+    C("Shift-RC-Right"):        C("Shift-End"),                 # Extend Selection to End of Line
+    C("Shift-RC-Up"):           C("C-Shift-Home"),              # Extend Selection to Beginning of File
+    C("Shift-RC-Down"):         C("C-Shift-End"),               # Extend Selection to End of File
+
+    C("Super-Backspace"):       C("C-Backspace"),               # Delete Word Left of Cursor
+    C("Shift-Alt-Backspace"):   C("C-Backspace"),               # Delete Word Left of Cursor (alt)
+    C("Super-Delete"):          C("C-Delete"),                  # Delete Word Right of Cursor
+    C("Shift-Alt-Delete"):      C("C-Delete"),                  # Delete Word Right of Cursor (alt)
+    C("Alt-Delete"):            C("C-Delete"),                  # Delete Word Right of Cursor (Option-style)
+
+    C("RC-Backspace"):          C("C-Shift-Backspace"),         # Delete to Beginning of Line
 
     # Allow access to Linux TTY virtual consoles with the usual physical key locations (General GUI)
     C("Super-RC-F1"):           C("C-Alt-F1"),                  # Go to TTY virtual console 1
@@ -5588,7 +5940,8 @@ keymap("General GUI", {
 
 }, when = lambda ctx:
     cnfg.screen_has_focus and
-    matchProps(not_clas=remoteStr)(ctx)
+    ctx_ovl_macos_globals and
+    not ctx_app_is_remote
 )
 
 
@@ -5620,11 +5973,11 @@ keymap("Diagnostics (isMultiTap)", {
                                 C("Enter"), C("Enter")],
                         ),
 
-}, when = lambda ctx: ctx is ctx)
+}, when = lambda _: True is True)
 
 
 # keymap("Diagnostics (isDoubleTap)", {
 #     C("Shift-Alt-RC-i"):        isDoubleTap(notify_context),    # Diagnostic dialog (primary)
 #     C("Shift-Alt-RC-h"):        isDoubleTap(notify_context),    # Diagnostic dialog (alternate)
 #     C("Shift-Alt-RC-t"):        isDoubleTap(macro_tester),      # Type out test macro
-# }, when = lambda ctx: ctx is ctx )
+# }, when = lambda _: True is True)
