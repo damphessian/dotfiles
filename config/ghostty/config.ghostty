@@ -1,8 +1,11 @@
+command = /home/linuxbrew/.linuxbrew/bin/zsh
+term = xterm-256color
+
 # theme = light:iTerm2 Solarized Light,dark:One Double Dark
 theme = One Double Dark
 
 font-family = Source Code Pro Ligaturized
-font-size = 20
+font-size = 18
 
 window-padding-x = 10
 window-padding-y = 10
