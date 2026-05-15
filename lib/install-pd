@@ -5,11 +5,11 @@
 
 set -e
 
-if [[ -z "${XDG_DATA_HOME}" ]]; then
-  echo "Error: XDG_DATA_HOME env var not set. Skipping p/d installation."
+if [[ -z "${SHELL_CONFIG_DIR}" ]]; then
+  echo "Error: SHELL_CONFIG_DIR env var not set. Skipping p/d installation."
   exit 1
-elif [[ -z "${DOTFILES_DIR}" ]]; then
-  echo "Error: DOTFILES_DIR env var not set. Skipping p/d installation."
+elif [[ -z "${XDG_LOCALS_DIR}" ]]; then
+  echo "Error: XDG_LOCALS_DIR env var not set. Skipping p/d installation."
   exit 1
 elif [[ -z "$(command -v mise)" ]]; then
   echo "Error: mise executable not found. Skipping p/d installation."
