@@ -11,9 +11,6 @@ state
 # state files miscategorized as config
 
 /config/.android
-/config/.gsd-keyboard.settings-ported
-/config/GNOME-xdg-terminals.list
-/config/NVIDIA/
 /config/colima
 /config/cups/
 /config/cursor/
@@ -25,8 +22,33 @@ state
 /config/zsh/.zsh_history
 /config/zsh/.zsh_sessions/
 
+# Linux (mv ~/.config/* ... && ln -sf ...)
+
+/config/.gsd-keyboard.settings-ported
+/config/BraveSoftware/
+/config/GNOME-xdg-terminals.list
+/config/NVIDIA/
+/config/autostart/
+/config/dconf/
+/config/enchant/
+/config/evolution/
+/config/gnome-initial-setup-done
+/config/go/
+/config/gtk-3.0/
+/config/ibus/
+/config/maestral/
+/config/mimeapps.list
+/config/monitors.xml
+/config/pulse/
+/config/systemd/
+/config/tiling-assistant/
+/config/toshy/*
+/config/ubuntu-xdg-terminals.list
+/config/user-dirs.*
+
 # keep
 
 !**/*/.keep
 !/config/toshy/toshy_config.py
 # ---------------------------------------
+
