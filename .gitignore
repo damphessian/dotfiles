@@ -32,6 +32,7 @@ state
 /config/dconf/
 /config/enchant/
 /config/evolution/
+/config/glib*
 /config/gnome-initial-setup-done
 /config/go/
 /config/gtk-3.0/
