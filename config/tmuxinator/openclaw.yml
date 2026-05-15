@@ -1,16 +1,1 @@
----
-name: openclaw
-project_root: "~"
-windows:
-- dotfiles:
-    panes:
-    - cd ~/.dotfiles
-- memory:
-    panes:
-    - cd ~/.openclaw/workspace
-- openclaw:
-    panes:
-    - cd ~/.openclaw
-- logs:
-    panes:
-    - cd ~/.openclaw && openclaw logs --follow
+../../locals/config/tmuxinator/openclaw.yml
