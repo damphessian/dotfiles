@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Reproducible Docker Engine install for Ubuntu using Docker's official apt repo.
+# Supports Ubuntu 24.04+ and other supported Ubuntu releases.
+# Usage:
+#   ./install-docker-ubuntu
+#   INSTALL_DOCKER_GROUP=1 ./install-docker-ubuntu
+#   DRY_RUN=1 ./install-docker-ubuntu
+
+DRY_RUN="${DRY_RUN:-0}"
+INSTALL_DOCKER_GROUP="${INSTALL_DOCKER_GROUP:-1}"
+
+run() {
+  if [[ "$DRY_RUN" == "1" ]]; then
+    printf '+ %q ' "$@"
+    printf '\n'
+  else
+    "$@"
+  fi
+}
+
+log() {
+  echo "==> $*"
+}
+
+require_root() {
+  if [[ "${EUID}" -ne 0 ]]; then
+    echo "Please run as root or via sudo: sudo bash $0" >&2
+    exit 1
+  fi
+}
+
+require_ubuntu() {
+  if [[ ! -r /etc/os-release ]]; then
+    echo "/etc/os-release not found; cannot detect distro" >&2
+    exit 1
+  fi
+  . /etc/os-release
+  if [[ "${ID:-}" != "ubuntu" ]]; then
+    echo "This script is intended for Ubuntu. Detected: ${ID:-unknown}" >&2
+    exit 1
+  fi
+  CODENAME="${UBUNTU_CODENAME:-${VERSION_CODENAME:-}}"
+  if [[ -z "$CODENAME" ]]; then
+    echo "Could not determine Ubuntu codename" >&2
+    exit 1
+  fi
+  ARCH="$(dpkg --print-architecture)"
+}
+
+main() {
+  require_root
+  require_ubuntu
+
+  log "Installing prerequisites"
+  run apt-get update
+  run apt-get install -y ca-certificates curl gnupg
+
+  log "Creating apt keyring directory"
+  run install -m 0755 -d /etc/apt/keyrings
+
+  log "Adding Docker GPG key"
+  run curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  run chmod a+r /etc/apt/keyrings/docker.asc
+
+  log "Configuring Docker apt repository for ${CODENAME} (${ARCH})"
+  if [[ "$DRY_RUN" == "1" ]]; then
+    cat <<REPO
+> /etc/apt/sources.list.d/docker.list
+  deb [arch=${ARCH} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu ${CODENAME} stable
+REPO
+  else
+    cat > /etc/apt/sources.list.d/docker.list <<REPO
+# Docker official repository
+# Managed by install-docker-ubuntu.sh
+
+deb [arch=${ARCH} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu ${CODENAME} stable
+REPO
+  fi
+
+  log "Refreshing package metadata"
+  run apt-get update
+
+  log "Installing Docker Engine and plugins"
+  run apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  log "Enabling and starting Docker services"
+  run systemctl enable --now containerd
+  run systemctl enable --now docker
+
+  if [[ "$INSTALL_DOCKER_GROUP" == "1" ]]; then
+    TARGET_USER="${SUDO_USER:-}"
+    if [[ -n "$TARGET_USER" && "$TARGET_USER" != "root" ]]; then
+      log "Adding ${TARGET_USER} to docker group"
+      run usermod -aG docker "$TARGET_USER"
+      echo
+      echo "Docker installed successfully."
+      echo "User '${TARGET_USER}' was added to the docker group."
+      echo "Log out and back in (or run 'newgrp docker') before using 'docker' without sudo."
+    else
+      echo
+      echo "Docker installed successfully."
+      echo "To use Docker without sudo, run: sudo usermod -aG docker <your-username>"
+    fi
+  else
+    echo
+    echo "Docker installed successfully."
+    echo "Docker commands will require sudo unless you add a user to the docker group later."
+  fi
+
+  echo
+  echo "Verification commands:"
+  echo "  systemctl status docker --no-pager"
+  echo "  docker --version"
+  echo "  docker compose version"
+  echo "  docker run hello-world"
+}
+
+main "$@"
