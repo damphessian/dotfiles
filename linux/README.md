@@ -1,52 +1,42 @@
-## Steps to add to the bootstrap
+## Emacs
 
-1. Install maestral `pip install maestral`, `maestral start`
-2. Command-line installations
+Built with sqlite3 support for magit
 
-# sudo ubuntu-drivers autoinstall
-# sudo apt install nvidia-cuda-toolkit
 ```
-echo ------- apt ---------
-sudo apt install ruby zsh xclip flatpak tmux gnome-tweaks gnome-sushi trash-cli
-
-echo ------- zsh ---------
-chsh -s $(which zsh) $USER
-
-echo ------- emacs ---------
 brew unlink emacs
 brew install poppler
 sudo apt install libvterm-dev
 sudo add-apt-repository ppa:ubuntuhandbook1/emacs
 sudo apt update
 sudo apt install emacs emacs-gtk emacs-common
+```
 
-echo ------- toshy ---------
-bash -c "$(curl -L https://raw.githubusercontent.com/RedBearAK/toshy/main/scripts/bootstrap.sh ||
- wget -O - https://raw.githubusercontent.com/RedBearAK/toshy/main/scripts/bootstrap.sh)"
-
-echo ------- vim ---------
-sudo apt-get install libx11-dev libxt-dev libxpm-dev libgtk2.0-dev
-brew tap h35514n/vim
-# copy formula to tap directory
-# brew install --build-from-source [TAP DIRECTORY]
-
-echo ------- kitty ---------
-~/.dotfiles/lib/install-kitty
-
-echo ------- flatpak ---------
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install brave extensionmanager
-
-echo ------- fonts ---------
+## Fonts
+```
 mkdir ~/.local/share/fonts
 cp -r ~/Dropbox/fonts/**/* ~/.local/share/fonts
 fc-cache -fv
 ```
 
-## Merge config and data home dirs
+## Toshy
 
-NB: May need to remove toshy first then `g co --` the config file after
-overwriting.
+https://github.com/RedBearAK/toshy
+
+```
+bash -c "$(curl -L https://raw.githubusercontent.com/RedBearAK/toshy/main/scripts/bootstrap.sh ||
+ wget -O - https://raw.githubusercontent.com/RedBearAK/toshy/main/scripts/bootstrap.sh)"
+```
+
+### Merge config and data home dirs
+
+1. Remove versioned toshy config
+2. Copy data dir contents to dotfiles subdirectory
+3. Link to dotfiles subdirectory
+4. Back up upstream toshy config
+5. Stage updated toshy config
+6. Copy customized toshy config to overwrite
+7. Pick-and-patch from the unstaged changes diff
+8. Commit updates
 
 ```
 mv ~/.config/* $XDG_CONFIG_HOME
@@ -78,14 +68,19 @@ dconf dump /org/gnome/ > gnome-keybindings-backup.conf
 
 #### Ubuntu
 
+```sh
+gsettings get org.gnome.shell.keybindings toggle-overview
+# @as []
 ```
-~ % gsettings set org.gnome.shell.keybindings toggle-overview "[]"
-~ % gsettings set org.gnome.mutter overlay-key ''
 
-~ % gsettings get org.gnome.shell.keybindings toggle-overview
-@as []
-~ % gsettings get org.gnome.mutter overlay-key
-''
+```sh
+gsettings get org.gnome.mutter overlay-key
+ # ''
+```
+
+```
+gsettings set org.gnome.shell.keybindings toggle-overview "[]"
+gsettings set org.gnome.mutter overlay-key ''
 ```
 
 ```
@@ -95,7 +90,15 @@ for i in {1..9}; do
 done
 ```
 
-#### PopOS
+## Deprecated Installs
+
+### CUDA Toolkit
+```
+sudo ubuntu-drivers autoinstall
+sudo apt install nvidia-cuda-toolkit
+```
+
+### PopOS
 
 Locate and edit the COSMIC extension's main JavaScript file, often named
 `extension.js`.
@@ -112,13 +115,7 @@ Search for this line and comment it out:
 overview_toggle(overlay_key_action);
 ```
 
-## Apps
-
-- Toshy: https://github.com/RedBearAK/toshy
-- Emacs: Built with sqlite3 support for magit
-- Vim: Built with clipboard support (`--with-x` build flag)
-
-## TeX
+### TeX
 
 May take several hours to complete:
 https://www.tug.org/texlive/quickinstall.html
@@ -129,11 +126,8 @@ wget https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
 zcat < install-tl-unx.tar.gz | tar xf -
 
 sudo ./install-tl --no-interaction --paper=letter --no-doc-install --no-src-install
-
 sudo ln -s /usr/local/texlive/[YYYY] /usr/local/texlive/current
 ```
-
-## Deprecated Installs
 
 ### input-remapper-2
 
@@ -152,4 +146,9 @@ sudo add-apt-repository universe -y
 sudo add-apt-repository ppa:agornostal/ulauncher -y
 sudo apt update
 sudo apt install ulauncher
+```
+
+### Kitty
+```
+~/.dotfiles/lib/install-kitty
 ```

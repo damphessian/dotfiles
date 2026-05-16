@@ -16,11 +16,6 @@ def setup(group_name, default: true)
   gated_prompt("Set up", group_name, default: default) { yield if block_given? }
 end
 
-def setup_writing(project)
-  FileUtils.mkdir_p(File.expand_path("~/Writing/#{project}"))
-  execho("git clone --recursive -j2 https://github.com/h35514n/#{project}.git ~/Writing/#{project}")
-end
-
 def configure(group_name)
   gated_prompt("Configure", group_name) { yield if block_given? }
 end
@@ -135,6 +130,20 @@ def install_system_zshenv
   end
 
   execho("sudo cp #{zshenv} #{target}")
+
+  return unless machine_is?(:linux)
+
+  if system("grep -q DOTFILES_DIR ~/.zshenv 2>/dev/null")
+    puts "XDG env setup found in ~/.zshenv"
+  else
+    execho(<<~SH)
+      mv ~/.zprofile ~/.zprofile.bak
+      echo 'source /etc/zsh/zshenv' >> ~/.zshenv
+      echo 'source ${DOTFILES_DIR}/env/setup.sh' >> ~/.zshenv
+    SH
+    puts "XDG env setup in ~/.zshenv. Restart bootstrap from Zshell."
+    exit(0)
+  end
 end
 
 def install_launchagents
@@ -167,7 +176,7 @@ def ensure_dropbox_synced
   return if File.exist?(File.expand_path "~/Dropbox")
 
   execho("mkdir ~/Dropbox")
-  prompt_and_wait "Issue `maestral gui` (macOS) or `maestral start` (Linux) and wait for sync to complete."
+  prompt_and_wait "Issue `maestral gui` (macOS) or `~/.maestral/bin/maestral start` (Linux) and wait for sync to complete."
 end
 
 def ensure_gpg_permissions_are_set_correctly
@@ -196,8 +205,13 @@ def ensure_locals_are_created
   end
 
   unless File.exist?(ENVIRONMENT.fetch("XDG_SECURE_DIR"))
-    target = "~/Dropbox"
-    execho("ln -s #{target}/dotfiles ${XDG_SECURE_DIR}")
+    execho("ln -s ~/Dropbox/dotfiles ${XDG_SECURE_DIR}")
+  end
+
+  gitconfig = File.expand_path("${XDG_LOCALS_DIR}/config/git/config")
+  unless File.exist?(gitconfig)
+    source = File.expand_path("${XDG_SECURE_DIR}/config/git/config")
+    execho("cp #{source} #{gitconfig}")
   end
 
   return unless machine_is?(:mac)
@@ -226,11 +240,12 @@ def setup_emacs_plus(version: 31)
     options = %i[with_compress_install with_xwidgets] if machine_is?(:apple)
     brew_install :emacs_plus, version: version, options: options
 
-    execho <<~SH
+    execho(<<~SH)
       \rm -rf '/Applications/Emacs.app' '/Applications/Emacs Client.app'
-      osascript -e 'tell application "Finder" to make alias file to posix file "#{HOMEBREW_PREFIX}/opt/emacs-plus@#{version}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
-      osascript -e 'tell application "Finder" to make alias file to posix file "#{HOMEBREW_PREFIX}/opt/emacs-plus@#{version}/Emacs Client.app" at posix file "/Applications" with properties {name:"Emacs Client.app"}'
+      cp -r /opt/homebrew/opt/emacs-plus@#{version}/Emacs.app /Applications/
+      cp -r "/opt/homebrew/opt/emacs-plus@#{version}/Emacs Client.app" /Applications/
     SH
+    execho("chmod 700 ${XDG_RUNTIME_DIR}/emacs/")
   end
 end
 
@@ -299,6 +314,58 @@ def brew_installed?(name, type: :formula)
   when :cask
     BREW_INSTALLED_CASKS.include?(name.to_s)
   end
+end
+
+def apt_install
+  return unless machine_is?(:linux)
+  execho(<<~SH)
+    export DEBIAN_FRONTEND=noninteractive 
+    sudo apt-get update
+    sudo apt-get install -y \
+        build-essential \
+        flatpak \
+        gnome-shell-extension-manager \
+        gnome-shell-extensions \
+        gnome-sushi \
+        gnome-tweaks \
+        libx11-dev \
+        libxpm-dev \
+        libxt-dev \
+        ruby \
+        tmux \
+        trash-cli \
+        vim-gtk3 \ 
+        xclip \
+        zsh
+  SH
+end
+
+def snap_install
+  return unless machine_is?(:linux)
+  execho(<<~SH)
+    snap install ghostty --classic
+  SH
+end
+
+def flatpak_install
+  return unless machine_is?(:linux)
+  execho(<<~SH)
+    flatpak remote-add --if-not-exists flathub \
+        https://flathub.org/repo/flathub.flatpakrepo
+    flatpak install brave extensionmanager
+  SH
+end
+
+def pip_install_maestral
+  return unless machine_is?(:linux)
+  execho(<<~SH)
+    python3 -m venv ~/.maestral
+    ~/.maestral/bin/pip install maestral
+  SH
+end
+
+def install_maestral
+  machine_is?(:mac) ? cask_install(:maestral) : pip_install_maestral
 end
 
 # Help

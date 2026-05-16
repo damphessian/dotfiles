@@ -1,33 +1,60 @@
 #!/usr/bin/ruby
 # frozen_string_literal: true
 
-# rubocop:disable Layout/EmptyLinesAroundBlockBody
 require_relative "../lib/bootstrap"
 
-setup :homebrew do
-  install_homebrew
+setup :linux_base_requirements do
+  apt_install
+  flatpak_install
+  snap_install
 end
 
-cask_install :maestral
+setup(:homebrew) { install_homebrew }
+setup(:dropbox) { install_maestral }
 
 setup :xdg_base_directory_environment do
   install_launchagents
   install_system_zshenv
 end
 
-setup :core_cli_tools do
+setup :gcc do
+  brew_install :gcc
+end
 
+setup :brew_installs do
+
+  brew_install "extract_url"
+  brew_install "romkatv/gitstatus/gitstatus"
+  brew_install :awscli
+  brew_install :basedpyright
+  brew_install :bash
+  brew_install :bash_language_server
+  brew_install :bat
   brew_install :binutils
+  brew_install :btop
+  brew_install :bzip2
+  brew_install :cmake
   brew_install :coreutils
   brew_install :cpdf
   brew_install :curl
   brew_install :diffutils
+  brew_install :direnv
   brew_install :docker
+  brew_install :editorconfig
+  brew_install :elixir_ls
+  brew_install :eza
   brew_install :fd
   brew_install :ffmpeg
   brew_install :findutils
+  brew_install :fzf
   brew_install :gawk
+  brew_install :gemini_cli
+  brew_install :gettext
+  brew_install :gh
+  brew_install :ghostscript
   brew_install :git
+  brew_install :git_delta
+  brew_install :git_filter_repo
   brew_install :git_lfs
   brew_install :gnu_indent
   brew_install :gnu_sed
@@ -35,130 +62,74 @@ setup :core_cli_tools do
   brew_install :gnu_which
   brew_install :gnupg
   brew_install :gnutls
+  brew_install :gopls
   brew_install :graphviz
   brew_install :grep
+  brew_install :hermes_agent
+  brew_install :icu4c, version: 78
+  brew_install :imagemagick
+  brew_install :imsg
   brew_install :jo
   brew_install :jq
   brew_install :less
+  brew_install :libffi
+  brew_install :libgccjit
+  brew_install :libxml2
+  brew_install :llvm
+  brew_install :mise
+  brew_install :nbdime
+  brew_install :ncurses
+  brew_install :openssl, version: 3
+  brew_install :pandoc
   brew_install :parallel
   brew_install :pnpm
+  brew_install :pymupdf
+  brew_install :readline
   brew_install :ripgrep
   brew_install :shfmt
+  brew_install :source_highlight
+  brew_install :summarize
+  brew_install :tectonic # https://tectonic-typesetting.github.io
+  brew_install :texlab
+  brew_install :tidy_html5
   brew_install :tlrc
+  brew_install :tmux
   brew_install :tmuxinator
   brew_install :uv
   brew_install :watch
   brew_install :wdiff
   brew_install :wget
-
-end
-
-setup :build_tools do
-
-  brew_install :bzip2
-  brew_install :cmake
-  brew_install :gcc
-  brew_install :gettext
-  brew_install :icu4c, version: 78
-  brew_install :imagemagick
-  brew_install :libffi
-  brew_install :libgccjit
-  brew_install :libxml2
-  brew_install :llvm
-  brew_install :ncurses
-  brew_install :openssl, version: 3
-  brew_install :readline
-  brew_install :zlib
-
-end
-
-setup :development_tools do
-
-  brew_install "extract_url"
-  brew_install :awscli
-  brew_install :bash
-  brew_install :bat
-  brew_install :btop
-  brew_install :direnv
-  brew_install :eza
-  brew_install :fzf
-  brew_install :gemini_cli
-  brew_install :gh
-  brew_install :git_delta
-  brew_install :git_filter_repo
-  brew_install :hermes_agent
-  brew_install :imsg
-  brew_install :mise
-  brew_install :nbdime
-  brew_install :pymupdf
-  brew_install :source_highlight
-  brew_install :summarize
-  brew_install :texlab
-  brew_install :tmux
+  brew_install :wordnet
   brew_install :xdg_ninja
+  brew_install :zlib
   brew_install :zsh
   brew_install :zsh_completions
 
-  brew_install "bro3886/tap/ical"
-  brew_install "romkatv/gitstatus/gitstatus"
-  brew_install "schpet/tap/linear"
-
 end
 
-setup :text_editing_cli_tools do
+if machine_is?(:linux)
+  brew_install :git_credential_libsecret
 
-  brew_install :basedpyright
-  brew_install :bash_language_server
-  brew_install :editorconfig
-  brew_install :elixir_ls
-  brew_install :ghostscript
-  brew_install :gopls
-  brew_install :pandoc
-  brew_install :tectonic # https://tectonic-typesetting.github.io
-  brew_install :tidy_html5
-  brew_install :wordnet
-
+  setup :vim_with_clipboard_support do
+    brew_tap "h35514n/homebrew-vim"
+    brew_install "h35514n/vim/vim", options: :build_from_source
+  end
 end
 
 if machine_is?(:mac)
   setup_emacs_plus(version: 31)
 
-  setup :emacs_mac, default: false do
-    brew_tap "railwaycat/emacsmacport"
-    brew_install :emacs_mac, options: %i[
-      with_emacs_big_sur_icon
-      with_imagemagick
-      with_librsvg
-      with_native_compilation
-      with_no_title_bars
-      with_starter
-      with_xwidgets
-    ]
-  end
-
   setup :mac_tools do
 
     brew install "steipete/tap/imsg"
+    brew_install "bro3886/tap/ical"
+    brew_install "schpet/tap/linear"
     brew_install :colima
     brew_install :macvim
     brew_install :osxutils
     brew_install :pinentry_mac
     brew_install :remindctl
     brew_install :trash
-    cask_install :cursor
-    cask_install :daisydisk
-    cask_install :karabiner_elements
-    cask_install :lm_studio
-    cask_install :marked_app
-    cask_install :ollama_app
-    cask_install :tailscale
-    cask_install :visual_studio_code
-    cask_install :zed
-
-  end
-
-  setup :gui_apps do
-
     cask_install :appcleaner
     cask_install :betterdisplay
     cask_install :bettertouchtool
@@ -169,6 +140,8 @@ if machine_is?(:mac)
     cask_install :codex
     cask_install :codex_app
     cask_install :copilot_cli
+    cask_install :cursor
+    cask_install :daisydisk
     cask_install :figma
     cask_install :finbar
     cask_install :gcloud_cli
@@ -177,15 +150,19 @@ if machine_is?(:mac)
     cask_install :google_drive
     cask_install :iterm2
     cask_install :itermai
+    cask_install :karabiner_elements
     cask_install :keycastr
     cask_install :latexit
     cask_install :launchbar
     cask_install :launchcontrol
     cask_install :licecap
     cask_install :linear_linear
+    cask_install :lm_studio
     cask_install :maestral
+    cask_install :marked_app
     cask_install :name_mangler
     cask_install :obsidian
+    cask_install :ollama_app
     cask_install :pdfsam_basic
     cask_install :rectangle_pro
     cask_install :responsively
@@ -193,9 +170,12 @@ if machine_is?(:mac)
     cask_install :scrivener
     cask_install :shottr
     cask_install :skim
+    cask_install :tailscale
     cask_install :tex_live_utility
     cask_install :transmission
+    cask_install :visual_studio_code
     cask_install :vlc
+    cask_install :zed
     cask_install :zoom
     cask_install :zotero
 
@@ -215,10 +195,6 @@ setup :pd_tool do
   script_install :pd
 end
 
-setup :writing_projects, default: false do
-  setup(:logos_ex_machina) { setup_writing(:logos_ex_machina) }
-end
-
 if machine_is?(:mac)
   configure :macos do
     disable_press_and_hold
@@ -231,5 +207,4 @@ perform :cleanups do
   brew_doctor
 end
 
-puts "\n\nThat's it! Restart and run the customization script."
-# rubocop:enable Layout/EmptyLinesAroundBlockBody
+puts "\n\nThat's it!"
