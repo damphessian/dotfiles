@@ -1,16 +1,3 @@
-## Emacs
-
-Built with sqlite3 support for magit
-
-```
-brew unlink emacs
-brew install poppler
-sudo apt install libvterm-dev
-sudo add-apt-repository ppa:ubuntuhandbook1/emacs
-sudo apt update
-sudo apt install emacs emacs-gtk emacs-common
-```
-
 ## Fonts
 ```
 mkdir ~/.local/share/fonts

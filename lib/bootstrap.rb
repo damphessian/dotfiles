@@ -249,6 +249,14 @@ def setup_emacs_plus(version: 31)
   end
 end
 
+def install_emacs_with_sqlite3
+  execho(<<~SH)
+    sudo add-apt-repository ppa:ubuntuhandbook1/emacs
+    sudo apt update
+    sudo apt install emacs emacs-gtk emacs-common
+  SH
+end
+
 def disable_press_and_hold
   execho("defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false")
 end

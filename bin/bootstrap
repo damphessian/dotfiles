@@ -114,6 +114,10 @@ if machine_is?(:linux)
     brew_tap "h35514n/homebrew-vim"
     brew_install "h35514n/vim/vim", options: :build_from_source
   end
+
+  setup :emacs_with_sqlite3_support_for_magit do
+    install_emacs_with_sqlite3
+  end
 end
 
 if machine_is?(:mac)
