@@ -339,6 +339,7 @@ def apt_install
         libx11-dev \
         libxpm-dev \
         libxt-dev \
+        openssh-server \
         ruby \
         tmux \
         trash-cli \
