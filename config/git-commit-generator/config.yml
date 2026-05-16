@@ -13,6 +13,12 @@ providers:
     api_key_env: "OLLAMA_API_KEY"
     protocol: "chat"
 
+  gemma4-e2b:
+    base_url: "http://localhost:11434/v1"
+    model: "gemma4:e2b"
+    api_key_env: "OLLAMA_API_KEY"
+    protocol: "chat"
+
   qwen2.5-7b:
     base_url: "http://localhost:11434/v1"
     model: "qwen2.5:7b"
