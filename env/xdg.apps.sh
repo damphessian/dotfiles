@@ -28,8 +28,8 @@ export GTAGSCONF="${XDG_CONFIG_HOME}/gtags/gtags.conf"
 export HEX_HOME="${XDG_STATE_HOME}/hex"
 export HISTFILE="${XDG_STATE_HOME}/zsh/history"
 export INPUTRC="${XDG_CONFIG_HOME}/inputrc"
-export IRBRC="${XDG_CONFIG_HOME}/irb/irbrc"
 export IPYTHONDIR="${XDG_DATA_HOME}/ipython"
+export IRBRC="${XDG_CONFIG_HOME}/irb/irbrc"
 export JUPYTER_CONFIG_DIR="${XDG_CONFIG_HOME}/jupyter"
 export LESSHISTFILE="${XDG_STATE_HOME}/less/history"
 export LESSKEY="${XDG_CONFIG_HOME}/less/keys"
@@ -52,3 +52,8 @@ export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"
 export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
 export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
 export ZELLIJ_CONFIG_DIR="${XDG_CONFIG_HOME}/zellij"
+
+if [[ "${MACHINE}" == "linux" ]]; then
+  unset DOCKER_CONFIG
+  unset DOCKER_HOST
+fi
