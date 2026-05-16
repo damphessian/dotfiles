@@ -1,50 +1,38 @@
-default_provider: gpt-oss
+default_provider: gpt-oss-cloud
 
 providers:
-  openai:
-    base_url: "https://api.openai.com/v1"
-    model: "gpt-4.1-mini"
-    api_key_env: "OPENAI_API_KEY_GIT"
-    protocol: "responses"
+  nemotron3-nano:
+    base_url: "http://localhost:1234/v1"
+    model: "nvidia/nemotron-3-nano"
+    api_key_env: "LMSTUDIO_API_KEY"
+    protocol: "chat"
 
-  qwen3-coder:
-    base_url: "http://localhost:11434/v1"
-    model: "qwen3-coder:480b-cloud"
-    api_key_env: "OLLAMA_API_KEY"
-    protocol: "responses"
-
-  gpt-oss:
+  gpt-oss-cloud:
     base_url: "http://localhost:11434/v1"
     model: "gpt-oss:120b-cloud"
     api_key_env: "OLLAMA_API_KEY"
     protocol: "chat"
 
-  # air_llama:
-  #   base_url: "http://jmr-air.local:1234/v1"
-  #   model: "llama-3.2-3b-instruct"
-  #   api_key_env: "LMSTUDIO_API_KEY"
-  #   protocol: "chat"
-  #
-  # air_qwen:
-  #   base_url: "http://jmr-air.local:1234/v1"
-  #   model: "qwen3.5-2b"
-  #   api_key_env: "LMSTUDIO_API_KEY"
-  #   protocol: "chat"
-  #
-  # grok:
-  #   base_url: "https://api.x.ai/v1"
-  #   model: "grok-3-mini"
-  #   api_key_env: "XAI_API_KEY"
-  #   protocol: "responses"
-  #
-  # lms_gpt:
-  #   base_url: "http://jmr-studio.local:1234/v1"
-  #   model: "openai/gpt-oss-20b"
-  #   api_key_env: "LMSTUDIO_API_KEY"
-  #   protocol: "chat"
-  #
-  # lms_deepseek:
-  #   base_url: "http://jmr-studio.local:1234/v1"
-  #   model: "deepseek-coder-v2-lite-instruct-mlx"
-  #   api_key_env: "LMSTUDIO_API_KEY"
-  #   protocol: "chat"
+  qwen2.5-7b:
+    base_url: "http://localhost:11434/v1"
+    model: "qwen2.5:7b"
+    api_key_env: "OLLAMA_API_KEY"
+    protocol: "responses"
+
+  qwen2.5-14b:
+    base_url: "http://localhost:11434/v1"
+    model: "qwen2.5:14b"
+    api_key_env: "OLLAMA_API_KEY"
+    protocol: "responses"
+
+  qwen2.5-32b:
+    base_url: "http://localhost:11434/v1"
+    model: "qwen2.5:32b"
+    api_key_env: "OLLAMA_API_KEY"
+    protocol: "responses"
+
+  openai:
+    base_url: "https://api.openai.com/v1"
+    model: "gpt-4.1-mini"
+    api_key_env: "OPENAI_API_KEY_GIT"
+    protocol: "responses"
