@@ -1,9 +1,11 @@
+#!/usr/bin/env bash
+
 # version manager configuration
 # https://mise.jdx.dev
 
 [[ -z "${XDG_CONFIG_HOME}" ]] && echo "WARNING: XDG_CONFIG_HOME is not set in ${0}"
-[[ -z "${XDG_DATA_HOME}" ]]   && echo "WARNING: XDG_DATA_HOME is not set in ${0}"
-[[ -z "${MACHINE_CORES}" ]]   && echo "WARNING: MACHINE_CORES is not set in ${0}"
+[[ -z "${XDG_DATA_HOME}" ]] && echo "WARNING: XDG_DATA_HOME is not set in ${0}"
+[[ -z "${MACHINE_CORES}" ]] && echo "WARNING: MACHINE_CORES is not set in ${0}"
 
 export MISE_DIR="${XDG_DATA_HOME}/mise"
 if [[ "${MACHINE_CORES}" =~ ^[0-9]+$ ]] && [[ "${MACHINE_CORES}" -gt 0 ]]; then

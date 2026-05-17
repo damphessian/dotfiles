@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 [[ -z "${DOTFILES_DIR}" ]]    && echo "WARNING: DOTFILES_DIR env var is not set in ${0}"
 [[ -z "${XDG_CACHE_HOME}" ]]  && echo "WARNING: XDG_CACHE_HOME is not set in ${0}"
 [[ -z "${XDG_CONFIG_HOME}" ]] && echo "WARNING: XDG_CONFIG_HOME is not set in ${0}"
@@ -15,7 +17,6 @@ export CARGO_HOME="${XDG_DATA_HOME}/rust/cargo"
 export CUDA_CACHE_PATH="${XDG_CACHE_HOME}/nv"
 export CURLOPT_NETRC_FILE="${XDG_SECURE_DIR}/config/netrc"
 export DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
-export DOCKER_HOST="unix://${XDG_CONFIG_HOME}/colima/default/docker.sock"
 export DOTNET_CLI_HOME="${XDG_DATA_HOME}/dotnet"
 export GEMRC="${XDG_CONFIG_HOME}/gem/gemrc"
 export GEM_SPEC_CACHE="${XDG_CACHE_HOME}/gem"
@@ -53,7 +54,6 @@ export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
 export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
 export ZELLIJ_CONFIG_DIR="${XDG_CONFIG_HOME}/zellij"
 
-if [[ "${MACHINE}" == "linux" ]]; then
-  unset DOCKER_CONFIG
-  unset DOCKER_HOST
+if [[ -n "${COLIMA_HOME}" ]]; then
+  export DOCKER_HOST="unix://${COLIMA_HOME}/default/docker.sock"
 fi

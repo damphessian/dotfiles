@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # - copied to /etc/zshenv or /etc/zsh/zshenv in bootstrap
 # - also set in LaunchAgent for mac GUI access (see set-xdg-env-vars.sh)
 

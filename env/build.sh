@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if [[ -z "${HOMEBREW_PREFIX}" ]]; then
   echo "WARNING: HOMEBREW_PREFIX env var is not set in ${0}"
 fi

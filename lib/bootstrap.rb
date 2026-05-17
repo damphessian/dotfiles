@@ -216,6 +216,12 @@ def ensure_locals_are_created
 
   return unless machine_is?(:mac)
 
+  if File.exist?("/Volumes/Cellar")
+    execho("ln -s ${COLIMA_HOME} ${HOME}/.colima")
+  else
+    puts("[WARNING] External drive unmounted. Skipping colima symlink.")
+  end
+
   system("mkdir -p ${HOME}/.local/")
 
   unless File.exist?(File.expand_path "~/.local/share")
