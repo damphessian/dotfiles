@@ -168,12 +168,14 @@ if machine_is?(:mac)
     cask_install :obsidian
     cask_install :ollama_app
     cask_install :pdfsam_basic
+    cask_install :qlmarkdown
     cask_install :rectangle_pro
     cask_install :responsively
     cask_install :screenflow
     cask_install :scrivener
     cask_install :shottr
     cask_install :skim
+    cask_install :syntax_highlight
     cask_install :tailscale
     cask_install :tex_live_utility
     cask_install :transmission
