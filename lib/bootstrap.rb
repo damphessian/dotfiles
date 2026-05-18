@@ -204,13 +204,15 @@ def ensure_locals_are_created
     execho("sudo ln -sf ${DOTFILES_DIR}/bin/pinentry-jmr /usr/local/bin/")
   end
 
-  unless File.exist?(ENVIRONMENT.fetch("XDG_SECURE_DIR"))
+  secure_dir = ENVIRONMENT.fetch("XDG_SECURE_DIR")
+  unless File.exist?(secure_dir)
     execho("ln -s ~/Dropbox/dotfiles ${XDG_SECURE_DIR}")
   end
 
-  gitconfig = File.expand_path("${XDG_LOCALS_DIR}/config/git/config")
+  locals_dir = ENVIRONMENT.fetch("XDG_LOCALS_DIR")
+  gitconfig = File.expand_path("#{locals_dir}/config/git/config")
   unless File.exist?(gitconfig)
-    source = File.expand_path("${XDG_SECURE_DIR}/config/git/config")
+    source = File.expand_path("#{secure_dir}/config/git/config")
     execho("cp #{source} #{gitconfig}")
   end
 
